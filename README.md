@@ -1,6 +1,6 @@
 # VivaHub - Frontend
 
-VivaHub is a modern and user-friendly beauty salon booking platform. Inspired by TreatWell, it allows customers to find salons, book appointments, and make secure payments. Salon owners can manage their services and appointments efficiently.
+VivaHub is a modern and user-friendly beauty salon booking platform. it allows customers to find salons, book appointments, and make secure payments. Salon owners can manage their services and appointments efficiently.
 
 ## Features
 - **Salon Search & Booking:** Browse and book appointments easily.
@@ -65,13 +65,14 @@ We welcome contributions! To contribute:
    git push origin feature-name
    ```
 
-## Collaborators
-- **Ayat Abu Haj**
+## Contact
+For questions or suggestions, feel free to reach out:
+
+- **GitHub:** (https://github.com/MrsLondon)
+- **LinkedIn:** [Ayat Abu Haj]
+
+### Collaborators
 - **Brunella Carvalho**
 - **Victor Marchesi**
 
-## Contact
-For questions or suggestions, feel free to reach out:
-- **GitHub:** [MrsLondon](https://github.com/MrsLondon)
-- **LinkedIn:** [Ayat Abu Haj]
 
