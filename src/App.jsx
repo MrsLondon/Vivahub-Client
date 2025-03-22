@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import { testConnection } from './services/api'
+import Homepage from './pages/HomePage'
 
 function App() {
   const [message, setMessage] = useState('Loading...')
@@ -22,12 +23,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>VivaHub</h1>
-      {error ? (
-        <div className="error">{error}</div>
-      ) : (
-        <div className="message">{message}</div>
-      )}
+     <Homepage />
     </div>
   )
 }
