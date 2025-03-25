@@ -26,13 +26,6 @@ function App() {
   return (
     <Router>
       <div>
-        <nav className="bg-gray-800 p-4">
-          <div className="max-w-7xl mx-auto flex space-x-4">
-            <Link to="/" className="text-white hover:text-blue-400 transition-colors">Home</Link>
-            <Link to="/about" className="text-white hover:text-blue-400 transition-colors">About Me</Link>
-          </div>
-        </nav>
-
         <Routes>
           <Route path="/" element={<Homepage />} />
         </Routes>
