@@ -68,6 +68,7 @@ function App() {
   }, [])
 
   return (
+
     <AuthProvider>
       <Router>
         <div className="min-h-screen bg-gray-100">
@@ -99,6 +100,9 @@ function App() {
       </Router>
     </AuthProvider>
   );
+
+  )
+
 }
 
 export default App
