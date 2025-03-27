@@ -1,7 +1,5 @@
-import { useState, useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import './App.css'
-import { testConnection } from './services/api'
 import Homepage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import UnauthorizedPage from './pages/UnauthorizedPage'
@@ -9,13 +7,10 @@ import CustomerDashboard from './pages/CustomerDashboard'
 import BusinessDashboard from './pages/BusinessDashboard'
 import ProtectedRoute from './components/ProtectedRoute'
 import AuthProvider from './context/AuthContext'
-import { useAuth } from './hooks/useAuth'
 
-// Separate component for navigation to use useAuth hook
-const Navigation = () => {
-  const { user, logout } = useAuth();
-  
+const App = () => {
   return (
+
     <header className="p-4 bg-[#eeeeee] shadow-sm">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         <img src="/src/assets/logo.png" alt="VivaHub Logo" className="h-10" />
@@ -84,39 +79,33 @@ function App() {
 
   return (
 
+
     <AuthProvider>
       <Router>
-        <div className="min-h-screen bg-gray-100">
-          <Navigation />
-          <main className="py-4">
-            <Routes>
-              <Route path="/" element={<Homepage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/unauthorized" element={<UnauthorizedPage />} />
-              <Route
-                path="/business-dashboard"
-                element={
-                  <ProtectedRoute allowedRoles={['business']}>
-                    <BusinessDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/customer-dashboard"
-                element={
-                  <ProtectedRoute allowedRoles={['customer']}>
-                    <CustomerDashboard />
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
-          </main>
-        </div>
+        <Routes>
+          <Route path="/" element={<Homepage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/unauthorized" element={<UnauthorizedPage />} />
+          <Route
+            path="/customer-dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['customer']}>
+                <CustomerDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/business-dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['business']}>
+                <BusinessDashboard />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
       </Router>
     </AuthProvider>
   );
-
-
-}
+};
 
 export default App
