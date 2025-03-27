@@ -1,14 +1,16 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Homepage = () => {
   return (
+
     <div className="font-sans leading-relaxed text-[#4A4A4A] bg-white min-h-screen">
       {/* Header */}
       <header className="p-4 bg-[#eeeeee] flex justify-between items-center shadow-sm">
-      <img src="/src/assets/logo.png" alt="VivaHub Logo" className="h-10"/>
-        <button className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded-lg text-sm hover:bg-[#A2B9C6] hover:text-white transition duration-300">
+        <img src="/src/assets/logo.png" alt="VivaHub Logo" className="h-10"/>
+        <Link to="/login" className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded-lg text-sm hover:bg-[#A2B9C6] hover:text-white transition duration-300">
           Log In
-        </button>
+        </Link>
       </header>
 
       {/* Hero Section */}
@@ -152,7 +154,7 @@ const Homepage = () => {
           </div>
         </div>
         <div className="max-w-6xl mx-auto pt-8 mt-8 border-t border-white/10 text-sm text-white/60">
-          © {new Date().getFullYear()} VivaHub. All rights reserved.
+          &copy; {new Date().getFullYear()} VivaHub. All rights reserved.
         </div>
       </footer>
     </div>
