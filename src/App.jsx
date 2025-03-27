@@ -16,36 +16,51 @@ const Navigation = () => {
   const { user, logout } = useAuth();
   
   return (
-    <nav className="bg-gray-800 p-4">
+    <header className="p-4 bg-[#eeeeee] shadow-sm">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <div className="flex space-x-4">
-          <Link to="/" className="text-white hover:text-blue-400 transition-colors">Home</Link>
+        <img src="/src/assets/logo.png" alt="VivaHub Logo" className="h-10" />
+        <nav className="flex space-x-4">
+          <Link to="/" className="text-[#4A4A4A] hover:text-[#A2B9C6] transition-colors">
+            Home
+          </Link>
           {!user ? (
-            <Link to="/login" className="text-white hover:text-blue-400 transition-colors">Login</Link>
+            <Link to="/login" className="text-[#4A4A4A] hover:text-[#A2B9C6] transition-colors">
+              Login
+            </Link>
           ) : (
             <>
-              {user.role === 'business' && (
-                <Link to="/business-dashboard" className="text-white hover:text-blue-400 transition-colors">Business Dashboard</Link>
+              {user.role === "business" && (
+                <Link
+                  to="/business-dashboard"
+                  className="text-[#4A4A4A] hover:text-[#A2B9C6] transition-colors"
+                >
+                  Business Dashboard
+                </Link>
               )}
-              {user.role === 'customer' && (
-                <Link to="/customer-dashboard" className="text-white hover:text-blue-400 transition-colors">Customer Dashboard</Link>
+              {user.role === "customer" && (
+                <Link
+                  to="/customer-dashboard"
+                  className="text-[#4A4A4A] hover:text-[#A2B9C6] transition-colors"
+                >
+                  Customer Dashboard
+                </Link>
               )}
             </>
           )}
-        </div>
+        </nav>
         {user && (
           <div className="flex items-center space-x-4">
-            <span className="text-white">Welcome, {user.name}</span>
-            <button 
+            <span className="text-[#4A4A4A]">Welcome, {user.name}</span>
+            <button
               onClick={logout}
-              className="text-white hover:text-blue-400 transition-colors"
+              className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded-lg text-sm hover:bg-[#A2B9C6] hover:text-white transition duration-300"
             >
               Logout
             </button>
           </div>
         )}
       </div>
-    </nav>
+    </header>
   );
 };
 

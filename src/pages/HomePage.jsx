@@ -3,13 +3,6 @@ import React from "react";
 const Homepage = () => {
   return (
     <div className="font-sans leading-relaxed text-[#4A4A4A] bg-white min-h-screen">
-      {/* Header */}
-      <header className="p-4 bg-[#eeeeee] flex justify-between items-center shadow-sm">
-      <img src="/src/assets/logo.png" alt="VivaHub Logo" className="h-10"/>
-        <button className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded-lg text-sm hover:bg-[#A2B9C6] hover:text-white transition duration-300">
-          Log In
-        </button>
-      </header>
 
       {/* Hero Section */}
       <section className="py-10 px-5 bg-white text-center">
