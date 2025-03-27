@@ -14,7 +14,7 @@ const SalonDetailsPage = () => {
     const fetchSalonDetails = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/salons/${salonId}`
+          `${import.meta.env.VITE_API_URL}/api/salons/${salonId}`
         );
         if (response.ok) {
           const data = await response.json();
@@ -33,7 +33,7 @@ const SalonDetailsPage = () => {
     const fetchReviews = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/reviews/salon/${salonId}`
+          `${import.meta.env.VITE_API_URL}/api/reviews/salon/${salonId}`
         );
         if (response.ok) {
           const data = await response.json();
