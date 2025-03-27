@@ -2,7 +2,20 @@ import React from "react";
 
 const Homepage = () => {
   return (
+
+    <div className="font-sans leading-relaxed text-[#4A4A4A] bg-white min-h-screen">
+      {/* Hero Section */}
+      <section className="py-10 px-5 bg-white text-center">
+        <h1 className="text-3xl font-light mb-4 text-[#4A4A4A]">
+          Book Your Perfect Salon Experience
+        </h1>
+        <p className="max-w-2xl mx-auto text-[#4A4A4A]/80 mb-8">
+          Discover top-rated salons and book beauty services with ease
+        </p>
+      </section>
+
     <div className="homepage">
+
       {/* Search Bar Section */}
       <section className="search-section">
         <div className="search-bar">
