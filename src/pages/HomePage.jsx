@@ -1,14 +1,124 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { FaFilter } from "react-icons/fa"; 
 
 const Homepage = () => {
+  const [showFilters, setShowFilters] = useState(false);
+
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
+  };
   return (
 
     <div className="font-sans leading-relaxed text-[#4A4A4A] bg-white min-h-screen">
-      {/* Header */}
-      <header className="p-4 bg-[#eeeeee] flex justify-between items-center shadow-sm">
-        <img src="/src/assets/logo.png" alt="VivaHub Logo" className="h-10"/>
-        <Link to="/login" className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded-lg text-sm hover:bg-[#A2B9C6] hover:text-white transition duration-300">
+        {/* Header */}
+        <header className="p-4 bg-[#eeeeee] flex justify-between items-center shadow-sm">
+        {/* Logo */}
+        <Link to="/" className="flex items-center">
+          <img src="/src/assets/logo.png" alt="VivaHub Logo" className="h-10" />
+        </Link>
+
+        {/* Filters for larger screens */}
+        <div className="hidden md:flex space-x-4">
+          <Link to="/filter/hair" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
+            Hair
+          </Link>
+          <Link to="/filter/nails" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
+            Nails
+          </Link>
+          <Link to="/filter/spa" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
+            Spa
+          </Link>
+          <Link to="/filter/makeup" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
+            Makeup
+          </Link>
+          <Link to="/filter/facials" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
+            Facials
+          </Link>
+          <Link to="/filter/waxing" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
+            Waxing
+          </Link>
+          <Link to="/filter/massage" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
+            Massage
+          </Link>
+          <Link to="/filter/language" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
+            Language
+          </Link>
+        </div>
+
+         {/* Filters for smaller screens */}
+         <div className="md:hidden relative">
+          <button
+            onClick={toggleFilters}
+            className="text-[#4A4A4A] hover:text-[#A2B9C6] transition duration-300"
+          >
+            <FaFilter size={20} />
+          </button>
+
+          {/* Popup for smaller screens */}
+          {showFilters && (
+            <div className="absolute top-10 right-0 w-48 bg-white shadow-lg z-10 p-4 rounded-lg">
+              <div className="flex flex-col space-y-2">
+                <Link
+                  to="/filter/hair"
+                  className="text-[#4A4A4A] hover:text-[#A2B9C6]"
+                  onClick={() => setShowFilters(false)}
+                >
+                  Hair
+                </Link>
+                <Link
+                  to="/filter/nails"
+                  className="text-[#4A4A4A] hover:text-[#A2B9C6]"
+                  onClick={() => setShowFilters(false)}
+                >
+                  Nails
+                </Link>
+                <Link
+                  to="/filter/spa"
+                  className="text-[#4A4A4A] hover:text-[#A2B9C6]"
+                  onClick={() => setShowFilters(false)}
+                >
+                  Spa
+                </Link>
+                <Link
+                  to="/filter/makeup"
+                  className="text-[#4A4A4A] hover:text-[#A2B9C6]"
+                  onClick={() => setShowFilters(false)}
+                >
+                  Makeup
+                </Link>
+                <Link
+                  to="/filter/facials"
+                  className="text-[#4A4A4A] hover:text-[#A2B9C6]"
+                  onClick={() => setShowFilters(false)}
+                >
+                  Facials
+                </Link>
+                <Link
+                  to="/filter/waxing"
+                  className="text-[#4A4A4A] hover:text-[#A2B9C6]"
+                  onClick={() => setShowFilters(false)}
+                >
+                  Waxing
+                </Link>
+                <Link
+                  to="/filter/massage"
+                  className="text-[#4A4A4A] hover:text-[#A2B9C6]"
+                  onClick={() => setShowFilters(false)}
+                >
+                  Massage
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Login Button */}
+        <Link
+          to="/login"
+          className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded-lg text-sm hover:bg-[#A2B9C6] hover:text-white transition duration-300"
+        >
           Log In
         </Link>
       </header>
