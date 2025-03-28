@@ -1,8 +1,10 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const location = useLocation();
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
 
   return (
     <header className="p-4 bg-[#eeeeee] flex justify-between items-center shadow-sm">
@@ -22,7 +24,7 @@ const Navbar = () => {
               Logout
             </button>
           </>
-        ) : (
+        ) : !isAuthPage && (
           <Link
             to="/login"
             className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded-lg text-sm hover:bg-[#A2B9C6] hover:text-white transition duration-300"
