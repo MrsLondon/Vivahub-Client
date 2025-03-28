@@ -56,12 +56,15 @@ const SignupPage = () => {
         lastName: formData.lastName,
         role: role,
         ...(role === 'business' && {
-          businessName: formData.businessName,
-          address: formData.address,
+          businessDetails: {
+            name: formData.businessName,
+            address: formData.address,
+          }
         }),
       };
 
-      await api.post('/api/auth/signup', signupData);
+      const response = await api.post('/api/auth/register', signupData);
+      console.log('Signup successful:', response.data);
       navigate('/login');
     } catch (err) {
       console.error('Signup error:', err);
