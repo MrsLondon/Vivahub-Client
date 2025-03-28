@@ -6,8 +6,8 @@ const Navbar = () => {
 
   return (
     <header className="p-4 bg-[#eeeeee] flex justify-between items-center shadow-sm">
-      <Link to="/">
-        <img src="/src/assets/logo.png" alt="VivaHub Logo" className="h-10"/>
+      <Link to="/" className="flex items-center">
+        <img src="/logo.png" alt="VivaHub Logo" className="h-10"/>
       </Link>
       <div className="flex items-center gap-4">
         {user ? (
