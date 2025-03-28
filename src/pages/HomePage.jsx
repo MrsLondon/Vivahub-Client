@@ -2,28 +2,40 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from 'axios';
 
+// API base URL from environment variables, fallback to localhost if not set
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 const Homepage = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [services, setServices] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  // State management for search functionality
+  const [searchTerm, setSearchTerm] = useState(''); // Store the search input value
+  const [loading, setLoading] = useState(false);    // Track loading state during API calls
+  const [searchResults, setSearchResults] = useState(null); // Store search results (null means no search performed)
+  const [error, setError] = useState('');           // Store any error messages
 
+  // Handle the search functionality
   const handleSearch = async () => {
+    // Don't search if the search term is empty or only whitespace
     if (!searchTerm.trim()) return;
 
     try {
-      setLoading(true);
-      setError('');
-      
+      setLoading(true); // Show loading state
+      setError('');     // Clear any previous errors
+
+      // Make API call to search endpoint with URL-encoded search term
       const response = await axios.get(`${API_URL}/api/services/search?query=${encodeURIComponent(searchTerm)}`);
-      setServices(response.data);
+      setSearchResults(response.data);
     } catch (err) {
       setError('Failed to fetch services. Please try again.');
       console.error('Search error:', err);
     } finally {
-      setLoading(false);
+      setLoading(false); // Hide loading state regardless of success/failure
+    }
+  };
+
+  // Handle Enter key press in search input
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
     }
   };
 
@@ -50,14 +62,17 @@ const Homepage = () => {
       {/* Search Bar Section */}
       <section className="my-5 px-5 max-w-4xl mx-auto">
         <div className="flex flex-col gap-3 md:flex-row">
+          {/* Search input field */}
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyPress={handleKeyPress}
             placeholder="Search for services (e.g., haircut, manicure, massage)..."
             className="flex-grow p-3 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
           />
-          <button 
+          {/* Search button with loading state */}
+          <button
             onClick={handleSearch}
             disabled={loading}
             className="p-3 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#8fa9b8] transition duration-300 md:px-6 disabled:opacity-50"
@@ -65,6 +80,7 @@ const Homepage = () => {
             {loading ? 'Searching...' : 'Search'}
           </button>
         </div>
+        {/* Error message display */}
         {error && (
           <div className="mt-3 text-red-500 text-sm text-center">
             {error}
@@ -72,36 +88,45 @@ const Homepage = () => {
         )}
       </section>
 
-      {/* Services Section - Show either search results or featured salons */}
+      {/* Services Section - Shows either search results or featured salons */}
       <section className="py-10 px-5 bg-[#F8F8F8]">
         <h2 className="text-xl font-medium mb-6 text-[#4A4A4A] text-center">
-          {services.length > 0 ? 'Search Results' : 'Featured Salons'}
+          {searchResults ? 'Search Results' : 'Featured Salons'}
         </h2>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
-          {services.length > 0 ? (
-            services.map((service) => (
-              <div
-                key={service._id}
-                className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition duration-300 border border-[#E0E0E0]"
-              >
-                <img
-                  src={service.image || `https://via.placeholder.com/400x300?text=${encodeURIComponent(service.name)}`}
-                  alt={service.name}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-4">
-                  <h3 className="font-medium text-lg mb-1">{service.name}</h3>
-                  <p className="text-sm text-[#4A4A4A]/80 mb-3">{service.description}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium text-[#4A4A4A]">${service.price}</span>
-                    <button className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded hover:bg-[#f0c8cc] transition duration-300">
-                      Book Now
-                    </button>
+          {searchResults ? (
+            searchResults.length > 0 ? (
+              // Map through search results if any found
+              searchResults.map((service) => (
+                <div
+                  key={service._id}
+                  className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition duration-300 border border-[#E0E0E0]"
+                >
+                  <img
+                    src={service.image || `https://via.placeholder.com/400x300?text=${encodeURIComponent(service.name)}`}
+                    alt={service.name}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="p-4">
+                    <h3 className="font-medium text-lg mb-1">{service.name}</h3>
+                    <p className="text-sm text-[#4A4A4A]/80 mb-3">{service.description}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-[#4A4A4A]">${service.price}</span>
+                      <button className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded hover:bg-[#f0c8cc] transition duration-300">
+                        Book Now
+                      </button>
+                    </div>
                   </div>
                 </div>
+              ))
+            ) : (
+              // Show "no results" message when search returns empty
+              <div className="col-span-3 text-center py-8 text-gray-500">
+                No services found matching your search. Try different keywords.
               </div>
-            ))
+            )
           ) : (
+            // Show featured salons when no search has been performed
             [1, 2, 3, 4, 5, 6].map((salon) => (
               <div
                 key={salon}
