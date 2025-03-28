@@ -171,19 +171,6 @@ const BusinessDashboard = () => {
     <>
       <Navbar />
       <div className="font-sans leading-relaxed text-[#4A4A4A] bg-white min-h-screen">
-        {/* Header */}
-        <header className="p-4 bg-[#eeeeee] flex justify-between items-center shadow-sm">
-          <img src="/src/assets/logo.png" alt="VivaHub Logo" className="h-10" />
-          <button
-            onClick={() => {
-              console.log("Logout clicked");
-            }}
-            className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded-lg text-sm hover:bg-[#A2B9C6] hover:text-white transition duration-300"
-          >
-            Logout
-          </button>
-        </header>
-
         {/* Main Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="bg-white shadow-sm rounded-lg">
