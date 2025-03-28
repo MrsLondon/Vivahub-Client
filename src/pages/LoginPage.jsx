@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../hooks/useAuth';
+import { Link } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
@@ -123,6 +124,12 @@ const LoginPage = () => {
             </button>
           </div>
         </form>
+
+        <div className="text-center mt-4">
+          <Link to="/signup" className="text-sm text-indigo-600 hover:text-indigo-500">
+            New user? Sign up here
+          </Link>
+        </div>
       </div>
     </div>
   );
