@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
 import axios from "axios";
 import Select from "react-select";
+import Navbar from "../components/Navbar";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
@@ -151,204 +152,215 @@ const BusinessDashboard = () => {
 
   if (loading)
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-      </div>
+      <>
+        <Navbar />
+        <div className="flex justify-center items-center h-screen">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+        </div>
+      </>
     );
 
-  if (error) return <div className="text-red-600 p-4">{error}</div>;
+  if (error) return (
+    <>
+      <Navbar />
+      <div className="text-red-600 p-4">{error}</div>
+    </>
+  );
 
   return (
-    <div className="font-sans leading-relaxed text-[#4A4A4A] bg-white min-h-screen">
-      {/* Header */}
-      <header className="p-4 bg-[#eeeeee] flex justify-between items-center shadow-sm">
-        <img src="/src/assets/logo.png" alt="VivaHub Logo" className="h-10" />
-        <button
-          onClick={() => {
-            console.log("Logout clicked");
-          }}
-          className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded-lg text-sm hover:bg-[#A2B9C6] hover:text-white transition duration-300"
-        >
-          Logout
-        </button>
-      </header>
+    <>
+      <Navbar />
+      <div className="font-sans leading-relaxed text-[#4A4A4A] bg-white min-h-screen">
+        {/* Header */}
+        <header className="p-4 bg-[#eeeeee] flex justify-between items-center shadow-sm">
+          <img src="/src/assets/logo.png" alt="VivaHub Logo" className="h-10" />
+          <button
+            onClick={() => {
+              console.log("Logout clicked");
+            }}
+            className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded-lg text-sm hover:bg-[#A2B9C6] hover:text-white transition duration-300"
+          >
+            Logout
+          </button>
+        </header>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white shadow-sm rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <h1 className="text-3xl font-light text-[#4A4A4A] mb-6">
-              Business Dashboard
-            </h1>
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="bg-white shadow-sm rounded-lg">
+            <div className="px-4 py-5 sm:p-6">
+              <h1 className="text-3xl font-light text-[#4A4A4A] mb-6">
+                Business Dashboard
+              </h1>
 
-            {/* Business Profile Section */}
-            <div className="bg-[#F8F8F8] p-4 rounded-lg mb-6 border border-[#E0E0E0]">
-              <h2 className="text-lg font-medium text-[#4A4A4A] mb-2">
-                Business Profile
-              </h2>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-[#4A4A4A]/80">Business Name</p>
-                  <p className="text-[#4A4A4A]">{salon?.name || "N/A"}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-[#4A4A4A]/80">Email</p>
-                  <p className="text-[#4A4A4A]">{user.email}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Add New Service Section */}
-            <div className="bg-[#F8F8F8] p-4 rounded-lg mb-6 border border-[#E0E0E0]">
-              <h2 className="text-lg font-medium text-[#4A4A4A] mb-4">
-                Add New Service
-              </h2>
-              <form
-                onSubmit={handleServiceSubmit}
-                className="bg-[#F8F8F8] p-4 rounded-lg"
-              >
+              {/* Business Profile Section */}
+              <div className="bg-[#F8F8F8] p-4 rounded-lg mb-6 border border-[#E0E0E0]">
+                <h2 className="text-lg font-medium text-[#4A4A4A] mb-2">
+                  Business Profile
+                </h2>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-[#4A4A4A]">
-                      Service Name
-                    </label>
-                    <input
-                      type="text"
-                      value={newService.name}
-                      onChange={(e) =>
-                        setNewService({ ...newService, name: e.target.value })
-                      }
-                      className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
-                      required
-                    />
+                    <p className="text-sm text-[#4A4A4A]/80">Business Name</p>
+                    <p className="text-[#4A4A4A]">{salon?.name || "N/A"}</p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-[#4A4A4A]">
-                      Price
-                    </label>
-                    <input
-                      type="number"
-                      value={newService.price}
-                      onChange={(e) =>
-                        setNewService({ ...newService, price: e.target.value })
-                      }
-                      className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-[#4A4A4A]">
-                      Duration (minutes)
-                    </label>
-                    <input
-                      type="number"
-                      value={newService.duration}
-                      onChange={(e) =>
-                        setNewService({
-                          ...newService,
-                          duration: e.target.value,
-                        })
-                      }
-                      className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-[#4A4A4A]">
-                      Description
-                    </label>
-                    <textarea
-                      value={newService.description}
-                      onChange={(e) =>
-                        setNewService({
-                          ...newService,
-                          description: e.target.value,
-                        })
-                      }
-                      className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
-                      required
-                    />
+                    <p className="text-sm text-[#4A4A4A]/80">Email</p>
+                    <p className="text-[#4A4A4A]">{user.email}</p>
                   </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#4A4A4A]">
-                    Languages Spoken
-                  </label>
-                  <Select
-                    isMulti
-                    options={languages}
-                    onChange={handleLanguageChange}
-                    className="mt-1"
-                    placeholder="Select languages..."
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="mt-4 bg-[#A2B9C6] text-white px-4 py-2 rounded-md hover:bg-[#8fa9b8] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+              </div>
+
+              {/* Add New Service Section */}
+              <div className="bg-[#F8F8F8] p-4 rounded-lg mb-6 border border-[#E0E0E0]">
+                <h2 className="text-lg font-medium text-[#4A4A4A] mb-4">
+                  Add New Service
+                </h2>
+                <form
+                  onSubmit={handleServiceSubmit}
+                  className="bg-[#F8F8F8] p-4 rounded-lg"
                 >
-                  Add Service
-                </button>
-              </form>
-            </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-[#4A4A4A]">
+                        Service Name
+                      </label>
+                      <input
+                        type="text"
+                        value={newService.name}
+                        onChange={(e) =>
+                          setNewService({ ...newService, name: e.target.value })
+                        }
+                        className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-[#4A4A4A]">
+                        Price
+                      </label>
+                      <input
+                        type="number"
+                        value={newService.price}
+                        onChange={(e) =>
+                          setNewService({ ...newService, price: e.target.value })
+                        }
+                        className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-[#4A4A4A]">
+                        Duration (minutes)
+                      </label>
+                      <input
+                        type="number"
+                        value={newService.duration}
+                        onChange={(e) =>
+                          setNewService({
+                            ...newService,
+                            duration: e.target.value,
+                          })
+                        }
+                        className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-[#4A4A4A]">
+                        Description
+                      </label>
+                      <textarea
+                        value={newService.description}
+                        onChange={(e) =>
+                          setNewService({
+                            ...newService,
+                            description: e.target.value,
+                          })
+                        }
+                        className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-[#4A4A4A]">
+                      Languages Spoken
+                    </label>
+                    <Select
+                      isMulti
+                      options={languages}
+                      onChange={handleLanguageChange}
+                      className="mt-1"
+                      placeholder="Select languages..."
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="mt-4 bg-[#A2B9C6] text-white px-4 py-2 rounded-md hover:bg-[#8fa9b8] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                  >
+                    Add Service
+                  </button>
+                </form>
+              </div>
 
-            {/* Services Section */}
-            <div className="mb-8">
-              <h2 className="text-lg font-medium text-[#4A4A4A] mb-4">
-                Your Services
-              </h2>
+              {/* Services Section */}
+              <div className="mb-8">
+                <h2 className="text-lg font-medium text-[#4A4A4A] mb-4">
+                  Your Services
+                </h2>
 
-              {services.length === 0 ? (
-                <div className="text-center py-8 bg-[#F8F8F8] rounded-lg border border-[#E0E0E0]">
-                  <p className="text-[#4A4A4A]/80">
-                    No services added yet. Add your first service using the form
-                    above.
-                  </p>
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-[#E0E0E0]">
-                    <thead className="bg-[#F8F8F8]">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#4A4A4A]/80 uppercase tracking-wider">
-                          Service
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#4A4A4A]/80 uppercase tracking-wider">
-                          Description
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#4A4A4A]/80 uppercase tracking-wider">
-                          Price
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#4A4A4A]/80 uppercase tracking-wider">
-                          Duration
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-[#E0E0E0]">
-                      {services.map((service) => (
-                        <tr key={service._id}>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A4A4A]">
-                            {service.name}
-                          </td>
-                          <td className="px-6 py-4 text-sm text-[#4A4A4A]">
-                            {service.description}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A4A4A]">
-                            ${service.price}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A4A4A]">
-                            {service.duration} mins
-                          </td>
+                {services.length === 0 ? (
+                  <div className="text-center py-8 bg-[#F8F8F8] rounded-lg border border-[#E0E0E0]">
+                    <p className="text-[#4A4A4A]/80">
+                      No services added yet. Add your first service using the form
+                      above.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-[#E0E0E0]">
+                      <thead className="bg-[#F8F8F8]">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#4A4A4A]/80 uppercase tracking-wider">
+                            Service
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#4A4A4A]/80 uppercase tracking-wider">
+                            Description
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#4A4A4A]/80 uppercase tracking-wider">
+                            Price
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-[#4A4A4A]/80 uppercase tracking-wider">
+                            Duration
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
+                      </thead>
+                      <tbody className="bg-white divide-y divide-[#E0E0E0]">
+                        {services.map((service) => (
+                          <tr key={service._id}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A4A4A]">
+                              {service.name}
+                            </td>
+                            <td className="px-6 py-4 text-sm text-[#4A4A4A]">
+                              {service.description}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A4A4A]">
+                              ${service.price}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A4A4A]">
+                              {service.duration} mins
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
