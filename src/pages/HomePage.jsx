@@ -1,38 +1,37 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from 'axios';
+import { FaFilter } from "react-icons/fa";
 
 // API base URL from environment variables, fallback to localhost if not set
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 const Homepage = () => {
-  // State management for search functionality
-  const [searchTerm, setSearchTerm] = useState(''); // Store the search input value
-  const [loading, setLoading] = useState(false);    // Track loading state during API calls
-  const [searchResults, setSearchResults] = useState(null); // Store search results (null means no search performed)
-  const [error, setError] = useState('');           // Store any error messages
+  const [showFilters, setShowFilters] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [searchResults, setSearchResults] = useState(null);
+  const [error, setError] = useState('');
 
-  // Handle the search functionality
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
+  };
+
   const handleSearch = async () => {
-    // Don't search if the search term is empty or only whitespace
     if (!searchTerm.trim()) return;
-
     try {
-      setLoading(true); // Show loading state
-      setError('');     // Clear any previous errors
-
-      // Make API call to search endpoint with URL-encoded search term
+      setLoading(true);
+      setError('');
       const response = await axios.get(`${API_URL}/api/services/search?query=${encodeURIComponent(searchTerm)}`);
       setSearchResults(response.data);
     } catch (err) {
       setError('Failed to fetch services. Please try again.');
       console.error('Search error:', err);
     } finally {
-      setLoading(false); // Hide loading state regardless of success/failure
+      setLoading(false);
     }
   };
 
-  // Handle Enter key press in search input
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSearch();
@@ -41,54 +40,137 @@ const Homepage = () => {
 
   return (
     <div className="font-sans leading-relaxed text-[#4A4A4A] bg-white min-h-screen">
-      {/* Header */}
       <header className="p-4 bg-[#eeeeee] flex justify-between items-center shadow-sm">
-        <img src="/src/assets/logo.png" alt="VivaHub Logo" className="h-10"/>
-        <Link to="/login" className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded-lg text-sm hover:bg-[#A2B9C6] hover:text-white transition duration-300">
+        <Link to="/" className="flex items-center">
+          <img src="/src/assets/logo.png" alt="VivaHub Logo" className="h-10" />
+        </Link>
+        <div className="hidden md:flex space-x-4">
+          <Link to="/filter/hair" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
+            Hair
+          </Link>
+          <Link to="/filter/nails" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
+            Nails
+          </Link>
+          <Link to="/filter/spa" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
+            Spa
+          </Link>
+          <Link to="/filter/makeup" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
+            Makeup
+          </Link>
+          <Link to="/filter/facials" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
+            Facials
+          </Link>
+          <Link to="/filter/waxing" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
+            Waxing
+          </Link>
+          <Link to="/filter/massage" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
+            Massage
+          </Link>
+          <Link to="/filter/language" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
+            Language
+          </Link>
+        </div>
+        <div className="md:hidden relative">
+          <button
+            onClick={toggleFilters}
+            className="text-[#4A4A4A] hover:text-[#A2B9C6] transition duration-300"
+          >
+            <FaFilter size={20} />
+          </button>
+          {showFilters && (
+            <div className="absolute top-10 right-0 w-48 bg-white shadow-lg z-10 p-4 rounded-lg">
+              <div className="flex flex-col space-y-2">
+                <Link
+                  to="/filter/hair"
+                  className="text-[#4A4A4A] hover:text-[#A2B9C6]"
+                  onClick={() => setShowFilters(false)}
+                >
+                  Hair
+                </Link>
+                <Link
+                  to="/filter/nails"
+                  className="text-[#4A4A4A] hover:text-[#A2B9C6]"
+                  onClick={() => setShowFilters(false)}
+                >
+                  Nails
+                </Link>
+                <Link
+                  to="/filter/spa"
+                  className="text-[#4A4A4A] hover:text-[#A2B9C6]"
+                  onClick={() => setShowFilters(false)}
+                >
+                  Spa
+                </Link>
+                <Link
+                  to="/filter/makeup"
+                  className="text-[#4A4A4A] hover:text-[#A2B9C6]"
+                  onClick={() => setShowFilters(false)}
+                >
+                  Makeup
+                </Link>
+                <Link
+                  to="/filter/facials"
+                  className="text-[#4A4A4A] hover:text-[#A2B9C6]"
+                  onClick={() => setShowFilters(false)}
+                >
+                  Facials
+                </Link>
+                <Link
+                  to="/filter/waxing"
+                  className="text-[#4A4A4A] hover:text-[#A2B9C6]"
+                  onClick={() => setShowFilters(false)}
+                >
+                  Waxing
+                </Link>
+                <Link
+                  to="/filter/massage"
+                  className="text-[#4A4A4A] hover:text-[#A2B9C6]"
+                  onClick={() => setShowFilters(false)}
+                >
+                  Massage
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
+        <Link
+          to="/login"
+          className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded-lg text-sm hover:bg-[#A2B9C6] hover:text-white transition duration-300"
+        >
           Log In
         </Link>
       </header>
 
-      {/* Hero Section */}
-      <section className="py-10 px-5 bg-white text-center">
-        <h1 className="text-3xl font-light mb-4 text-[#4A4A4A]">
-          Book Your Perfect Salon Experience
-        </h1>
-        <p className="max-w-2xl mx-auto text-[#4A4A4A]/80 mb-8">
-          Discover top-rated salons and book beauty services with ease
-        </p>
-      </section>
-
-      {/* Search Bar Section */}
-      <section className="my-5 px-5 max-w-4xl mx-auto">
-        <div className="flex flex-col gap-3 md:flex-row">
-          {/* Search input field */}
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Search for services (e.g., haircut, manicure, massage)..."
-            className="flex-grow p-3 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-          />
-          {/* Search button with loading state */}
-          <button
-            onClick={handleSearch}
-            disabled={loading}
-            className="p-3 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#8fa9b8] transition duration-300 md:px-6 disabled:opacity-50"
-          >
-            {loading ? 'Searching...' : 'Search'}
-          </button>
-        </div>
-        {/* Error message display */}
-        {error && (
-          <div className="mt-3 text-red-500 text-sm text-center">
-            {error}
+      <section className="h-[500px] bg-cover bg-no-repeat bg-center bg-contain bg-left flex bg-none md:bg-[url('/src/assets/background-comb.png')]">
+        <div className="hidden md:flex flex-1"></div>
+        <div className="flex-1 flex flex-col justify-center items-start px-5">
+          <h1 className="text-3xl font-light mb-4 text-[#4A4A4A]">Book Your Perfect Salon Experience</h1>
+          <p className="text-[#4A4A4A]/80 mb-8">Discover top-rated salons and book beauty services with ease</p>
+          <div className="flex flex-col gap-3 md:flex-row w-full">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Find salons near you..."
+              className="flex-grow p-3 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+            />
+            <button
+              onClick={handleSearch}
+              disabled={loading}
+              className="p-3 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#8fa9b8] transition duration-300 md:px-6 disabled:opacity-50"
+            >
+              {loading ? 'Searching...' : 'Search'}
+            </button>
           </div>
-        )}
+          {error && (
+            <div className="mt-3 text-red-500 text-sm text-center">
+              {error}
+            </div>
+          )}
+        </div>
       </section>
 
-      {/* Services Section - Shows either search results or featured salons */}
       <section className="py-10 px-5 bg-[#F8F8F8]">
         <h2 className="text-xl font-medium mb-6 text-[#4A4A4A] text-center">
           {searchResults ? 'Search Results' : 'Featured Salons'}
@@ -96,7 +178,6 @@ const Homepage = () => {
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
           {searchResults ? (
             searchResults.length > 0 ? (
-              // Map through search results if any found
               searchResults.map((service) => (
                 <div
                   key={service._id}
@@ -120,13 +201,11 @@ const Homepage = () => {
                 </div>
               ))
             ) : (
-              // Show "no results" message when search returns empty
               <div className="col-span-3 text-center py-8 text-gray-500">
                 No services found matching your search. Try different keywords.
               </div>
             )
           ) : (
-            // Show featured salons when no search has been performed
             [1, 2, 3, 4, 5, 6].map((salon) => (
               <div
                 key={salon}
@@ -154,27 +233,26 @@ const Homepage = () => {
         </div>
       </section>
 
-      {/* Testimonials Section */}
       <section className="py-10 px-5 bg-white">
         <h2 className="text-xl font-medium mb-8 text-[#4A4A4A] text-center">
           What Our Clients Say
         </h2>
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
           {[
-            { 
-              text: "The booking process was seamless and the salon exceeded my expectations!", 
-              author: "Emma S.", 
-              rating: 5 
+            {
+              text: "The booking process was seamless and the salon exceeded my expectations!",
+              author: "Emma S.",
+              rating: 5
             },
-            { 
-              text: "I love how easy VivaHub makes it to find quality salons in my area.", 
-              author: "Michael T.", 
-              rating: 4 
+            {
+              text: "I love how easy VivaHub makes it to find quality salons in my area.",
+              author: "Michael T.",
+              rating: 4
             },
-            { 
-              text: "Professional services every time. Highly recommend to anyone looking for beauty services.", 
-              author: "Sarah L.", 
-              rating: 5 
+            {
+              text: "Professional services every time. Highly recommend to anyone looking for beauty services.",
+              author: "Sarah L.",
+              rating: 5
             }
           ].map((review, index) => (
             <div
@@ -193,7 +271,6 @@ const Homepage = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-12 px-5 bg-[#A2B9C6] text-white text-center">
         <h2 className="text-2xl font-light mb-4">Ready to Book Your Next Appointment?</h2>
         <p className="max-w-2xl mx-auto mb-6 opacity-90">
@@ -204,7 +281,6 @@ const Homepage = () => {
         </button>
       </section>
 
-      {/* Footer */}
       <footer className="py-8 px-5 bg-[#4A4A4A] text-white">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
