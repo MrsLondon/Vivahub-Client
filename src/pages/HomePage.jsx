@@ -124,28 +124,34 @@ const Homepage = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="py-10 px-5 bg-white text-center">
-        <h1 className="text-3xl font-light mb-4 text-[#4A4A4A]">
-          Book Your Perfect Salon Experience
-        </h1>
-        <p className="max-w-2xl mx-auto text-[#4A4A4A]/80 mb-8">
-          Discover top-rated salons and book beauty services with ease
-        </p>
-      </section>
+      <section
+  className="h-[500px] bg-cover bg-no-repeat bg-center bg-contain bg-left flex bg-none md:bg-[url('/src/assets/background-comb.png')]"
+>
+   {/* Left Side (Empty) - Hidden on smaller screens */}
+   <div className="hidden md:flex flex-1"></div>
 
-      {/* Search Bar Section */}
-      <section className="my-5 px-5 max-w-4xl mx-auto">
-        <div className="flex flex-col gap-3 md:flex-row">
-          <input
-            type="text"
-            placeholder="Find salons near you..."
-            className="flex-grow p-3 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-          />
-          <button className="p-3 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#8fa9b8] transition duration-300 md:px-6">
-            Search
-          </button>
-        </div>
-      </section>
+  {/* Right Side (Text and Search Bar) */}
+  <div className="flex-1 flex flex-col justify-center items-start px-5">
+    <h1 className="text-3xl font-light mb-4 text-[#4A4A4A]">
+      Book Your Perfect Salon Experience
+    </h1>
+    <p className="text-[#4A4A4A]/80 mb-8">
+      Discover top-rated salons and book beauty services with ease
+    </p>
+    <div className="flex flex-col gap-3 md:flex-row w-full">
+      <input
+        type="text"
+        placeholder="Find salons near you..."
+        className="flex-grow p-3 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+      />
+      <button className="p-3 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#8fa9b8] transition duration-300 md:px-6">
+        Search
+      </button>
+    </div>
+  </div>
+</section>
+
+     
 
       {/* Featured Salons Section */}
       <section className="py-10 px-5 bg-[#F8F8F8]">
