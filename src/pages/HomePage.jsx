@@ -89,7 +89,7 @@ const Homepage = () => {
       {/* Header Section */}
       <header className="p-4 bg-[#eeeeee] flex justify-between items-center shadow-sm">
         <Link to="/" className="flex items-center">
-          <img src="/src/assets/logo.png" alt="VivaHub Logo" className="h-10" />
+          <img src="/public/logo.png" alt="VivaHub Logo" className="h-10" />
         </Link>
         <div className="hidden md:flex space-x-4">
           <Link to="/filter/hair" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Hair</Link>
@@ -131,7 +131,7 @@ const Homepage = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="h-[500px] bg-cover bg-no-repeat bg-center bg-contain bg-left flex bg-none md:bg-[url('/src/assets/background-comb.png')]">
+      <section className="h-[500px] bg-cover bg-no-repeat bg-center bg-contain bg-left flex bg-none md:bg-[url('/public/background-comb.png')]">
         <div className="hidden md:flex flex-1"></div>
         <div className="flex-1 flex flex-col justify-center items-start px-5">
           <h1 className="text-3xl font-light mb-4 text-[#4A4A4A]">Book Your Perfect Salon Experience</h1>
@@ -222,7 +222,7 @@ const Homepage = () => {
       </section>
 
       {/* Featured Salons Section */}
-      <section className="py-10 px-5 bg-[#F8F8F8]"> 
+      {/* <section className="py-10 px-5 bg-[#F8F8F8]"> 
         <h2 className="text-xl font-medium mb-6 text-[#4A4A4A] text-center">
           {searchResults ? "Search Results" : "Featured Salons"}
         </h2>
@@ -289,7 +289,39 @@ const Homepage = () => {
             ))
           )}
         </div>
-      </section>
+      </section> */}
+
+      {/* Special Offers Section */}
+<section className="py-10 px-5 bg-[#F8F8F8]">
+  <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="bg-white p-6 rounded-lg shadow-sm text-center">
+      <img src="../../public/coupon.png" alt="Discount Coupon" className="mx-auto mb-4" />
+      <h3 className="text-lg font-medium text-[#4A4A4A] mb-2">Get a Special Discount</h3>
+      <p className="text-sm text-[#4A4A4A]/80 mb-4">
+        Claim your exclusive discount coupon for your next salon visit.
+      </p>
+      <Link
+        to="/special-offers"
+        className="px-6 py-2 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#91A7B4] transition duration-300"
+      >
+        Claim Now
+      </Link>
+    </div>
+    <div className="bg-white p-6 rounded-lg shadow-sm text-center">
+      <img src="../../public/nails1.png" alt="Top Rated Salons" className="mx-auto mb-4" />
+      <h3 className="text-lg font-medium text-[#4A4A4A] mb-2">Top Rated Salons</h3>
+      <p className="text-sm text-[#4A4A4A]/80 mb-4">
+        Explore the highest-rated salons in your area and book today.
+      </p>
+      <Link
+        to="/filter/top-rated"
+        className="px-6 py-2 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#91A7B4] transition duration-300"
+      >
+        View Salons
+      </Link>
+    </div>
+  </div>
+</section>
 
       {/* Testimonials Section */}
       <section className="py-10 px-5 bg-white">
@@ -342,6 +374,93 @@ const Homepage = () => {
           </button>
         </Link>
       </section>
+
+      {/* About the App Section */}
+<section className="py-10 px-5 bg-white">
+  <div className="max-w-6xl mx-auto text-center">
+    <h2 className="text-xl font-medium text-[#4A4A4A] mb-6">Why Choose VivaHub?</h2>
+    <p className="text-[#4A4A4A]/80 mb-8">
+      VivaHub is your one-stop platform for discovering and booking top-rated salons. 
+      Enjoy seamless booking, exclusive discounts, and access to the best beauty services in your area.
+    </p>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="bg-[#F8F8F8] p-6 rounded-lg shadow-sm">
+        <img src="../../public/beauty-salon-pink.png" alt="Feature 1" className="mx-auto mb-4" />
+        <h3 className="text-lg font-medium text-[#4A4A4A] mb-2">Discover Top Salons</h3>
+        <p className="text-sm text-[#4A4A4A]/80">
+          Find the best salons near you with verified reviews and ratings.
+        </p>
+      </div>
+      <div className="bg-[#F8F8F8] p-6 rounded-lg shadow-sm">
+        <img src="../../public/discount.png" alt="Feature 2" className="mx-auto mb-4" />
+        <h3 className="text-lg font-medium text-[#4A4A4A] mb-2">Exclusive Discounts</h3>
+        <p className="text-sm text-[#4A4A4A]/80">
+          Enjoy special offers and discounts on your favorite services.
+        </p>
+      </div>
+      <div className="bg-[#F8F8F8] p-6 rounded-lg shadow-sm">
+        <img src="../../public/computer.png" alt="Feature 3" className="mx-auto mb-4" />
+        <h3 className="text-lg font-medium text-[#4A4A4A] mb-2">Easy Booking</h3>
+        <p className="text-sm text-[#4A4A4A]/80">
+          Book your appointments in just a few clicks, anytime, anywhere.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{/* For Business Owners Section */}
+<section className="py-10 px-5 bg-white">
+  <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 items-center">
+    {/* Left Side: Text Content */}
+    <div className="text-center md:text-left flex flex-col justify-center">
+      <h2 className="text-xl font-medium text-[#4A4A4A] mb-6">Are You a Salon Owner?</h2>
+      <p className="text-[#4A4A4A]/80 mb-8">
+        Join VivaHub and grow your business by reaching thousands of potential customers. 
+        Showcase your services, manage bookings, and increase your revenue.
+      </p>
+      <Link
+        to="/signup"
+        className="px-4 py-2 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#91A7B4] transition duration-300"
+      >
+        Partner with Us
+      </Link>
+    </div>
+
+    {/* Right Side: Regular Image */}
+    <div className="flex justify-center">
+      <img
+        src="../../public/business-owner1.jpg"
+        alt="Business Owner"
+        className="w-full max-w-sm rounded-lg"
+      />
+    </div>
+  </div>
+</section>
+
+{/* Social Media Links Section */}
+<section className="py-10 px-5 bg-[#F8F8F8]">
+  <div className="max-w-6xl mx-auto text-center">
+    <h2 className="text-xl font-medium text-[#4A4A4A] mb-6">Follow Us on Social Media</h2>
+    <p className="text-[#4A4A4A]/80 mb-8">
+      Stay updated with the latest news, offers, and beauty tips from VivaHub.
+    </p>
+    <div className="flex justify-center space-x-6">
+      <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+        <img src="https://via.placeholder.com/50" alt="Facebook" />
+      </a>
+      <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+        <img src="https://via.placeholder.com/50" alt="Instagram" />
+      </a>
+      <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+        <img src="https://via.placeholder.com/50" alt="Twitter" />
+      </a>
+      <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+        <img src="https://via.placeholder.com/50" alt="LinkedIn" />
+      </a>
+    </div>
+  </div>
+</section>
 
       {/* Footer Section */}
       <footer className="py-8 px-5 bg-[#4A4A4A] text-white">
