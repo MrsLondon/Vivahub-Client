@@ -1,6 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaSearch, FaTimes, FaLanguage } from "react-icons/fa";
+import axios from 'axios';
+import { FaSearch, FaTimes, FaLanguage, FaFilter } from "react-icons/fa";
+
+// API base URL from environment variables, fallback to localhost if not set
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 // Languages list
 const LANGUAGES = [
@@ -15,15 +19,48 @@ const Homepage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showLanguageSearch, setShowLanguageSearch] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [searchResults, setSearchResults] = useState(null);
+  const [error, setError] = useState('');
 
-  const handleSearch = () => {
+  // Fetch all salons on page load
+  useEffect(() => {
+    const fetchSalons = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${API_URL}/api/salons`);
+        setSearchResults(response.data); // Store salons in state
+      } catch (err) {
+        setError("Failed to fetch salons. Please try again.");
+        console.error("Error fetching salons:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSalons();
+  }, []);
+
+  const handleSearch = async () => {
     const params = new URLSearchParams({
       ...(searchTerm && { query: searchTerm }),
       ...(selectedLanguage && { language: selectedLanguage })
     });
-    navigate(`/search?${params.toString()}`);
+    
+    try {
+      setLoading(true);
+      setError('');
+      const response = await axios.get(`${API_URL}/api/salons/search?${params.toString()}`);
+      setSearchResults(response.data);
+    } catch (err) {
+      setError('Failed to fetch salons. Please try again.');
+      console.error('Search error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // Trigger search on pressing Enter
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSearch();
@@ -39,36 +76,51 @@ const Homepage = () => {
     setSearchTerm('');
     setSelectedLanguage('');
     setShowLanguageSearch(false);
+    setSearchResults(null);
+  };
+
+  // Toggle filter dropdown for mobile view
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
   };
 
   return (
     <div className="font-sans leading-relaxed text-[#4A4A4A] bg-white min-h-screen">
+      {/* Header Section */}
       <header className="p-4 bg-[#eeeeee] flex justify-between items-center shadow-sm">
         <Link to="/" className="flex items-center">
           <img src="/src/assets/logo.png" alt="VivaHub Logo" className="h-10" />
         </Link>
         <div className="hidden md:flex space-x-4">
-          <Link to="/filter/hair" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
-            Hair
-          </Link>
-          <Link to="/filter/nails" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
-            Nails
-          </Link>
-          <Link to="/filter/spa" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
-            Spa
-          </Link>
-          <Link to="/filter/makeup" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
-            Makeup
-          </Link>
-          <Link to="/filter/facials" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
-            Facials
-          </Link>
-          <Link to="/filter/waxing" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
-            Waxing
-          </Link>
-          <Link to="/filter/massage" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
-            Massage
-          </Link>
+          <Link to="/filter/hair" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Hair</Link>
+          <Link to="/filter/nails" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Nails</Link>
+          <Link to="/filter/spa" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Spa</Link>
+          <Link to="/filter/makeup" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Makeup</Link>
+          <Link to="/filter/facials" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Facials</Link>
+          <Link to="/filter/waxing" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Waxing</Link>
+          <Link to="/filter/massage" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Massage</Link>
+          <Link to="/filter/language" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Language</Link>
+        </div>
+        <div className="md:hidden relative">
+          <button
+            onClick={toggleFilters}
+            className="text-[#4A4A4A] hover:text-[#A2B9C6] transition duration-300"
+          >
+            <FaFilter size={20} />
+          </button>
+          {showFilters && (
+            <div className="absolute top-10 right-0 w-48 bg-white shadow-lg z-10 p-4 rounded-lg">
+              <div className="flex flex-col space-y-2">
+                <Link to="/filter/hair" className="text-[#4A4A4A] hover:text-[#A2B9C6]" onClick={() => setShowFilters(false)}>Hair</Link>
+                <Link to="/filter/nails" className="text-[#4A4A4A] hover:text-[#A2B9C6]" onClick={() => setShowFilters(false)}>Nails</Link>
+                <Link to="/filter/spa" className="text-[#4A4A4A] hover:text-[#A2B9C6]" onClick={() => setShowFilters(false)}>Spa</Link>
+                <Link to="/filter/makeup" className="text-[#4A4A4A] hover:text-[#A2B9C6]" onClick={() => setShowFilters(false)}>Makeup</Link>
+                <Link to="/filter/facials" className="text-[#4A4A4A] hover:text-[#A2B9C6]" onClick={() => setShowFilters(false)}>Facials</Link>
+                <Link to="/filter/waxing" className="text-[#4A4A4A] hover:text-[#A2B9C6]" onClick={() => setShowFilters(false)}>Waxing</Link>
+                <Link to="/filter/massage" className="text-[#4A4A4A] hover:text-[#A2B9C6]" onClick={() => setShowFilters(false)}>Massage</Link>
+              </div>
+            </div>
+          )}
         </div>
         <Link
           to="/login"
@@ -78,11 +130,13 @@ const Homepage = () => {
         </Link>
       </header>
 
-      <section className="h-[500px] bg-cover bg-center flex bg-none md:bg-[url('/src/assets/background-comb.png')]">
+      {/* Hero Section */}
+      <section className="h-[500px] bg-cover bg-no-repeat bg-center bg-contain bg-left flex bg-none md:bg-[url('/src/assets/background-comb.png')]">
         <div className="hidden md:flex flex-1"></div>
         <div className="flex-1 flex flex-col justify-center items-start px-5">
           <h1 className="text-3xl font-light mb-4 text-[#4A4A4A]">Book Your Perfect Salon Experience</h1>
           <p className="text-[#4A4A4A]/80 mb-8">Discover top-rated salons and book beauty services with ease</p>
+          
           <div className="w-full max-w-4xl">
             {/* Search Section */}
             <div className="mb-6 bg-white p-4 rounded-lg shadow-sm">
@@ -121,9 +175,10 @@ const Homepage = () => {
                   </button>
                   <button
                     onClick={handleSearch}
-                    className="px-6 py-2 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#91A7B4] transition duration-300"
+                    disabled={loading}
+                    className="px-6 py-2 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#91A7B4] transition duration-300 disabled:opacity-50"
                   >
-                    Search
+                    {loading ? 'Searching...' : 'Search'}
                   </button>
                 </div>
 
@@ -157,17 +212,59 @@ const Homepage = () => {
               </div>
             </div>
           </div>
+          
+          {error && (
+            <div className="mt-3 text-red-500 text-sm text-center">
+              {error}
+            </div>
+          )}
         </div>
       </section>
 
       {/* Featured Salons Section */}
-      <section className="py-12 px-4 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-xl font-medium mb-6 text-[#4A4A4A] text-center">
-            Featured Salons
-          </h2>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {[1, 2, 3, 4, 5, 6].map((salon) => (
+      <section className="py-10 px-5 bg-[#F8F8F8]"> 
+        <h2 className="text-xl font-medium mb-6 text-[#4A4A4A] text-center">
+          {searchResults ? "Search Results" : "Featured Salons"}
+        </h2>
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
+          {searchResults ? (
+            searchResults.length > 0 ? (
+              searchResults.map((salon) => (
+                <Link
+                  to={`/salon/${salon._id}`} 
+                  key={salon._id}
+                  className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition duration-300 border border-[#E0E0E0]"
+                >
+                  <img
+                    src={salon.image || "https://via.placeholder.com/400x300"}
+                    alt={salon.name}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="p-4">
+                    <h3 className="font-medium text-lg mb-1 text-[#4A4A4A]">
+                      {salon.name}
+                    </h3>
+                    <p className="text-sm text-[#4A4A4A]/80 mb-3">
+                      {salon.description}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-[#4A4A4A]">
+                        {salon.location}
+                      </span>
+                      <button className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded hover:bg-[#f0c8cc] transition duration-300">
+                        View Details
+                      </button>
+                    </div>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <div className="col-span-3 text-center py-8 text-gray-500">
+                No salons found matching your search. Try different keywords.
+              </div>
+            )
+          ) : (
+            [1, 2, 3, 4, 5, 6].map((salon) => (
               <div
                 key={salon}
                 className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition duration-300 border border-[#E0E0E0]"
@@ -189,13 +286,14 @@ const Homepage = () => {
                   </button>
                 </div>
               </div>
-            ))}
-          </div>
+            ))
+          )}
         </div>
       </section>
 
-      <section className="py-10 px-5 bg-[#F8F8F8]">
-        <h2 className="text-xl font-medium mb-6 text-[#4A4A4A] text-center">
+      {/* Testimonials Section */}
+      <section className="py-10 px-5 bg-white">
+        <h2 className="text-xl font-medium mb-8 text-[#4A4A4A] text-center">
           What Our Clients Say
         </h2>
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
@@ -232,16 +330,20 @@ const Homepage = () => {
         </div>
       </section>
 
+      {/* Call-to-Action Section */}
       <section className="py-12 px-5 bg-[#A2B9C6] text-white text-center">
         <h2 className="text-2xl font-light mb-4">Ready to Book Your Next Appointment?</h2>
         <p className="max-w-2xl mx-auto mb-6 opacity-90">
           Join thousands of satisfied customers using VivaHub
         </p>
-        <button className="px-6 py-3 bg-white text-[#4A4A4A] rounded-lg hover:bg-[#FADADD] transition duration-300">
-          Sign Up Now
-        </button>
+        <Link to="/signup">
+          <button className="px-6 py-3 bg-white text-[#4A4A4A] rounded-lg hover:bg-[#FADADD] transition duration-300">
+            Sign Up Now
+          </button>
+        </Link>
       </section>
 
+      {/* Footer Section */}
       <footer className="py-8 px-5 bg-[#4A4A4A] text-white">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
