@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { FaSearch, FaTimes, FaLanguage, FaFilter } from "react-icons/fa";
+import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
+
 
 // API base URL from environment variables, fallback to localhost if not set
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
@@ -295,7 +297,11 @@ const Homepage = () => {
 <section className="py-10 px-5 bg-[#F8F8F8]">
   <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
     <div className="bg-white p-6 rounded-lg shadow-sm text-center">
-      <img src="../../public/coupon.png" alt="Discount Coupon" className="mx-auto mb-4" />
+    <img
+        src="../../public/coupon.png"
+        alt="Discount Coupon"
+        className="mx-auto mb-4 w-48 h-48 object-contain"
+      />
       <h3 className="text-lg font-medium text-[#4A4A4A] mb-2">Get a Special Discount</h3>
       <p className="text-sm text-[#4A4A4A]/80 mb-4">
         Claim your exclusive discount coupon for your next salon visit.
@@ -308,7 +314,11 @@ const Homepage = () => {
       </Link>
     </div>
     <div className="bg-white p-6 rounded-lg shadow-sm text-center">
-      <img src="../../public/nails1.png" alt="Top Rated Salons" className="mx-auto mb-4" />
+    <img
+      src="../../public/nails1.png"
+      alt="Top Rated Salons"
+      className="mx-auto mb-4 w-48 h-48 object-contain"
+      />
       <h3 className="text-lg font-medium text-[#4A4A4A] mb-2">Top Rated Salons</h3>
       <p className="text-sm text-[#4A4A4A]/80 mb-4">
         Explore the highest-rated salons in your area and book today.
@@ -418,13 +428,16 @@ const Homepage = () => {
       <p className="text-[#4A4A4A]/80 mb-8">
         Join VivaHub and grow your business by reaching thousands of potential customers. 
         Showcase your services, manage bookings, and increase your revenue.
-      </p>
-      <Link
+        <br />
+        <br />
+        <Link
         to="/signup"
         className="px-4 py-2 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#91A7B4] transition duration-300"
       >
         Partner with Us
       </Link>
+      </p>
+     
     </div>
 
     {/* Right Side: Regular Image */}
@@ -446,18 +459,31 @@ const Homepage = () => {
       Stay updated with the latest news, offers, and beauty tips from VivaHub.
     </p>
     <div className="flex justify-center space-x-6">
-      <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
-        <img src="https://via.placeholder.com/50" alt="Facebook" />
+      <a
+        href="https://facebook.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="p-3 bg-[#4267B2] text-white rounded-full hover:bg-[#365899] transition duration-300"
+      >
+        <FaFacebook size={20} />
       </a>
-      <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
-        <img src="https://via.placeholder.com/50" alt="Instagram" />
+      <a
+        href="https://instagram.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="p-3 bg-gradient-to-r from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-white rounded-full hover:opacity-90 transition duration-300"
+      >
+        <FaInstagram size={20} />
       </a>
-      <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
-        <img src="https://via.placeholder.com/50" alt="Twitter" />
+      <a
+        href="https://twitter.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="p-3 bg-[#1DA1F2] text-white rounded-full hover:bg-[#0d95e8] transition duration-300"
+      >
+        <FaTwitter size={20} />
       </a>
-      <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
-        <img src="https://via.placeholder.com/50" alt="LinkedIn" />
-      </a>
+
     </div>
   </div>
 </section>
