@@ -1,25 +1,49 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import { FaFilter } from "react-icons/fa"; 
+import axios from 'axios';
+import { FaFilter } from "react-icons/fa";
+
+// API base URL from environment variables, fallback to localhost if not set
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 const Homepage = () => {
   const [showFilters, setShowFilters] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [searchResults, setSearchResults] = useState(null);
+  const [error, setError] = useState('');
 
   const toggleFilters = () => {
     setShowFilters(!showFilters);
   };
-  return (
 
+  const handleSearch = async () => {
+    if (!searchTerm.trim()) return;
+    try {
+      setLoading(true);
+      setError('');
+      const response = await axios.get(`${API_URL}/api/services/search?query=${encodeURIComponent(searchTerm)}`);
+      setSearchResults(response.data);
+    } catch (err) {
+      setError('Failed to fetch services. Please try again.');
+      console.error('Search error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
+  return (
     <div className="font-sans leading-relaxed text-[#4A4A4A] bg-white min-h-screen">
-        {/* Header */}
-        <header className="p-4 bg-[#eeeeee] flex justify-between items-center shadow-sm">
-        {/* Logo */}
+      <header className="p-4 bg-[#eeeeee] flex justify-between items-center shadow-sm">
         <Link to="/" className="flex items-center">
           <img src="/src/assets/logo.png" alt="VivaHub Logo" className="h-10" />
         </Link>
-
-        {/* Filters for larger screens */}
         <div className="hidden md:flex space-x-4">
           <Link to="/filter/hair" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
             Hair
@@ -46,17 +70,13 @@ const Homepage = () => {
             Language
           </Link>
         </div>
-
-         {/* Filters for smaller screens */}
-         <div className="md:hidden relative">
+        <div className="md:hidden relative">
           <button
             onClick={toggleFilters}
             className="text-[#4A4A4A] hover:text-[#A2B9C6] transition duration-300"
           >
             <FaFilter size={20} />
           </button>
-
-          {/* Popup for smaller screens */}
           {showFilters && (
             <div className="absolute top-10 right-0 w-48 bg-white shadow-lg z-10 p-4 rounded-lg">
               <div className="flex flex-col space-y-2">
@@ -113,8 +133,6 @@ const Homepage = () => {
             </div>
           )}
         </div>
-
-        {/* Login Button */}
         <Link
           to="/login"
           className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded-lg text-sm hover:bg-[#A2B9C6] hover:text-white transition duration-300"
@@ -123,89 +141,118 @@ const Homepage = () => {
         </Link>
       </header>
 
-      {/* Hero Section */}
-      <section
-  className="h-[500px] bg-cover bg-no-repeat bg-center bg-contain bg-left flex bg-none md:bg-[url('/src/assets/background-comb.png')]"
->
-   {/* Left Side (Empty) - Hidden on smaller screens */}
-   <div className="hidden md:flex flex-1"></div>
-
-  {/* Right Side (Text and Search Bar) */}
-  <div className="flex-1 flex flex-col justify-center items-start px-5">
-    <h1 className="text-3xl font-light mb-4 text-[#4A4A4A]">
-      Book Your Perfect Salon Experience
-    </h1>
-    <p className="text-[#4A4A4A]/80 mb-8">
-      Discover top-rated salons and book beauty services with ease
-    </p>
-    <div className="flex flex-col gap-3 md:flex-row w-full">
-      <input
-        type="text"
-        placeholder="Find salons near you..."
-        className="flex-grow p-3 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-      />
-      <button className="p-3 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#8fa9b8] transition duration-300 md:px-6">
-        Search
-      </button>
-    </div>
-  </div>
-</section>
-
-     
-
-      {/* Featured Salons Section */}
-      <section className="py-10 px-5 bg-[#F8F8F8]">
-        <h2 className="text-xl font-medium mb-6 text-[#4A4A4A] text-center">
-          Featured Salons
-        </h2>
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
-          {[1, 2, 3, 4, 5, 6].map((salon) => (
-            <div
-              key={salon}
-              className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition duration-300 border border-[#E0E0E0]"
+      <section className="h-[500px] bg-cover bg-no-repeat bg-center bg-contain bg-left flex bg-none md:bg-[url('/src/assets/background-comb.png')]">
+        <div className="hidden md:flex flex-1"></div>
+        <div className="flex-1 flex flex-col justify-center items-start px-5">
+          <h1 className="text-3xl font-light mb-4 text-[#4A4A4A]">Book Your Perfect Salon Experience</h1>
+          <p className="text-[#4A4A4A]/80 mb-8">Discover top-rated salons and book beauty services with ease</p>
+          <div className="flex flex-col gap-3 md:flex-row w-full">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Find salons near you..."
+              className="flex-grow p-3 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+            />
+            <button
+              onClick={handleSearch}
+              disabled={loading}
+              className="p-3 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#8fa9b8] transition duration-300 md:px-6 disabled:opacity-50"
             >
-              <img
-                src={`https://via.placeholder.com/400x300?text=Salon+${salon}`}
-                alt={`Salon ${salon}`}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4">
-                <h3 className="font-medium text-lg mb-1">Luxe Beauty Salon #{salon}</h3>
-                <div className="flex items-center mb-2">
-                  <span className="text-[#FADADD]">★★★★☆</span>
-                  <span className="text-sm text-[#4A4A4A]/60 ml-2">(24 reviews)</span>
-                </div>
-                <p className="text-sm text-[#4A4A4A]/80 mb-3">Hair • Nails • Spa</p>
-                <button className="w-full py-2 bg-[#FADADD] text-[#4A4A4A] rounded hover:bg-[#f0c8cc] transition duration-300">
-                  Book Now
-                </button>
-              </div>
+              {loading ? 'Searching...' : 'Search'}
+            </button>
+          </div>
+          {error && (
+            <div className="mt-3 text-red-500 text-sm text-center">
+              {error}
             </div>
-          ))}
+          )}
         </div>
       </section>
 
-      {/* Testimonials Section */}
+      <section className="py-10 px-5 bg-[#F8F8F8]">
+        <h2 className="text-xl font-medium mb-6 text-[#4A4A4A] text-center">
+          {searchResults ? 'Search Results' : 'Featured Salons'}
+        </h2>
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
+          {searchResults ? (
+            searchResults.length > 0 ? (
+              searchResults.map((service) => (
+                <div
+                  key={service._id}
+                  className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition duration-300 border border-[#E0E0E0]"
+                >
+                  <img
+                    src={service.image || `https://via.placeholder.com/400x300?text=${encodeURIComponent(service.name)}`}
+                    alt={service.name}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="p-4">
+                    <h3 className="font-medium text-lg mb-1">{service.name}</h3>
+                    <p className="text-sm text-[#4A4A4A]/80 mb-3">{service.description}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-[#4A4A4A]">${service.price}</span>
+                      <button className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded hover:bg-[#f0c8cc] transition duration-300">
+                        Book Now
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-3 text-center py-8 text-gray-500">
+                No services found matching your search. Try different keywords.
+              </div>
+            )
+          ) : (
+            [1, 2, 3, 4, 5, 6].map((salon) => (
+              <div
+                key={salon}
+                className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition duration-300 border border-[#E0E0E0]"
+              >
+                <img
+                  src={`https://via.placeholder.com/400x300?text=Salon+${salon}`}
+                  alt={`Salon ${salon}`}
+                  className="w-full h-48 object-cover"
+                />
+                <div className="p-4">
+                  <h3 className="font-medium text-lg mb-1">Luxe Beauty Salon #{salon}</h3>
+                  <div className="flex items-center mb-2">
+                    <span className="text-[#FADADD]">★★★★☆</span>
+                    <span className="text-sm text-[#4A4A4A]/60 ml-2">(24 reviews)</span>
+                  </div>
+                  <p className="text-sm text-[#4A4A4A]/80 mb-3">Hair • Nails • Spa</p>
+                  <button className="w-full py-2 bg-[#FADADD] text-[#4A4A4A] rounded hover:bg-[#f0c8cc] transition duration-300">
+                    Book Now
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </section>
+
       <section className="py-10 px-5 bg-white">
         <h2 className="text-xl font-medium mb-8 text-[#4A4A4A] text-center">
           What Our Clients Say
         </h2>
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
           {[
-            { 
-              text: "The booking process was seamless and the salon exceeded my expectations!", 
-              author: "Emma S.", 
-              rating: 5 
+            {
+              text: "The booking process was seamless and the salon exceeded my expectations!",
+              author: "Emma S.",
+              rating: 5
             },
-            { 
-              text: "I love how easy VivaHub makes it to find quality salons in my area.", 
-              author: "Michael T.", 
-              rating: 4 
+            {
+              text: "I love how easy VivaHub makes it to find quality salons in my area.",
+              author: "Michael T.",
+              rating: 4
             },
-            { 
-              text: "Professional services every time. Highly recommend to anyone looking for beauty services.", 
-              author: "Sarah L.", 
-              rating: 5 
+            {
+              text: "Professional services every time. Highly recommend to anyone looking for beauty services.",
+              author: "Sarah L.",
+              rating: 5
             }
           ].map((review, index) => (
             <div
@@ -224,7 +271,6 @@ const Homepage = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-12 px-5 bg-[#A2B9C6] text-white text-center">
         <h2 className="text-2xl font-light mb-4">Ready to Book Your Next Appointment?</h2>
         <p className="max-w-2xl mx-auto mb-6 opacity-90">
@@ -235,7 +281,6 @@ const Homepage = () => {
         </button>
       </section>
 
-      {/* Footer */}
       <footer className="py-8 px-5 bg-[#4A4A4A] text-white">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { AuthContext } from './auth.context';
+import { useState, useEffect } from "react";
+import { AuthContext } from "./auth.context";
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -7,7 +7,7 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     // Check if user is logged in on mount
-    const storedUser = localStorage.getItem('user');
+    const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
@@ -16,15 +16,15 @@ const AuthProvider = ({ children }) => {
 
   const login = (userData) => {
     setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
-    localStorage.setItem('token', userData.token);
+    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("token", userData.token);
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    window.location.href = '/';
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    window.location.href = "/";
   };
 
   if (loading) {
