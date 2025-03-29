@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from 'axios';
 import { FaFilter } from "react-icons/fa";
@@ -13,10 +13,29 @@ const Homepage = () => {
   const [searchResults, setSearchResults] = useState(null);
   const [error, setError] = useState('');
 
+  // Toggle filter dropdown for mobile view
   const toggleFilters = () => {
     setShowFilters(!showFilters);
   };
 
+  // Fetch all salons on page load
+  useEffect(() => {
+    const fetchSalons = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${API_URL}/api/salons`);
+        setSearchResults(response.data); // Store salons in state
+      } catch (err) {
+        setError("Failed to fetch salons. Please try again.");
+        console.error("Error fetching salons:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSalons();
+  }, []);
+
+  // Handle search functionality
   const handleSearch = async () => {
     if (!searchTerm.trim()) return;
     try {
@@ -32,43 +51,32 @@ const Homepage = () => {
     }
   };
 
+  // Trigger search on pressing Enter
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSearch();
     }
   };
 
+  
+
   return (
     <div className="font-sans leading-relaxed text-[#4A4A4A] bg-white min-h-screen">
+      
+      {/* Header Section */}
       <header className="p-4 bg-[#eeeeee] flex justify-between items-center shadow-sm">
         <Link to="/" className="flex items-center">
           <img src="/src/assets/logo.png" alt="VivaHub Logo" className="h-10" />
         </Link>
         <div className="hidden md:flex space-x-4">
-          <Link to="/filter/hair" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
-            Hair
-          </Link>
-          <Link to="/filter/nails" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
-            Nails
-          </Link>
-          <Link to="/filter/spa" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
-            Spa
-          </Link>
-          <Link to="/filter/makeup" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
-            Makeup
-          </Link>
-          <Link to="/filter/facials" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
-            Facials
-          </Link>
-          <Link to="/filter/waxing" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
-            Waxing
-          </Link>
-          <Link to="/filter/massage" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
-            Massage
-          </Link>
-          <Link to="/filter/language" className="text-[#4A4A4A] hover:text-[#A2B9C6]">
-            Language
-          </Link>
+          <Link to="/filter/hair" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Hair</Link>
+          <Link to="/filter/nails" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Nails</Link>
+          <Link to="/filter/spa" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Spa</Link>
+          <Link to="/filter/makeup" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Makeup</Link>
+          <Link to="/filter/facials" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Facials</Link>
+          <Link to="/filter/waxing" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Waxing</Link>
+          <Link to="/filter/massage" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Massage</Link>
+          <Link to="/filter/language" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Language</Link>
         </div>
         <div className="md:hidden relative">
           <button
@@ -80,55 +88,13 @@ const Homepage = () => {
           {showFilters && (
             <div className="absolute top-10 right-0 w-48 bg-white shadow-lg z-10 p-4 rounded-lg">
               <div className="flex flex-col space-y-2">
-                <Link
-                  to="/filter/hair"
-                  className="text-[#4A4A4A] hover:text-[#A2B9C6]"
-                  onClick={() => setShowFilters(false)}
-                >
-                  Hair
-                </Link>
-                <Link
-                  to="/filter/nails"
-                  className="text-[#4A4A4A] hover:text-[#A2B9C6]"
-                  onClick={() => setShowFilters(false)}
-                >
-                  Nails
-                </Link>
-                <Link
-                  to="/filter/spa"
-                  className="text-[#4A4A4A] hover:text-[#A2B9C6]"
-                  onClick={() => setShowFilters(false)}
-                >
-                  Spa
-                </Link>
-                <Link
-                  to="/filter/makeup"
-                  className="text-[#4A4A4A] hover:text-[#A2B9C6]"
-                  onClick={() => setShowFilters(false)}
-                >
-                  Makeup
-                </Link>
-                <Link
-                  to="/filter/facials"
-                  className="text-[#4A4A4A] hover:text-[#A2B9C6]"
-                  onClick={() => setShowFilters(false)}
-                >
-                  Facials
-                </Link>
-                <Link
-                  to="/filter/waxing"
-                  className="text-[#4A4A4A] hover:text-[#A2B9C6]"
-                  onClick={() => setShowFilters(false)}
-                >
-                  Waxing
-                </Link>
-                <Link
-                  to="/filter/massage"
-                  className="text-[#4A4A4A] hover:text-[#A2B9C6]"
-                  onClick={() => setShowFilters(false)}
-                >
-                  Massage
-                </Link>
+                <Link to="/filter/hair" className="text-[#4A4A4A] hover:text-[#A2B9C6]" onClick={() => setShowFilters(false)}>Hair</Link>
+                <Link to="/filter/nails" className="text-[#4A4A4A] hover:text-[#A2B9C6]" onClick={() => setShowFilters(false)}>Nails</Link>
+                <Link to="/filter/spa" className="text-[#4A4A4A] hover:text-[#A2B9C6]" onClick={() => setShowFilters(false)}>Spa</Link>
+                <Link to="/filter/makeup" className="text-[#4A4A4A] hover:text-[#A2B9C6]" onClick={() => setShowFilters(false)}>Makeup</Link>
+                <Link to="/filter/facials" className="text-[#4A4A4A] hover:text-[#A2B9C6]" onClick={() => setShowFilters(false)}>Facials</Link>
+                <Link to="/filter/waxing" className="text-[#4A4A4A] hover:text-[#A2B9C6]" onClick={() => setShowFilters(false)}>Waxing</Link>
+                <Link to="/filter/massage" className="text-[#4A4A4A] hover:text-[#A2B9C6]" onClick={() => setShowFilters(false)}>Massage</Link>
               </div>
             </div>
           )}
@@ -141,6 +107,7 @@ const Homepage = () => {
         </Link>
       </header>
 
+      {/* Hero Section */}
       <section className="h-[500px] bg-cover bg-no-repeat bg-center bg-contain bg-left flex bg-none md:bg-[url('/src/assets/background-comb.png')]">
         <div className="hidden md:flex flex-1"></div>
         <div className="flex-1 flex flex-col justify-center items-start px-5">
@@ -171,68 +138,77 @@ const Homepage = () => {
         </div>
       </section>
 
-      <section className="py-10 px-5 bg-[#F8F8F8]">
-        <h2 className="text-xl font-medium mb-6 text-[#4A4A4A] text-center">
-          {searchResults ? 'Search Results' : 'Featured Salons'}
-        </h2>
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
-          {searchResults ? (
-            searchResults.length > 0 ? (
-              searchResults.map((service) => (
-                <div
-                  key={service._id}
-                  className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition duration-300 border border-[#E0E0E0]"
-                >
-                  <img
-                    src={service.image || `https://via.placeholder.com/400x300?text=${encodeURIComponent(service.name)}`}
-                    alt={service.name}
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="p-4">
-                    <h3 className="font-medium text-lg mb-1">{service.name}</h3>
-                    <p className="text-sm text-[#4A4A4A]/80 mb-3">{service.description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium text-[#4A4A4A]">${service.price}</span>
-                      <button className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded hover:bg-[#f0c8cc] transition duration-300">
-                        Book Now
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="col-span-3 text-center py-8 text-gray-500">
-                No services found matching your search. Try different keywords.
+     {/* Featured Salons Section */}
+  <section className="py-10 px-5 bg-[#F8F8F8]"> 
+  <h2 className="text-xl font-medium mb-6 text-[#4A4A4A] text-center">
+    {searchResults ? "Search Results" : "Featured Salons"}
+  </h2>
+  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
+    {searchResults ? (
+      searchResults.length > 0 ? (
+        searchResults.map((salon) => (
+          <Link
+            to={`/salon/${salon._id}`} 
+            key={salon._id}
+            className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition duration-300 border border-[#E0E0E0]"
+          >
+            <img
+              src={salon.image || "https://via.placeholder.com/400x300"}
+              alt={salon.name}
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-4">
+              <h3 className="font-medium text-lg mb-1 text-[#4A4A4A]">
+                {salon.name}
+              </h3>
+              <p className="text-sm text-[#4A4A4A]/80 mb-3">
+                {salon.description}
+              </p>
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-[#4A4A4A]">
+                  {salon.location}
+                </span>
+                <button className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded hover:bg-[#f0c8cc] transition duration-300">
+                  View Details
+                </button>
               </div>
-            )
-          ) : (
-            [1, 2, 3, 4, 5, 6].map((salon) => (
-              <div
-                key={salon}
-                className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition duration-300 border border-[#E0E0E0]"
-              >
-                <img
-                  src={`https://via.placeholder.com/400x300?text=Salon+${salon}`}
-                  alt={`Salon ${salon}`}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-4">
-                  <h3 className="font-medium text-lg mb-1">Luxe Beauty Salon #{salon}</h3>
-                  <div className="flex items-center mb-2">
-                    <span className="text-[#FADADD]">★★★★☆</span>
-                    <span className="text-sm text-[#4A4A4A]/60 ml-2">(24 reviews)</span>
-                  </div>
-                  <p className="text-sm text-[#4A4A4A]/80 mb-3">Hair • Nails • Spa</p>
-                  <button className="w-full py-2 bg-[#FADADD] text-[#4A4A4A] rounded hover:bg-[#f0c8cc] transition duration-300">
-                    Book Now
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
+            </div>
+          </Link>
+        ))
+      ) : (
+        <div className="col-span-3 text-center py-8 text-gray-500">
+          No salons found matching your search. Try different keywords.
         </div>
-      </section>
+      )
+    ) : (
+      [1, 2, 3, 4, 5, 6].map((salon) => (
+        <div
+          key={salon}
+          className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition duration-300 border border-[#E0E0E0]"
+        >
+          <img
+            src={`https://via.placeholder.com/400x300?text=Salon+${salon}`}
+            alt={`Salon ${salon}`}
+            className="w-full h-48 object-cover"
+          />
+          <div className="p-4">
+            <h3 className="font-medium text-lg mb-1">Luxe Beauty Salon #{salon}</h3>
+            <div className="flex items-center mb-2">
+              <span className="text-[#FADADD]">★★★★☆</span>
+              <span className="text-sm text-[#4A4A4A]/60 ml-2">(24 reviews)</span>
+            </div>
+            <p className="text-sm text-[#4A4A4A]/80 mb-3">Hair • Nails • Spa</p>
+            <button className="w-full py-2 bg-[#FADADD] text-[#4A4A4A] rounded hover:bg-[#f0c8cc] transition duration-300">
+              Book Now
+            </button>
+          </div>
+        </div>
+      ))
+    )}
+  </div>
+</section>
 
+      {/* Testimonials Section */}
       <section className="py-10 px-5 bg-white">
         <h2 className="text-xl font-medium mb-8 text-[#4A4A4A] text-center">
           What Our Clients Say
@@ -271,16 +247,20 @@ const Homepage = () => {
         </div>
       </section>
 
+      {/* Call-to-Action Section */}
       <section className="py-12 px-5 bg-[#A2B9C6] text-white text-center">
         <h2 className="text-2xl font-light mb-4">Ready to Book Your Next Appointment?</h2>
         <p className="max-w-2xl mx-auto mb-6 opacity-90">
           Join thousands of satisfied customers using VivaHub
         </p>
-        <button className="px-6 py-3 bg-white text-[#4A4A4A] rounded-lg hover:bg-[#FADADD] transition duration-300">
-          Sign Up Now
-        </button>
+        <Link to="/signup">
+    <button className="px-6 py-3 bg-white text-[#4A4A4A] rounded-lg hover:bg-[#FADADD] transition duration-300">
+      Sign Up Now
+    </button>
+  </Link>
       </section>
 
+      {/* Footer Section */}
       <footer className="py-8 px-5 bg-[#4A4A4A] text-white">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
