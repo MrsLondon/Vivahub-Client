@@ -9,6 +9,7 @@ import BusinessDashboard from './pages/BusinessDashboard'
 import ProtectedRoute from './components/ProtectedRoute'
 import AuthProvider from './context/AuthContext'
 import SalonDetailsPage from "./pages/SalonDetailsPage";
+import SearchResults from './pages/SearchResults';
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Homepage />} />
           <Route path="/salon/:salonId" element={<SalonDetailsPage />} />
+          <Route path="/search" element={<SearchResults />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
