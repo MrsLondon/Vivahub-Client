@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { FaSearch, FaTimes, FaLanguage, FaFilter } from "react-icons/fa";
-import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
+import { FiFacebook, FiInstagram, } from "react-icons/fi";
+
 
 
 // API base URL from environment variables, fallback to localhost if not set
@@ -445,45 +446,36 @@ const Homepage = () => {
       <img
         src="../../public/business-owner1.jpg"
         alt="Business Owner"
-        className="w-full max-w-sm rounded-lg"
+        className="w-full max-w-sm"
       />
     </div>
   </div>
 </section>
 
 {/* Social Media Links Section */}
-<section className="py-10 px-5 bg-[#F8F8F8]">
+<section className="py-12 px-5 bg-[#F8F8F8]">
   <div className="max-w-6xl mx-auto text-center">
     <h2 className="text-xl font-medium text-[#4A4A4A] mb-6">Follow Us on Social Media</h2>
-    <p className="text-[#4A4A4A]/80 mb-8">
-      Stay updated with the latest news, offers, and beauty tips from VivaHub.
+    <p className="text-[#4A4A4A]/80 mb-8 max-w-2xl mx-auto">
+    Stay updated with the latest news, offers, and beauty tips from VivaHub.
     </p>
-    <div className="flex justify-center space-x-6">
+    <div className="flex justify-center space-x-4">
       <a
         href="https://facebook.com"
         target="_blank"
         rel="noopener noreferrer"
-        className="p-3 bg-[#4267B2] text-white rounded-full hover:bg-[#365899] transition duration-300"
+        className="p-3 text-[#4A4A4A] hover:text-[#A2B9C6] transition duration-300 border border-[#E0E0E0] rounded-full hover:border-[#A2B9C6]"
       >
-        <FaFacebook size={20} />
+        <FiFacebook size={22} />
       </a>
       <a
         href="https://instagram.com"
         target="_blank"
         rel="noopener noreferrer"
-        className="p-3 bg-gradient-to-r from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-white rounded-full hover:opacity-90 transition duration-300"
+        className="p-3 text-[#4A4A4A] hover:text-[#A2B9C6] transition duration-300 border border-[#E0E0E0] rounded-full hover:border-[#A2B9C6]"
       >
-        <FaInstagram size={20} />
+        <FiInstagram size={22} />
       </a>
-      <a
-        href="https://twitter.com"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="p-3 bg-[#1DA1F2] text-white rounded-full hover:bg-[#0d95e8] transition duration-300"
-      >
-        <FaTwitter size={20} />
-      </a>
-
     </div>
   </div>
 </section>
