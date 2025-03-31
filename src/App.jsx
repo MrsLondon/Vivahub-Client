@@ -10,9 +10,11 @@ import ProtectedRoute from './components/ProtectedRoute'
 import AuthProvider from './context/AuthContext'
 import SalonDetailsPage from "./pages/SalonDetailsPage";
 import SearchResults from './pages/SearchResults';
+import { ThemeProvider } from './context/ThemeContext';
 
 const App = () => {
   return (
+    <ThemeProvider>
     <AuthProvider>
       <Router>
         <Routes>
@@ -41,6 +43,7 @@ const App = () => {
         </Routes>
       </Router>
     </AuthProvider>
+    </ThemeProvider>
   );
 };
 
