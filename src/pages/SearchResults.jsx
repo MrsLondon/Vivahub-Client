@@ -5,14 +5,6 @@ import { FaSearch, FaTimes, FaLanguage, FaUser } from "react-icons/fa";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
-// Languages list
-const LANGUAGES = [
-  'English', 'French', 'Spanish', 'Arabic', 'Chinese', 'Hindi',
-  'Portuguese', 'Russian', 'Japanese', 'Korean', 'German', 'Italian',
-  'Dutch', 'Polish', 'Turkish', 'Vietnamese', 'Thai', 'Greek',
-  'Hebrew', 'Swedish'
-];
-
 const SearchResults = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -24,6 +16,21 @@ const SearchResults = () => {
   const [error, setError] = useState('');
   const [showLanguageSearch, setShowLanguageSearch] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState(searchParams.get('language') || '');
+  const [languages, setLanguages] = useState([]);
+
+  // Fetch languages from backend
+  useEffect(() => {
+    const fetchLanguages = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/api/services/languages`);
+        setLanguages(response.data);
+      } catch (err) {
+        console.error('Failed to fetch languages:', err);
+        setError('Failed to load languages');
+      }
+    };
+    fetchLanguages();
+  }, []);
 
   const handleSearch = useCallback(async () => {
     try {
@@ -39,7 +46,7 @@ const SearchResults = () => {
       // Update URL with search parameters
       navigate(`/search?${params.toString()}`, { replace: true });
 
-      const response = await axios.get(`${API_URL}/api/search?${params}`);
+      const response = await axios.get(`${API_URL}/api/search`, { params });
       
       if (response.data.status === 'success') {
         setSearchResults(response.data.data);
@@ -58,17 +65,12 @@ const SearchResults = () => {
     if (searchTerm || selectedLanguage) {
       handleSearch();
     }
-  }, [searchTerm, selectedLanguage, handleSearch]);
+  }, [handleSearch, searchTerm, selectedLanguage]);
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSearch();
     }
-  };
-
-  const handleLanguageSelect = (language) => {
-    setSelectedLanguage(language);
-    setShowLanguageSearch(false);
   };
 
   const clearSearch = () => {
@@ -158,15 +160,23 @@ const SearchResults = () => {
                 />
                 {selectedLanguage && (
                   <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-                    {LANGUAGES.filter(lang => 
-                      lang.toLowerCase().includes(selectedLanguage.toLowerCase())
+                    {languages.filter(lang => 
+                      lang.name.toLowerCase().includes(selectedLanguage.toLowerCase())
                     ).map(lang => (
                       <button
-                        key={lang}
-                        onClick={() => handleLanguageSelect(lang)}
-                        className="w-full px-4 py-2 text-left hover:bg-gray-100 focus:bg-gray-100"
+                        key={lang.code}
+                        className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center"
+                        onClick={() => {
+                          setSelectedLanguage(lang.code);
+                          handleSearch();
+                        }}
                       >
-                        {lang}
+                        <img 
+                          src={`https://flagcdn.com/w20/${lang.country}.png`}
+                          alt={lang.name}
+                          className="w-5 h-4 mr-2"
+                        />
+                        {lang.name}
                       </button>
                     ))}
                   </div>

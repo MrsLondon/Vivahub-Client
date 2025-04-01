@@ -4,18 +4,8 @@ import axios from 'axios';
 import { FaSearch, FaTimes, FaLanguage, FaFilter } from "react-icons/fa";
 import { FiFacebook, FiInstagram, } from "react-icons/fi";
 
-
-
 // API base URL from environment variables, fallback to localhost if not set
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
-
-// Languages list
-const LANGUAGES = [
-  'English', 'French', 'Spanish', 'Arabic', 'Chinese', 'Hindi',
-  'Portuguese', 'Russian', 'Japanese', 'Korean', 'German', 'Italian',
-  'Dutch', 'Polish', 'Turkish', 'Vietnamese', 'Thai', 'Greek',
-  'Hebrew', 'Swedish'
-];
 
 const Homepage = () => {
   const navigate = useNavigate();
@@ -23,44 +13,32 @@ const Homepage = () => {
   const [showLanguageSearch, setShowLanguageSearch] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [searchResults, setSearchResults] = useState(null);
+  const [languages, setLanguages] = useState([]);
   const [error, setError] = useState('');
 
-  // Fetch all salons on page load
+  // Fetch languages from backend
   useEffect(() => {
-    const fetchSalons = async () => {
+    const fetchLanguages = async () => {
       try {
-        setLoading(true);
-        const response = await axios.get(`${API_URL}/api/salons`);
-        setSearchResults(response.data); // Store salons in state
+        const response = await axios.get(`${API_URL}/api/services/languages`);
+        setLanguages(response.data);
       } catch (err) {
-        setError("Failed to fetch salons. Please try again.");
-        console.error("Error fetching salons:", err);
-      } finally {
-        setLoading(false);
+        console.error('Failed to fetch languages:', err);
+        setError('Failed to load languages');
       }
     };
-    fetchSalons();
+    fetchLanguages();
   }, []);
 
   const handleSearch = async () => {
     const params = new URLSearchParams({
+      filterType: selectedLanguage ? 'language' : 'service',
       ...(searchTerm && { query: searchTerm }),
       ...(selectedLanguage && { language: selectedLanguage })
     });
     
-    try {
-      setLoading(true);
-      setError('');
-      const response = await axios.get(`${API_URL}/api/salons/search?${params.toString()}`);
-      setSearchResults(response.data);
-    } catch (err) {
-      setError('Failed to fetch salons. Please try again.');
-      console.error('Search error:', err);
-    } finally {
-      setLoading(false);
-    }
+    // Navigate to search results page with the search parameters
+    navigate(`/search?${params.toString()}`);
   };
 
   // Trigger search on pressing Enter
@@ -70,16 +48,10 @@ const Homepage = () => {
     }
   };
 
-  const handleLanguageSelect = (language) => {
-    setSelectedLanguage(language);
-    setShowLanguageSearch(false);
-  };
-
   const clearSearch = () => {
     setSearchTerm('');
     setSelectedLanguage('');
     setShowLanguageSearch(false);
-    setSearchResults(null);
   };
 
   // Toggle filter dropdown for mobile view
@@ -178,10 +150,9 @@ const Homepage = () => {
                   </button>
                   <button
                     onClick={handleSearch}
-                    disabled={loading}
-                    className="px-6 py-2 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#91A7B4] transition duration-300 disabled:opacity-50"
+                    className="px-6 py-2 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#91A7B4] transition duration-300"
                   >
-                    {loading ? 'Searching...' : 'Search'}
+                    Search
                   </button>
                 </div>
 
@@ -197,15 +168,24 @@ const Homepage = () => {
                     />
                     {selectedLanguage && (
                       <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-                        {LANGUAGES.filter(lang => 
-                          lang.toLowerCase().includes(selectedLanguage.toLowerCase())
+                        {languages.filter(lang => 
+                          lang.name.toLowerCase().includes(selectedLanguage.toLowerCase())
                         ).map(lang => (
                           <button
-                            key={lang}
-                            onClick={() => handleLanguageSelect(lang)}
-                            className="w-full px-4 py-2 text-left hover:bg-gray-100 focus:bg-gray-100"
+                            key={lang.code}
+                            onClick={() => {
+                              setSelectedLanguage(lang.code);
+                              setShowLanguageSearch(false);
+                              handleSearch();
+                            }}
+                            className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center"
                           >
-                            {lang}
+                            <img 
+                              src={`https://flagcdn.com/w20/${lang.country}.png`}
+                              alt={lang.name}
+                              className="w-5 h-4 mr-2"
+                            />
+                            {lang.name}
                           </button>
                         ))}
                       </div>
@@ -223,76 +203,6 @@ const Homepage = () => {
           )}
         </div>
       </section>
-
-      {/* Featured Salons Section */}
-      {/* <section className="py-10 px-5 bg-[#F8F8F8]"> 
-        <h2 className="text-xl font-medium mb-6 text-[#4A4A4A] text-center">
-          {searchResults ? "Search Results" : "Featured Salons"}
-        </h2>
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
-          {searchResults ? (
-            searchResults.length > 0 ? (
-              searchResults.map((salon) => (
-                <Link
-                  to={`/salon/${salon._id}`} 
-                  key={salon._id}
-                  className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition duration-300 border border-[#E0E0E0]"
-                >
-                  <img
-                    src={salon.image || "https://via.placeholder.com/400x300"}
-                    alt={salon.name}
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="p-4">
-                    <h3 className="font-medium text-lg mb-1 text-[#4A4A4A]">
-                      {salon.name}
-                    </h3>
-                    <p className="text-sm text-[#4A4A4A]/80 mb-3">
-                      {salon.description}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium text-[#4A4A4A]">
-                        {salon.location}
-                      </span>
-                      <button className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded hover:bg-[#f0c8cc] transition duration-300">
-                        View Details
-                      </button>
-                    </div>
-                  </div>
-                </Link>
-              ))
-            ) : (
-              <div className="col-span-3 text-center py-8 text-gray-500">
-                No salons found matching your search. Try different keywords.
-              </div>
-            )
-          ) : (
-            [1, 2, 3, 4, 5, 6].map((salon) => (
-              <div
-                key={salon}
-                className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition duration-300 border border-[#E0E0E0]"
-              >
-                <img
-                  src={`https://via.placeholder.com/400x300?text=Salon+${salon}`}
-                  alt={`Salon ${salon}`}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-4">
-                  <h3 className="font-medium text-lg mb-1">Luxe Beauty Salon #{salon}</h3>
-                  <div className="flex items-center mb-2">
-                    <span className="text-[#FADADD]">★★★★☆</span>
-                    <span className="text-sm text-[#4A4A4A]/60 ml-2">(24 reviews)</span>
-                  </div>
-                  <p className="text-sm text-[#4A4A4A]/80 mb-3">Hair • Nails • Spa</p>
-                  <button className="w-full py-2 bg-[#FADADD] text-[#4A4A4A] rounded hover:bg-[#f0c8cc] transition duration-300">
-                    Book Now
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </section> */}
 
       {/* Special Offers Section */}
 <section className="py-10 px-5 bg-[#F8F8F8]">
