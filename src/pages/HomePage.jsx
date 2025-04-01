@@ -64,7 +64,7 @@ const Homepage = () => {
       {/* Header Section */}
       <header className="p-4 bg-[#eeeeee] flex justify-between items-center shadow-sm">
         <Link to="/" className="flex items-center">
-          <img src="/public/logo.png" alt="VivaHub Logo" className="h-10" />
+          <img src="/logo.png" alt="VivaHub Logo" className="h-10" />
         </Link>
         <div className="hidden md:flex space-x-4">
           <Link to="/filter/hair" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Hair</Link>
@@ -106,7 +106,7 @@ const Homepage = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="h-[500px] bg-cover bg-no-repeat bg-center bg-contain bg-left flex bg-none md:bg-[url('/public/background-comb.png')]">
+      <section className="h-[500px] bg-cover bg-no-repeat bg-center bg-contain bg-left flex bg-none md:bg-[url('/background-comb.png')]">
         <div className="hidden md:flex flex-1"></div>
         <div className="flex-1 flex flex-col justify-center items-start px-5">
           <h1 className="text-3xl font-light mb-4 text-[#4A4A4A]">Book Your Perfect Salon Experience</h1>
@@ -209,7 +209,7 @@ const Homepage = () => {
   <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
     <div className="bg-white p-6 rounded-lg shadow-sm text-center">
     <img
-        src="../../public/coupon.png"
+        src="coupon.png"
         alt="Discount Coupon"
         className="mx-auto mb-4 w-48 h-48 object-contain"
       />
@@ -226,7 +226,7 @@ const Homepage = () => {
     </div>
     <div className="bg-white p-6 rounded-lg shadow-sm text-center">
     <img
-      src="../../public/nails1.png"
+      src="nails1.png"
       alt="Top Rated Salons"
       className="mx-auto mb-4 w-48 h-48 object-contain"
       />
@@ -306,21 +306,21 @@ const Homepage = () => {
     </p>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div className="bg-[#F8F8F8] p-6 rounded-lg shadow-sm">
-        <img src="../../public/beauty-salon-pink.png" alt="Feature 1" className="mx-auto mb-4" />
+        <img src="beauty-salon-pink.png" alt="Feature 1" className="mx-auto mb-4" />
         <h3 className="text-lg font-medium text-[#4A4A4A] mb-2">Discover Top Salons</h3>
         <p className="text-sm text-[#4A4A4A]/80">
           Find the best salons near you with verified reviews and ratings.
         </p>
       </div>
       <div className="bg-[#F8F8F8] p-6 rounded-lg shadow-sm">
-        <img src="../../public/discount.png" alt="Feature 2" className="mx-auto mb-4" />
+        <img src="discount.png" alt="Feature 2" className="mx-auto mb-4" />
         <h3 className="text-lg font-medium text-[#4A4A4A] mb-2">Exclusive Discounts</h3>
         <p className="text-sm text-[#4A4A4A]/80">
           Enjoy special offers and discounts on your favorite services.
         </p>
       </div>
       <div className="bg-[#F8F8F8] p-6 rounded-lg shadow-sm">
-        <img src="../../public/computer.png" alt="Feature 3" className="mx-auto mb-4" />
+        <img src="computer.png" alt="Feature 3" className="mx-auto mb-4" />
         <h3 className="text-lg font-medium text-[#4A4A4A] mb-2">Easy Booking</h3>
         <p className="text-sm text-[#4A4A4A]/80">
           Book your appointments in just a few clicks, anytime, anywhere.
@@ -354,7 +354,7 @@ const Homepage = () => {
     {/* Right Side: Regular Image */}
     <div className="flex justify-center">
       <img
-        src="../../public/business-owner1.jpg"
+        src="business-owner1.jpg"
         alt="Business Owner"
         className="w-full max-w-sm"
       />
