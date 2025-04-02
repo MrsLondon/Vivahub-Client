@@ -7,6 +7,20 @@ const api = axios.create({
   },
 });
 
+// Add request interceptor to include auth token
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 // Example API methods
 export const testConnection = async () => {
   try {
@@ -18,4 +32,4 @@ export const testConnection = async () => {
   }
 };
 
-export default api; 
+export default api;

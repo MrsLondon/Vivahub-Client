@@ -133,24 +133,30 @@ const SignupPage = () => {
     return (
       <div className="font-sans bg-[#F8F8F8] min-h-screen flex flex-col">
         <Navbar />
-        <div className="flex-grow flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center bg-[#F8F8F8] py-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
-            <h2 className="text-center text-3xl font-extrabold text-[#4A4A4A]">
-              Create your account
-            </h2>
-            <p className="text-center text-sm text-[#4A4A4A]/80">
-              Choose your account type
-            </p>
+            <div>
+              <h2 className="text-center text-2xl font-medium text-[#4A4A4A]">
+                Create your account
+              </h2>
+              <p className="mt-2 text-center text-sm text-[#4A4A4A]/80">
+                Choose your account type
+              </p>
+            </div>
+
             <div className="mt-8 space-y-4">
               <button
-                onClick={() => handleRoleSelect("customer")}
-                className="w-full py-3 px-4 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#8fa9b8] transition duration-300"
+                onClick={() => handleRoleSelect('customer')}
+                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#A2B9C6] hover:bg-[#8fa9b8] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#A2B9C6]"
               >
                 I'm a Customer
               </button>
               <button
-                onClick={() => handleRoleSelect("business")}
-                className="w-full py-3 px-4 bg-[#FADADD] text-[#4A4A4A] rounded-lg hover:bg-[#f0c8cc] transition duration-300"
+
+
+                onClick={() => handleRoleSelect('business')}
+                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#A2B9C6] hover:bg-[#8fa9b8] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#A2B9C6]"
+
               >
                 I'm a Business
               </button>
@@ -164,11 +170,16 @@ const SignupPage = () => {
   return (
     <div className="font-sans bg-[#F8F8F8] min-h-screen flex flex-col">
       <Navbar />
-      <div className="flex-grow flex items-center justify-center">
+
+      <div className="min-h-screen flex items-center justify-center bg-[#F8F8F8] py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
-          <h2 className="text-center text-3xl font-extrabold text-[#4A4A4A]">
-            Create your {role} account
-          </h2>
+          <div>
+            <h2 className="text-center text-2xl font-medium text-[#4A4A4A]">
+              Create your {role} account
+            </h2>
+          </div>
+
+
           {error && (
             <div
               className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
@@ -178,89 +189,121 @@ const SignupPage = () => {
             </div>
           )}
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-            <div className="space-y-4">
-              <input
-                name="firstName"
-                type="text"
-                required
-                className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-                placeholder="First Name"
-                value={formData.firstName}
-                onChange={handleChange}
-              />
-              <input
-                name="lastName"
-                type="text"
-                required
-                className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-                placeholder="Last Name"
-                value={formData.lastName}
-                onChange={handleChange}
-              />
-              <input
-                name="email"
-                type="email"
-                required
-                className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-                placeholder="Email address"
-                value={formData.email}
-                onChange={handleChange}
-              />
-              {role === "business" && (
+
+            <div className="rounded-md shadow-sm -space-y-px">
+              <div>
+                <input
+                  name="firstName"
+                  type="text"
+                  required
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-[#E0E0E0] placeholder-[#4A4A4A]/60 text-[#4A4A4A] rounded-t-md focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] sm:text-sm"
+                  placeholder="First Name"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <input
+                  name="lastName"
+                  type="text"
+                  required
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-[#E0E0E0] placeholder-[#4A4A4A]/60 text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] sm:text-sm"
+                  placeholder="Last Name"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <input
+                  name="email"
+                  type="email"
+                  required
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-[#E0E0E0] placeholder-[#4A4A4A]/60 text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] sm:text-sm"
+                  placeholder="Email address"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+              </div>
+              {role === 'business' && (
                 <>
-                  <input
-                    name="businessName"
-                    type="text"
-                    required
-                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-                    placeholder="Business Name"
-                    value={formData.businessName}
-                    onChange={handleChange}
-                  />
-                  <input
-                    name="address"
-                    type="text"
-                    required
-                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-                    placeholder="Business Address"
-                    value={formData.address}
-                    onChange={handleChange}
-                  />
-                  <textarea
-                    name="description"
-                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-                    placeholder="Business Description"
-                    value={formData.description}
-                    onChange={handleChange}
-                  />
-                  <input
-                    name="phone"
-                    type="text"
-                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-                    placeholder="Phone Number (optional)"
-                    value={formData.phone}
-                    onChange={handleChange}
-                  />
+                  <div>
+                    <input
+                      name="businessName"
+                      type="text"
+                      required
+                      className="appearance-none rounded-none relative block w-full px-3 py-2 border border-[#E0E0E0] placeholder-[#4A4A4A]/60 text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] sm:text-sm"
+                      placeholder="Business Name"
+                      value={formData.businessName}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div>
+                    <input
+                      name="address"
+                      type="text"
+                      required
+                      className="appearance-none rounded-none relative block w-full px-3 py-2 border border-[#E0E0E0] placeholder-[#4A4A4A]/60 text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] sm:text-sm"
+                      placeholder="Business Address"
+                      value={formData.address}
+                      onChange={handleChange}
+                    />
+                  </div>
+                    <div>
+                    <input
+                      name="description"
+                      type="text"
+                      required
+                      className="appearance-none rounded-none relative block w-full px-3 py-2 border border-[#E0E0E0] placeholder-[#4A4A4A]/60 text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] sm:text-sm"
+                      placeholder="Business Description"
+                      value={formData.description}
+                      onChange={handleChange}
+                    />
+                  </div>
+                    <div>
+                    <input
+                      name="phone"
+                      type="text"
+                      required
+                      className="appearance-none rounded-none relative block w-full px-3 py-2 border border-[#E0E0E0] placeholder-[#4A4A4A]/60 text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] sm:text-sm"
+                      placeholder="Phone Number"
+                      value={formData.phone}
+                      onChange={handleChange}
+                    />
+                  </div>
                 </>
               )}
-              <input
-                name="password"
-                type="password"
-                required
-                className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-              <input
-                name="confirmPassword"
-                type="password"
-                required
-                className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-                placeholder="Confirm Password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-              />
+              <div>
+                <input
+                  name="password"
+                  type="password"
+                  required
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-[#E0E0E0] placeholder-[#4A4A4A]/60 text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] sm:text-sm"
+                  placeholder="Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <input
+                  name="confirmPassword"
+                  type="password"
+                  required
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-[#E0E0E0] placeholder-[#4A4A4A]/60 text-[#4A4A4A] rounded-b-md focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] sm:text-sm"
+                  placeholder="Confirm Password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            <div>
+              <button
+                type="submit"
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#A2B9C6] hover:bg-[#8fa9b8] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#A2B9C6]"
+              >
+                Sign up
+              </button>
+
             </div>
             <button
               type="submit"
@@ -270,10 +313,9 @@ const SignupPage = () => {
             </button>
           </form>
           <div className="text-center">
-            <Link
-              to="/login"
-              className="text-sm text-[#A2B9C6] hover:text-[#8fa9b8] transition duration-300"
-            >
+
+            <Link to="/login" className="text-sm text-[#A2B9C6] hover:underline hover:text-[#8fa9b8]">
+
               Already have an account? Sign in
             </Link>
           </div>

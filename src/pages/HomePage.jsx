@@ -1,158 +1,248 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
+import { FaSearch, FaTimes, FaLanguage, FaFilter } from "react-icons/fa";
+import { FiFacebook, FiInstagram, } from "react-icons/fi";
 
 // API base URL from environment variables, fallback to localhost if not set
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 const Homepage = () => {
-  // State management for search functionality
-  const [searchTerm, setSearchTerm] = useState(''); // Store the search input value
-  const [loading, setLoading] = useState(false);    // Track loading state during API calls
-  const [searchResults, setSearchResults] = useState(null); // Store search results (null means no search performed)
-  const [error, setError] = useState('');           // Store any error messages
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showLanguageSearch, setShowLanguageSearch] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [languages, setLanguages] = useState([]);
+  const [error, setError] = useState('');
 
-  // Handle the search functionality
+  // Fetch languages from backend
+  useEffect(() => {
+    const fetchLanguages = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/api/services/languages`);
+        setLanguages(response.data);
+      } catch (err) {
+        console.error('Failed to fetch languages:', err);
+        setError('Failed to load languages');
+      }
+    };
+    fetchLanguages();
+  }, []);
+
   const handleSearch = async () => {
-    // Don't search if the search term is empty or only whitespace
-    if (!searchTerm.trim()) return;
-
-    try {
-      setLoading(true); // Show loading state
-      setError('');     // Clear any previous errors
-
-      // Make API call to search endpoint with URL-encoded search term
-      const response = await axios.get(`${API_URL}/api/services/search?query=${encodeURIComponent(searchTerm)}`);
-      setSearchResults(response.data);
-    } catch (err) {
-      setError('Failed to fetch services. Please try again.');
-      console.error('Search error:', err);
-    } finally {
-      setLoading(false); // Hide loading state regardless of success/failure
-    }
+    const params = new URLSearchParams({
+      filterType: selectedLanguage ? 'language' : 'service',
+      ...(searchTerm && { query: searchTerm }),
+      ...(selectedLanguage && { language: selectedLanguage })
+    });
+    
+    // Navigate to search results page with the search parameters
+    navigate(`/search?${params.toString()}`);
   };
 
-  // Handle Enter key press in search input
+  // Trigger search on pressing Enter
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSearch();
     }
   };
 
+  const clearSearch = () => {
+    setSearchTerm('');
+    setSelectedLanguage('');
+    setShowLanguageSearch(false);
+  };
+
+  // Toggle filter dropdown for mobile view
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
+  };
+
   return (
     <div className="font-sans leading-relaxed text-[#4A4A4A] bg-white min-h-screen">
-      {/* Header */}
+      {/* Header Section */}
       <header className="p-4 bg-[#eeeeee] flex justify-between items-center shadow-sm">
-        <img src="/src/assets/logo.png" alt="VivaHub Logo" className="h-10"/>
-        <Link to="/login" className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded-lg text-sm hover:bg-[#A2B9C6] hover:text-white transition duration-300">
+        <Link to="/" className="flex items-center">
+          <img src="/logo.png" alt="VivaHub Logo" className="h-10" />
+        </Link>
+        <div className="hidden md:flex space-x-4">
+          <Link to="/filter/hair" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Hair</Link>
+          <Link to="/filter/nails" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Nails</Link>
+          <Link to="/filter/spa" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Spa</Link>
+          <Link to="/filter/makeup" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Makeup</Link>
+          <Link to="/filter/facials" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Facials</Link>
+          <Link to="/filter/waxing" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Waxing</Link>
+          <Link to="/filter/massage" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Massage</Link>
+          <Link to="/filter/language" className="text-[#4A4A4A] hover:text-[#A2B9C6]">Language</Link>
+        </div>
+        <div className="md:hidden relative">
+          <button
+            onClick={toggleFilters}
+            className="text-[#4A4A4A] hover:text-[#A2B9C6] transition duration-300"
+          >
+            <FaFilter size={20} />
+          </button>
+          {showFilters && (
+            <div className="absolute top-10 right-0 w-48 bg-white shadow-lg z-10 p-4 rounded-lg">
+              <div className="flex flex-col space-y-2">
+                <Link to="/filter/hair" className="text-[#4A4A4A] hover:text-[#A2B9C6]" onClick={() => setShowFilters(false)}>Hair</Link>
+                <Link to="/filter/nails" className="text-[#4A4A4A] hover:text-[#A2B9C6]" onClick={() => setShowFilters(false)}>Nails</Link>
+                <Link to="/filter/spa" className="text-[#4A4A4A] hover:text-[#A2B9C6]" onClick={() => setShowFilters(false)}>Spa</Link>
+                <Link to="/filter/makeup" className="text-[#4A4A4A] hover:text-[#A2B9C6]" onClick={() => setShowFilters(false)}>Makeup</Link>
+                <Link to="/filter/facials" className="text-[#4A4A4A] hover:text-[#A2B9C6]" onClick={() => setShowFilters(false)}>Facials</Link>
+                <Link to="/filter/waxing" className="text-[#4A4A4A] hover:text-[#A2B9C6]" onClick={() => setShowFilters(false)}>Waxing</Link>
+                <Link to="/filter/massage" className="text-[#4A4A4A] hover:text-[#A2B9C6]" onClick={() => setShowFilters(false)}>Massage</Link>
+              </div>
+            </div>
+          )}
+        </div>
+        <Link
+          to="/login"
+          className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded-lg text-sm hover:bg-[#A2B9C6] hover:text-white transition duration-300"
+        >
           Log In
         </Link>
       </header>
 
       {/* Hero Section */}
-      <section className="py-10 px-5 bg-white text-center">
-        <h1 className="text-3xl font-light mb-4 text-[#4A4A4A]">
-          Book Your Perfect Salon Experience
-        </h1>
-        <p className="max-w-2xl mx-auto text-[#4A4A4A]/80 mb-8">
-          Discover top-rated salons and book beauty services with ease
-        </p>
-      </section>
-
-      {/* Search Bar Section */}
-      <section className="my-5 px-5 max-w-4xl mx-auto">
-        <div className="flex flex-col gap-3 md:flex-row">
-          {/* Search input field */}
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Search for services (e.g., haircut, manicure, massage)..."
-            className="flex-grow p-3 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-          />
-          {/* Search button with loading state */}
-          <button
-            onClick={handleSearch}
-            disabled={loading}
-            className="p-3 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#8fa9b8] transition duration-300 md:px-6 disabled:opacity-50"
-          >
-            {loading ? 'Searching...' : 'Search'}
-          </button>
-        </div>
-        {/* Error message display */}
-        {error && (
-          <div className="mt-3 text-red-500 text-sm text-center">
-            {error}
-          </div>
-        )}
-      </section>
-
-      {/* Services Section - Shows either search results or featured salons */}
-      <section className="py-10 px-5 bg-[#F8F8F8]">
-        <h2 className="text-xl font-medium mb-6 text-[#4A4A4A] text-center">
-          {searchResults ? 'Search Results' : 'Featured Salons'}
-        </h2>
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
-          {searchResults ? (
-            searchResults.length > 0 ? (
-              // Map through search results if any found
-              searchResults.map((service) => (
-                <div
-                  key={service._id}
-                  className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition duration-300 border border-[#E0E0E0]"
-                >
-                  <img
-                    src={service.image || `https://via.placeholder.com/400x300?text=${encodeURIComponent(service.name)}`}
-                    alt={service.name}
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="p-4">
-                    <h3 className="font-medium text-lg mb-1">{service.name}</h3>
-                    <p className="text-sm text-[#4A4A4A]/80 mb-3">{service.description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium text-[#4A4A4A]">${service.price}</span>
-                      <button className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded hover:bg-[#f0c8cc] transition duration-300">
-                        Book Now
+      <section className="h-[500px] bg-cover bg-no-repeat bg-center bg-contain bg-left flex bg-none md:bg-[url('/background-comb.png')]">
+        <div className="hidden md:flex flex-1"></div>
+        <div className="flex-1 flex flex-col justify-center items-start px-5">
+          <h1 className="text-3xl font-light mb-4 text-[#4A4A4A]">Book Your Perfect Salon Experience</h1>
+          <p className="text-[#4A4A4A]/80 mb-8">Discover top-rated salons and book beauty services with ease</p>
+          
+          <div className="w-full max-w-4xl">
+            {/* Search Section */}
+            <div className="mb-6 bg-white p-4 rounded-lg shadow-sm">
+              <div className="flex flex-col gap-4">
+                {/* Search Bar */}
+                <div className="w-full">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder={selectedLanguage ? `Search services in ${selectedLanguage}...` : "Search for services or salons..."}
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      className="w-full p-3 pl-10 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6]"
+                    />
+                    <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    {(searchTerm || selectedLanguage) && (
+                      <button
+                        onClick={clearSearch}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      >
+                        <FaTimes />
                       </button>
-                    </div>
+                    )}
                   </div>
                 </div>
-              ))
-            ) : (
-              // Show "no results" message when search returns empty
-              <div className="col-span-3 text-center py-8 text-gray-500">
-                No services found matching your search. Try different keywords.
-              </div>
-            )
-          ) : (
-            // Show featured salons when no search has been performed
-            [1, 2, 3, 4, 5, 6].map((salon) => (
-              <div
-                key={salon}
-                className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition duration-300 border border-[#E0E0E0]"
-              >
-                <img
-                  src={`https://via.placeholder.com/400x300?text=Salon+${salon}`}
-                  alt={`Salon ${salon}`}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-4">
-                  <h3 className="font-medium text-lg mb-1">Luxe Beauty Salon #{salon}</h3>
-                  <div className="flex items-center mb-2">
-                    <span className="text-[#FADADD]">★★★★☆</span>
-                    <span className="text-sm text-[#4A4A4A]/60 ml-2">(24 reviews)</span>
-                  </div>
-                  <p className="text-sm text-[#4A4A4A]/80 mb-3">Hair • Nails • Spa</p>
-                  <button className="w-full py-2 bg-[#FADADD] text-[#4A4A4A] rounded hover:bg-[#f0c8cc] transition duration-300">
-                    Book Now
+
+                {/* Language Search Link */}
+                <div className="flex justify-between items-center">
+                  <button
+                    onClick={() => setShowLanguageSearch(!showLanguageSearch)}
+                    className="text-[#A2B9C6] hover:text-[#91A7B4] text-sm flex items-center gap-2"
+                  >
+                    <FaLanguage />
+                    Search by language
+                  </button>
+                  <button
+                    onClick={handleSearch}
+                    className="px-6 py-2 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#91A7B4] transition duration-300"
+                  >
+                    Search
                   </button>
                 </div>
+
+                {/* Language Search Dropdown */}
+                {showLanguageSearch && (
+                  <div className="relative mt-2">
+                    <input
+                      type="text"
+                      placeholder="Type to search languages..."
+                      value={selectedLanguage}
+                      onChange={(e) => setSelectedLanguage(e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6]"
+                    />
+                    {selectedLanguage && (
+                      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                        {languages.filter(lang => 
+                          lang.name.toLowerCase().includes(selectedLanguage.toLowerCase())
+                        ).map(lang => (
+                          <button
+                            key={lang.code}
+                            onClick={() => {
+                              setSelectedLanguage(lang.code);
+                              setShowLanguageSearch(false);
+                              handleSearch();
+                            }}
+                            className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center"
+                          >
+                            <img 
+                              src={`https://flagcdn.com/w20/${lang.country}.png`}
+                              alt={lang.name}
+                              className="w-5 h-4 mr-2"
+                            />
+                            {lang.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
-            ))
+            </div>
+          </div>
+          
+          {error && (
+            <div className="mt-3 text-red-500 text-sm text-center">
+              {error}
+            </div>
           )}
         </div>
       </section>
+
+      {/* Special Offers Section */}
+<section className="py-10 px-5 bg-[#F8F8F8]">
+  <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="bg-white p-6 rounded-lg shadow-sm text-center">
+    <img
+        src="coupon.png"
+        alt="Discount Coupon"
+        className="mx-auto mb-4 w-48 h-48 object-contain"
+      />
+      <h3 className="text-lg font-medium text-[#4A4A4A] mb-2">Get a Special Discount</h3>
+      <p className="text-sm text-[#4A4A4A]/80 mb-4">
+        Claim your exclusive discount coupon for your next salon visit.
+      </p>
+      <Link
+        to="/special-offers"
+        className="px-6 py-2 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#91A7B4] transition duration-300"
+      >
+        Claim Now
+      </Link>
+    </div>
+    <div className="bg-white p-6 rounded-lg shadow-sm text-center">
+    <img
+      src="nails1.png"
+      alt="Top Rated Salons"
+      className="mx-auto mb-4 w-48 h-48 object-contain"
+      />
+      <h3 className="text-lg font-medium text-[#4A4A4A] mb-2">Top Rated Salons</h3>
+      <p className="text-sm text-[#4A4A4A]/80 mb-4">
+        Explore the highest-rated salons in your area and book today.
+      </p>
+      <Link
+        to="/filter/top-rated"
+        className="px-6 py-2 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#91A7B4] transition duration-300"
+      >
+        View Salons
+      </Link>
+    </div>
+  </div>
+</section>
 
       {/* Testimonials Section */}
       <section className="py-10 px-5 bg-white">
@@ -161,20 +251,20 @@ const Homepage = () => {
         </h2>
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
           {[
-            { 
-              text: "The booking process was seamless and the salon exceeded my expectations!", 
-              author: "Emma S.", 
-              rating: 5 
+            {
+              text: "The booking process was seamless and the salon exceeded my expectations!",
+              author: "Emma S.",
+              rating: 5
             },
-            { 
-              text: "I love how easy VivaHub makes it to find quality salons in my area.", 
-              author: "Michael T.", 
-              rating: 4 
+            {
+              text: "I love how easy VivaHub makes it to find quality salons in my area.",
+              author: "Michael T.",
+              rating: 4
             },
-            { 
-              text: "Professional services every time. Highly recommend to anyone looking for beauty services.", 
-              author: "Sarah L.", 
-              rating: 5 
+            {
+              text: "Professional services every time. Highly recommend to anyone looking for beauty services.",
+              author: "Sarah L.",
+              rating: 5
             }
           ].map((review, index) => (
             <div
@@ -193,18 +283,114 @@ const Homepage = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* Call-to-Action Section */}
       <section className="py-12 px-5 bg-[#A2B9C6] text-white text-center">
         <h2 className="text-2xl font-light mb-4">Ready to Book Your Next Appointment?</h2>
         <p className="max-w-2xl mx-auto mb-6 opacity-90">
           Join thousands of satisfied customers using VivaHub
         </p>
-        <button className="px-6 py-3 bg-white text-[#4A4A4A] rounded-lg hover:bg-[#FADADD] transition duration-300">
-          Sign Up Now
-        </button>
+        <Link to="/signup">
+          <button className="px-6 py-3 bg-white text-[#4A4A4A] rounded-lg hover:bg-[#FADADD] transition duration-300">
+            Sign Up Now
+          </button>
+        </Link>
       </section>
 
-      {/* Footer */}
+      {/* About the App Section */}
+<section className="py-10 px-5 bg-white">
+  <div className="max-w-6xl mx-auto text-center">
+    <h2 className="text-xl font-medium text-[#4A4A4A] mb-6">Why Choose VivaHub?</h2>
+    <p className="text-[#4A4A4A]/80 mb-8">
+      VivaHub is your one-stop platform for discovering and booking top-rated salons. 
+      Enjoy seamless booking, exclusive discounts, and access to the best beauty services in your area.
+    </p>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="bg-[#F8F8F8] p-6 rounded-lg shadow-sm">
+        <img src="beauty-salon-pink.png" alt="Feature 1" className="mx-auto mb-4" />
+        <h3 className="text-lg font-medium text-[#4A4A4A] mb-2">Discover Top Salons</h3>
+        <p className="text-sm text-[#4A4A4A]/80">
+          Find the best salons near you with verified reviews and ratings.
+        </p>
+      </div>
+      <div className="bg-[#F8F8F8] p-6 rounded-lg shadow-sm">
+        <img src="discount.png" alt="Feature 2" className="mx-auto mb-4" />
+        <h3 className="text-lg font-medium text-[#4A4A4A] mb-2">Exclusive Discounts</h3>
+        <p className="text-sm text-[#4A4A4A]/80">
+          Enjoy special offers and discounts on your favorite services.
+        </p>
+      </div>
+      <div className="bg-[#F8F8F8] p-6 rounded-lg shadow-sm">
+        <img src="computer.png" alt="Feature 3" className="mx-auto mb-4" />
+        <h3 className="text-lg font-medium text-[#4A4A4A] mb-2">Easy Booking</h3>
+        <p className="text-sm text-[#4A4A4A]/80">
+          Book your appointments in just a few clicks, anytime, anywhere.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{/* For Business Owners Section */}
+<section className="py-10 px-5 bg-white">
+  <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 items-center">
+    {/* Left Side: Text Content */}
+    <div className="text-center md:text-left flex flex-col justify-center">
+      <h2 className="text-xl font-medium text-[#4A4A4A] mb-6">Are You a Salon Owner?</h2>
+      <p className="text-[#4A4A4A]/80 mb-8">
+        Join VivaHub and grow your business by reaching thousands of potential customers. 
+        Showcase your services, manage bookings, and increase your revenue.
+        <br />
+        <br />
+        <Link
+        to="/signup"
+        className="px-4 py-2 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#91A7B4] transition duration-300"
+      >
+        Partner with Us
+      </Link>
+      </p>
+     
+    </div>
+
+    {/* Right Side: Regular Image */}
+    <div className="flex justify-center">
+      <img
+        src="business-owner1.jpg"
+        alt="Business Owner"
+        className="w-full max-w-sm"
+      />
+    </div>
+  </div>
+</section>
+
+{/* Social Media Links Section */}
+<section className="py-12 px-5 bg-[#F8F8F8]">
+  <div className="max-w-6xl mx-auto text-center">
+    <h2 className="text-xl font-medium text-[#4A4A4A] mb-6">Follow Us on Social Media</h2>
+    <p className="text-[#4A4A4A]/80 mb-8 max-w-2xl mx-auto">
+    Stay updated with the latest news, offers, and beauty tips from VivaHub.
+    </p>
+    <div className="flex justify-center space-x-4">
+      <a
+        href="https://facebook.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="p-3 text-[#4A4A4A] hover:text-[#A2B9C6] transition duration-300 border border-[#E0E0E0] rounded-full hover:border-[#A2B9C6]"
+      >
+        <FiFacebook size={22} />
+      </a>
+      <a
+        href="https://instagram.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="p-3 text-[#4A4A4A] hover:text-[#A2B9C6] transition duration-300 border border-[#E0E0E0] rounded-full hover:border-[#A2B9C6]"
+      >
+        <FiInstagram size={22} />
+      </a>
+    </div>
+  </div>
+</section>
+
+      {/* Footer Section */}
       <footer className="py-8 px-5 bg-[#4A4A4A] text-white">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>

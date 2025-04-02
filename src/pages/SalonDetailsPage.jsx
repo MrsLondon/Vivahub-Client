@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import StarRating from "../components/StarRating";
 
 const SalonDetailsPage = () => {
   const { salonId } = useParams();
   const navigate = useNavigate();
   const [salon, setSalon] = useState(null);
-  const [reviews, setReviews] = useState([]); // State to store reviews
+  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -37,7 +37,7 @@ const SalonDetailsPage = () => {
         );
         if (response.ok) {
           const data = await response.json();
-          setReviews(data); // Store reviews in state
+          setReviews(data);
         } else {
           console.error("Failed to fetch reviews");
         }
@@ -57,13 +57,9 @@ const SalonDetailsPage = () => {
     <div className="font-sans leading-relaxed text-[#4A4A4A] bg-white min-h-screen flex flex-col">
       {/* Header */}
       <header className="p-4 bg-[#eeeeee] flex justify-between items-center shadow-sm">
-        <img src="/src/assets/logo.png" alt="VivaHub Logo" className="h-10" />
-        <button
-          onClick={() => navigate("/")}
-          className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded-lg text-sm hover:bg-[#A2B9C6] hover:text-white transition duration-300"
-        >
-          Back to Home
-        </button>
+        <Link to="/">
+          <img src="/src/assets/logo.png" alt="VivaHub Logo" className="h-10" />
+        </Link>
       </header>
 
       {/* Salon Details Section */}
@@ -76,8 +72,22 @@ const SalonDetailsPage = () => {
           <p className="text-sm text-[#4A4A4A]/60 mb-1">
             <strong>Address:</strong> {salon.location}
           </p>
-          <p className="text-sm text-[#4A4A4A]/60 mb-6">
+          <p className="text-sm text-[#4A4A4A]/60 mb-1">
             <strong>Contact:</strong> {salon.phone}
+          </p>
+          <p className="text-sm text-[#4A4A4A]/60 mb-6">
+            <strong>Opening Hours:</strong>
+            {salon.openingHours ? (
+              <ul className="mt-2">
+                {Object.entries(salon.openingHours).map(([day, hours]) => (
+                  <li key={day} className="text-sm text-[#4A4A4A]/80">
+                    <strong>{day.charAt(0).toUpperCase() + day.slice(1)}:</strong> {hours}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              " Not available"
+            )}
           </p>
         </div>
       </section>
@@ -121,8 +131,18 @@ const SalonDetailsPage = () => {
         </div>
       </section>
 
-      {/* Customer Reviews Section */}
+      {/* Google Maps Placeholder Section */}
       <section className="py-10 px-5 bg-white">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-xl font-medium text-[#4A4A4A] mb-6">Location</h2>
+          <div className="w-full h-64 bg-gray-200 flex items-center justify-center">
+            <p className="text-gray-500">Google Maps Placeholder</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Customer Reviews Section */}
+      <section className="py-10 px-5 bg-[#F8F8F8]">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-xl font-medium text-[#4A4A4A] mb-6">
             Customer Reviews
@@ -150,6 +170,69 @@ const SalonDetailsPage = () => {
           ) : (
             <p className="text-center text-[#4A4A4A]/60">
               No reviews available for this salon.
+            </p>
+          )}
+        </div>
+      </section>
+
+      {/* Meet the Staff Section */}
+      <section className="py-10 px-5 bg-white">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-xl font-medium text-[#4A4A4A] mb-6">Meet the Staff</h2>
+          {salon.staff && salon.staff.length > 0 ? (
+            <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {salon.staff.map((member) => (
+                <li
+                  key={member._id}
+                  className="bg-[#F8F8F8] p-5 rounded-lg shadow-sm border border-[#E0E0E0] hover:shadow-md transition duration-300"
+                >
+                  <h3 className="text-lg font-medium text-[#4A4A4A] mb-2">
+                    {member.name}
+                  </h3>
+                  <p className="text-sm text-[#4A4A4A]/80 mb-2">
+                    <strong>Role:</strong> {member.role}
+                  </p>
+                  <p className="text-sm text-[#4A4A4A]/80">{member.bio}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-center text-[#4A4A4A]/60">
+              No staff information available.
+            </p>
+          )}
+        </div>
+      </section>
+
+      {/* Nearby Salons Section */}
+      <section className="py-10 px-5 bg-[#F8F8F8]">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-xl font-medium text-[#4A4A4A] mb-6">Nearby Salons</h2>
+          {salon.nearbySalons && salon.nearbySalons.length > 0 ? (
+            <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {salon.nearbySalons.map((nearbySalon) => (
+                <li
+                  key={nearbySalon._id}
+                  className="bg-white rounded-lg shadow-sm p-5 border border-[#E0E0E0] hover:shadow-md transition duration-300"
+                >
+                  <h3 className="text-lg font-medium text-[#4A4A4A] mb-2">
+                    {nearbySalon.name}
+                  </h3>
+                  <p className="text-sm text-[#4A4A4A]/80 mb-2">
+                    {nearbySalon.location}
+                  </p>
+                  <Link
+                    to={`/salon/${nearbySalon._id}`}
+                    className="text-sm text-[#A2B9C6] hover:underline"
+                  >
+                    View Details
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-center text-[#4A4A4A]/60">
+              No nearby salons available.
             </p>
           )}
         </div>

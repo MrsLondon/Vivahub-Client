@@ -2,23 +2,25 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
 import axios from "axios";
 import Navbar from "../components/Navbar";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
 const CustomerDashboard = () => {
   const { user } = useAuth();
-  //console.log("User object:", user);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedBooking, setSelectedBooking] = useState(null); // selected booking for rescheduling
-  const [newDate, setNewDate] = useState(""); // New date
-  const [newTime, setNewTime] = useState(""); // New time
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [newDate, setNewDate] = useState("");
+  const [newTime, setNewTime] = useState("");
+  const [bookingToCancel, setBookingToCancel] = useState(null);
 
   const handleRescheduleBooking = async () => {
     console.log("Selected Booking:", selectedBooking);
     if (!newDate || !newTime) {
-      alert("Please select a new date and time.");
+      toast.warning("Please select a new date and time");
       return;
     }
 
@@ -35,40 +37,42 @@ const CustomerDashboard = () => {
 
       console.log("Updated Booking:", response.data.booking);
 
-      // update the bookings state with the new booking data
       setBookings((prevBookings) =>
         prevBookings.map((booking) =>
           booking._id === selectedBooking._id ? response.data.booking : booking
         )
       );
 
-      alert("Booking rescheduled successfully.");
+      toast.success("Booking rescheduled successfully");
       setSelectedBooking(null);
     } catch (error) {
       console.error("Error rescheduling booking:", error);
-      alert("Failed to reschedule booking. Please try again.");
+      toast.error("Failed to reschedule booking");
     }
   };
 
   const openRescheduleModal = (booking) => {
     setSelectedBooking(booking);
-    setNewDate(""); // clear previous date
-    setNewTime(""); // clear previous time
+    setNewDate("");
+    setNewTime("");
   };
 
   const closeRescheduleModal = () => {
     setSelectedBooking(null);
   };
 
-  const handleCancelBooking = async (bookingId) => {
-    if (!window.confirm("Are you sure you want to cancel this booking?")) {
-      return;
-    }
+  const openCancelConfirmation = (bookingId) => {
+    setBookingToCancel(bookingId);
+  };
 
+  const closeCancelConfirmation = () => {
+    setBookingToCancel(null);
+  };
+
+  const handleCancelBooking = async () => {
     try {
-      // Make the API call to cancel the booking
       await axios.delete(
-        `${API_URL}/api/canceledBookings/cancel/${bookingId}`,
+        `${API_URL}/api/canceledBookings/cancel/${bookingToCancel}`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
@@ -76,15 +80,15 @@ const CustomerDashboard = () => {
         }
       );
 
-      // Update the bookings state to remove the canceled booking
       setBookings((prevBookings) =>
-        prevBookings.filter((booking) => booking._id !== bookingId)
+        prevBookings.filter((booking) => booking._id !== bookingToCancel)
       );
 
-      alert("Booking canceled successfully.");
+      toast.success("Booking canceled successfully");
+      setBookingToCancel(null);
     } catch (error) {
       console.error("Error canceling booking:", error);
-      alert("Failed to cancel booking. Please try again.");
+      toast.error("Failed to cancel booking");
     }
   };
 
@@ -99,7 +103,7 @@ const CustomerDashboard = () => {
           })
           .catch((err) => {
             if (err.response?.status === 404) {
-              return { data: [] }; // Return empty array if no bookings found
+              return { data: [] };
             }
             throw err;
           });
@@ -109,6 +113,7 @@ const CustomerDashboard = () => {
         if (!err.response || err.response.status !== 404) {
           setError("Failed to fetch bookings");
           console.error("Error fetching bookings:", err);
+          toast.error("Failed to fetch bookings");
         }
       } finally {
         setLoading(false);
@@ -139,13 +144,25 @@ const CustomerDashboard = () => {
   return (
     <>
       <Navbar />
-      {/* Reschedule */}
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={true}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
+      
+      {/* Reschedule Modal */}
       {selectedBooking && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
             <h2 className="text-lg font-semibold mb-4">Reschedule Booking</h2>
             <form>
-              {/* Select new date */}
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
                   New Date
@@ -158,7 +175,6 @@ const CustomerDashboard = () => {
                 />
               </div>
 
-              {/* New time */}
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
                   New Time
@@ -171,7 +187,6 @@ const CustomerDashboard = () => {
                 />
               </div>
 
-              {/* Action button */}
               <div className="flex justify-end space-x-4">
                 <button
                   type="button"
@@ -192,6 +207,31 @@ const CustomerDashboard = () => {
           </div>
         </div>
       )}
+
+      {/* Cancel Confirmation Modal */}
+      {bookingToCancel && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-lg font-semibold mb-4">Confirm Cancellation</h2>
+            <p className="mb-6">Are you sure you want to cancel this booking?</p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={closeCancelConfirmation}
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-400"
+              >
+                No, Keep It
+              </button>
+              <button
+                onClick={handleCancelBooking}
+                className="px-4 py-2 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600"
+              >
+                Yes, Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white shadow-sm rounded-lg">
           <div className="px-4 py-5 sm:p-6">
@@ -199,7 +239,6 @@ const CustomerDashboard = () => {
               Welcome, {user.firstName}!
             </h1>
 
-            {/* User Profile Section */}
             <div className="bg-gray-50 p-4 rounded-lg mb-6">
               <h2 className="text-lg font-semibold text-gray-700 mb-2">
                 Your Profile
@@ -218,7 +257,6 @@ const CustomerDashboard = () => {
               </div>
             </div>
 
-            {/* Bookings Section */}
             <div>
               <h2 className="text-lg font-semibold text-gray-700 mb-4">
                 Your Bookings
@@ -284,7 +322,6 @@ const CustomerDashboard = () => {
                           </td>
 
                           <td className="px-6 py-4 whitespace-nowrap text-center">
-                            {/* Show the butoons based on the booking status */}
                             {booking.bookingStatus === "Pending" ? (
                               <div className="flex justify-center items-center space-x-4">
                                 <button
@@ -294,9 +331,7 @@ const CustomerDashboard = () => {
                                   Reschedule
                                 </button>
                                 <button
-                                  onClick={() =>
-                                    handleCancelBooking(booking._id)
-                                  }
+                                  onClick={() => openCancelConfirmation(booking._id)}
                                   className="px-4 py-2 bg-[#A2B9C6] text-white rounded-lg text-sm hover:bg-[#FADADD] hover:text-[#4A4A4A] transition duration-300"
                                 >
                                   Cancel
