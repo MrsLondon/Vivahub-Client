@@ -296,15 +296,7 @@ const SignupPage = () => {
               </div>
             </div>
 
-            <div>
-              <button
-                type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#A2B9C6] hover:bg-[#8fa9b8] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#A2B9C6]"
-              >
-                Sign up
-              </button>
-
-            </div>
+  
             <button
               type="submit"
               className="w-full py-3 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#8fa9b8] transition duration-300"
