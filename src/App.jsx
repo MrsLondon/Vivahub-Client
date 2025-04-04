@@ -1,22 +1,21 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import './App.css'
-import Homepage from './pages/HomePage'
-import LoginPage from './pages/LoginPage'
-import SignupPage from './pages/SignupPage'
-import UnauthorizedPage from './pages/UnauthorizedPage'
-import CustomerDashboard from './pages/CustomerDashboard'
-import BusinessDashboard from './pages/BusinessDashboard'
-import ProtectedRoute from './components/ProtectedRoute'
-import AuthProvider from './context/AuthContext'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import "./App.css";
+import Homepage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
+import UnauthorizedPage from "./pages/UnauthorizedPage";
+import CustomerDashboard from "./pages/CustomerDashboard";
+import BusinessDashboard from "./pages/BusinessDashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AuthProvider from "./context/AuthContext";
 import SalonDetailsPage from "./pages/SalonDetailsPage";
-import SearchResults from './pages/SearchResults';
-import { ThemeProvider } from './context/ThemeContext'
+import SearchResults from "./pages/SearchResults";
+import { ThemeProvider } from "./context/ThemeContext";
 
 const App = () => {
   return (
     <ThemeProvider>
-    <AuthProvider>
-      <Router>
+      <AuthProvider>
         <Routes>
           <Route path="/" element={<Homepage />} />
           <Route path="/salon/:salonId" element={<SalonDetailsPage />} />
@@ -27,7 +26,7 @@ const App = () => {
           <Route
             path="/customer-dashboard"
             element={
-              <ProtectedRoute allowedRoles={['customer']}>
+              <ProtectedRoute allowedRoles={["customer"]}>
                 <CustomerDashboard />
               </ProtectedRoute>
             }
@@ -35,16 +34,15 @@ const App = () => {
           <Route
             path="/business-dashboard"
             element={
-              <ProtectedRoute allowedRoles={['business']}>
+              <ProtectedRoute allowedRoles={["business"]}>
                 <BusinessDashboard />
               </ProtectedRoute>
             }
           />
         </Routes>
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 };
 
-export default App
+export default App;
