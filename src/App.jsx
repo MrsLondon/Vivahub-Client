@@ -1,3 +1,4 @@
+
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import Homepage from './pages/HomePage';
@@ -14,45 +15,37 @@ import Navbar from './components/Navbar';
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from './context/ThemeContext';
 
+
 const App = () => {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <Router>
-          <div className="min-h-screen bg-[#F8F8F8] dark:bg-gray-900">
-            <Navbar />
 
-            <Routes>
-              {/* Public routes */}
-              <Route path="/" element={<Homepage />} />
-              <Route path="/salon/:salonId" element={<SalonDetailsPage />} />
-              <Route path="/search" element={<SearchResults />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/signup" element={<SignupPage />} />
-              <Route path="/unauthorized" element={<UnauthorizedPage />} />
+        <Routes>
+          <Route path="/" element={<Homepage />} />
+          <Route path="/salon/:salonId" element={<SalonDetailsPage />} />
+          <Route path="/search" element={<SearchResults />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/unauthorized" element={<UnauthorizedPage />} />
+          <Route
+            path="/customer-dashboard"
+            element={
+              <ProtectedRoute allowedRoles={["customer"]}>
+                <CustomerDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/business-dashboard"
+            element={
+              <ProtectedRoute allowedRoles={["business"]}>
+                <BusinessDashboard />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
 
-              {/* Protected routes */}
-              <Route
-                path="/customer-dashboard"
-                element={
-                  <ProtectedRoute allowedRoles={['customer']}>
-                    <CustomerDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/business-dashboard"
-                element={
-                  <ProtectedRoute allowedRoles={['business']}>
-                    <BusinessDashboard />
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
-
-            <Toaster position="top-center" reverseOrder={false} />
-          </div>
-        </Router>
       </AuthProvider>
     </ThemeProvider>
   );
