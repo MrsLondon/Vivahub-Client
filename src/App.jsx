@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import './App.css'
 import Homepage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
@@ -23,48 +23,45 @@ import { Toaster } from 'react-hot-toast';
  */
 const App = () => {
   return (
-    <Router>
-      {/* Wrap entire app with AuthProvider for authentication context */}
-      <AuthProvider>
-        <div className="min-h-screen bg-[#F8F8F8]">
-          {/* Global navigation bar */}
-          <Navbar />
+    <AuthProvider>
+      <div className="min-h-screen bg-[#F8F8F8]">
+        {/* Global navigation bar */}
+        <Navbar />
+        
+        {/* Route configuration */}
+        <Routes>
+          {/* Public routes */}
+          <Route path="/" element={<Homepage />} />
+          <Route path="/salon/:salonId" element={<SalonDetailsPage />} />
+          <Route path="/search" element={<SearchResults />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/unauthorized" element={<UnauthorizedPage />} />
           
-          {/* Route configuration */}
-          <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<Homepage />} />
-            <Route path="/salon/:salonId" element={<SalonDetailsPage />} />
-            <Route path="/search" element={<SearchResults />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="/unauthorized" element={<UnauthorizedPage />} />
-            
-            {/* Protected routes with role-based access */}
-            <Route
-              path="/customer-dashboard"
-              element={
-                <ProtectedRoute allowedRoles={['customer']}>
-                  <CustomerDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/business-dashboard"
-              element={
-                <ProtectedRoute allowedRoles={['business']}>
-                  <BusinessDashboard />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-
-          {/* Global toast notifications */}
-          <Toaster position="top-center" />
-        </div>
-      </AuthProvider>
-    </Router>
+          {/* Protected routes with role-based access */}
+          <Route
+            path="/customer-dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['customer']}>
+                <CustomerDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/business-dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['business']}>
+                <BusinessDashboard />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+        
+        {/* Toast notification container */}
+        <Toaster position="top-center" reverseOrder={false} />
+      </div>
+    </AuthProvider>
   );
 };
 
-export default App
+export default App;
