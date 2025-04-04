@@ -12,6 +12,7 @@ import SalonDetailsPage from "./pages/SalonDetailsPage";
 import SearchResults from './pages/SearchResults';
 import Navbar from './components/Navbar';
 import { Toaster } from 'react-hot-toast';
+import { ThemeProvider } from './context/ThemeContext'
 
 /**
  * Main App component that sets up:
@@ -20,50 +21,52 @@ import { Toaster } from 'react-hot-toast';
  * 3. Global navigation with Navbar
  * 4. Protected routes for authenticated users
  * 5. Toast notifications system
+ * 6. Theme provider for light/dark mode
  */
 const App = () => {
   return (
-    <Router>
-      {/* Wrap entire app with AuthProvider for authentication context */}
+    <ThemeProvider>
       <AuthProvider>
-        <div className="min-h-screen bg-[#F8F8F8]">
-          {/* Global navigation bar */}
-          <Navbar />
-          
-          {/* Route configuration */}
-          <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<Homepage />} />
-            <Route path="/salon/:salonId" element={<SalonDetailsPage />} />
-            <Route path="/search" element={<SearchResults />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="/unauthorized" element={<UnauthorizedPage />} />
+        <Router>
+          <div className="min-h-screen bg-[#F8F8F8] dark:bg-gray-900">
+            {/* Global navigation bar */}
+            <Navbar />
             
-            {/* Protected routes with role-based access */}
-            <Route
-              path="/customer-dashboard"
-              element={
-                <ProtectedRoute allowedRoles={['customer']}>
-                  <CustomerDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/business-dashboard"
-              element={
-                <ProtectedRoute allowedRoles={['business']}>
-                  <BusinessDashboard />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
+            {/* Route configuration */}
+            <Routes>
+              {/* Public routes */}
+              <Route path="/" element={<Homepage />} />
+              <Route path="/salon/:salonId" element={<SalonDetailsPage />} />
+              <Route path="/search" element={<SearchResults />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/unauthorized" element={<UnauthorizedPage />} />
+              
+              {/* Protected routes with role-based access */}
+              <Route
+                path="/customer-dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={['customer']}>
+                    <CustomerDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/business-dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={['business']}>
+                    <BusinessDashboard />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
 
-          {/* Global toast notifications */}
-          <Toaster position="top-center" />
-        </div>
+            {/* Global toast notifications */}
+            <Toaster position="top-center" />
+          </div>
+        </Router>
       </AuthProvider>
-    </Router>
+    </ThemeProvider>
   );
 };
 
