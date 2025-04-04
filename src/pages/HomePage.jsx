@@ -19,10 +19,10 @@ const Homepage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showLanguageSearch, setShowLanguageSearch] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
   const [languages, setLanguages] = useState([]);
   const [error, setError] = useState('');
   const { theme, toggleTheme } = useTheme();
+  const [showFilters, setShowFilters] = useState(false);
 
   // Fetch languages from backend
   useEffect(() => {

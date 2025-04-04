@@ -1,21 +1,26 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import "./App.css";
-import Homepage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
-import SignupPage from "./pages/SignupPage";
-import UnauthorizedPage from "./pages/UnauthorizedPage";
-import CustomerDashboard from "./pages/CustomerDashboard";
-import BusinessDashboard from "./pages/BusinessDashboard";
-import ProtectedRoute from "./components/ProtectedRoute";
-import AuthProvider from "./context/AuthContext";
-import SalonDetailsPage from "./pages/SalonDetailsPage";
-import SearchResults from "./pages/SearchResults";
-import { ThemeProvider } from "./context/ThemeContext";
+
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './App.css';
+import Homepage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import UnauthorizedPage from './pages/UnauthorizedPage';
+import CustomerDashboard from './pages/CustomerDashboard';
+import BusinessDashboard from './pages/BusinessDashboard';
+import ProtectedRoute from './components/ProtectedRoute';
+import AuthProvider from './context/AuthContext';
+import SalonDetailsPage from './pages/SalonDetailsPage';
+import SearchResults from './pages/SearchResults';
+import Navbar from './components/Navbar';
+import { Toaster } from 'react-hot-toast';
+import { ThemeProvider } from './context/ThemeContext';
+
 
 const App = () => {
   return (
     <ThemeProvider>
       <AuthProvider>
+
         <Routes>
           <Route path="/" element={<Homepage />} />
           <Route path="/salon/:salonId" element={<SalonDetailsPage />} />
@@ -40,6 +45,7 @@ const App = () => {
             }
           />
         </Routes>
+
       </AuthProvider>
     </ThemeProvider>
   );
