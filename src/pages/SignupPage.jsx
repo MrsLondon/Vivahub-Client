@@ -1,6 +1,15 @@
 import { useState } from "react";
-import { Link, Navigate } from "react-router-dom";
-import api from "../services/api";
+import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
+
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 const SignupPage = () => {
   const [step, setStep] = useState("role"); // 'role', 'form'
@@ -27,7 +36,7 @@ const SignupPage = () => {
     },
   });
   const [error, setError] = useState("");
-  const [redirectToLogin, setRedirectToLogin] = useState(false);
+  const navigate = useNavigate();
 
   const handleRoleSelect = (selectedRole) => {
     setRole(selectedRole);
@@ -76,57 +85,41 @@ const SignupPage = () => {
         role: role,
       };
 
-      // Add business details if role is business
-      if (role === "business") {
-        signupData.businessDetails = {
-          businessName: formData.businessName,
-          address: formData.address,
-          description: formData.description,
-          phone: formData.phone,
-        };
-      }
-
       console.log("Signup data being sent:", signupData);
 
-      const userResponse = await api.post("/auth/register", signupData);
+      const userResponse = await api.post("/api/auth/register", signupData);
       console.log("Signup successful:", userResponse.data);
 
       // If the role is business, create the salon
       if (role === "business") {
-        try {
-          const salonData = {
-            name: formData.businessName,
-            location: formData.address,
-            description: formData.description,
-            phone: formData.phone,
-            email: formData.email,
-            openingHours: formData.openingHours,
-          };
+        const salonData = {
+          name: formData.businessName,
+          location: formData.address,
+          description: formData.description,
+          phone: formData.phone,
+          email: formData.email,
+          openingHours: formData.openingHours,
+        };
 
-          console.log("Salon data being sent:", salonData);
+        console.log("Salon data being sent:", salonData);
 
-          // Verify the salon data
-          if (!salonData.name || !salonData.location || !salonData.phone) {
-            setError("Please fill in all required fields for the salon.");
-            return;
-          }
-
-          const salonResponse = await api.post("/salons", salonData, {
-            headers: {
-              Authorization: `Bearer ${userResponse.data.token}`, // Include the token in the request
-            },
-          });
-
-          console.log("Salon created successfully:", salonResponse.data);
-        } catch (salonError) {
-          console.error("Error creating salon:", salonError);
-          // Continue with registration even if salon creation fails
-          // The user can create their salon later
+        // Verify the salon data
+        if (!salonData.name || !salonData.location || !salonData.phone) {
+          setError("Please fill in all required fields for the salon.");
+          return;
         }
+
+        const salonResponse = await api.post("/api/salons", salonData, {
+          headers: {
+            Authorization: `Bearer ${userResponse.data.token}`, // Include the token in the request
+          },
+        });
+
+        console.log("Salon created successfully:", salonResponse.data);
       }
 
       // Redirect the user to the login page
-      setRedirectToLogin(true);
+      navigate("/login");
     } catch (err) {
       console.error("Signup error:", err);
       setError(
@@ -134,11 +127,6 @@ const SignupPage = () => {
       );
     }
   };
-
-  // Use Navigate component for redirection
-  if (redirectToLogin) {
-    return <Navigate to="/login" />;
-  }
 
   if (step === "role") {
     return (
@@ -162,8 +150,11 @@ const SignupPage = () => {
                 I'm a Customer
               </button>
               <button
+
+
                 onClick={() => handleRoleSelect('business')}
                 className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#A2B9C6] hover:bg-[#8fa9b8] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#A2B9C6]"
+
               >
                 I'm a Business
               </button>
@@ -184,6 +175,7 @@ const SignupPage = () => {
             </h2>
           </div>
 
+
           {error && (
             <div
               className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
@@ -193,6 +185,7 @@ const SignupPage = () => {
             </div>
           )}
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+
             <div className="rounded-md shadow-sm -space-y-px">
               <div>
                 <input
@@ -251,7 +244,7 @@ const SignupPage = () => {
                       onChange={handleChange}
                     />
                   </div>
-                  <div>
+                    <div>
                     <input
                       name="description"
                       type="text"
@@ -262,7 +255,7 @@ const SignupPage = () => {
                       onChange={handleChange}
                     />
                   </div>
-                  <div>
+                    <div>
                     <input
                       name="phone"
                       type="text"
@@ -299,6 +292,7 @@ const SignupPage = () => {
               </div>
             </div>
 
+  
             <button
               type="submit"
               className="w-full py-3 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#8fa9b8] transition duration-300"
@@ -307,7 +301,9 @@ const SignupPage = () => {
             </button>
           </form>
           <div className="text-center">
+
             <Link to="/login" className="text-sm text-[#A2B9C6] hover:underline hover:text-[#8fa9b8]">
+
               Already have an account? Sign in
             </Link>
           </div>
