@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
-import { FaSearch, FaTimes, FaLanguage, FaFilter } from "react-icons/fa";
-import { FiFacebook, FiInstagram, } from "react-icons/fi";
+import { FaSearch, FaTimes, FaLanguage } from "react-icons/fa";
+import { FiFacebook, FiInstagram } from "react-icons/fi";
 
 // API base URL from environment variables, fallback to localhost if not set
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
@@ -12,7 +12,6 @@ const Homepage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showLanguageSearch, setShowLanguageSearch] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
   const [languages, setLanguages] = useState([]);
   const [error, setError] = useState('');
 
@@ -54,174 +53,119 @@ const Homepage = () => {
     setShowLanguageSearch(false);
   };
 
-  // Toggle filter dropdown for mobile view
-  const toggleFilters = () => {
-    setShowFilters(!showFilters);
-  };
-
   return (
     <div className="font-body leading-relaxed text-[#4A4A4A] bg-white min-h-screen">
-      {/* Add Google Fonts link to your HTML head or use @import in your CSS */}
-      <header className="p-4 bg-[#eeeeee] flex justify-between items-center shadow-sm">
-        <Link to="/" className="flex items-center">
-          <img src="/logo.png" alt="VivaHub Logo" className="h-10" />
-        </Link>
-        <div className="hidden md:flex space-x-4">
-          <Link to="/filter/hair" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium">Hair</Link>
-          <Link to="/filter/nails" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium">Nails</Link>
-          <Link to="/filter/spa" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium">Spa</Link>
-          <Link to="/filter/makeup" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium">Makeup</Link>
-          <Link to="/filter/facials" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium">Facials</Link>
-          <Link to="/filter/waxing" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium">Waxing</Link>
-          <Link to="/filter/massage" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium">Massage</Link>
-          <Link to="/filter/language" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium">Language</Link>
-        </div>
-        <div className="md:hidden relative">
-          <button
-            onClick={toggleFilters}
-            className="text-[#4A4A4A] hover:text-[#A2B9C6] transition duration-300"
-          >
-            <FaFilter size={20} />
-          </button>
-          {showFilters && (
-            <div className="absolute top-10 right-0 w-48 bg-white shadow-lg z-10 p-4 rounded-lg">
-              <div className="flex flex-col space-y-2">
-                <Link to="/filter/hair" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium" onClick={() => setShowFilters(false)}>Hair</Link>
-                <Link to="/filter/nails" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium" onClick={() => setShowFilters(false)}>Nails</Link>
-                <Link to="/filter/spa" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium" onClick={() => setShowFilters(false)}>Spa</Link>
-                <Link to="/filter/makeup" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium" onClick={() => setShowFilters(false)}>Makeup</Link>
-                <Link to="/filter/facials" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium" onClick={() => setShowFilters(false)}>Facials</Link>
-                <Link to="/filter/waxing" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium" onClick={() => setShowFilters(false)}>Waxing</Link>
-                <Link to="/filter/massage" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium" onClick={() => setShowFilters(false)}>Massage</Link>
-              </div>
-            </div>
-          )}
-        </div>
-        <Link
-          to="/login"
-          className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded-lg text-sm hover:bg-[#A2B9C6] hover:text-white transition duration-300 font-medium"
-        >
-          Log In
-        </Link>
-      </header>
-
       {/* Hero Section */}
       <section className="relative h-[500px] flex items-center justify-center bg-cover bg-center">
-  {/* Video Background */}
-  <video
-    className="absolute inset-0 w-full h-full object-cover"
-    src="/video-hero.mp4"
-    autoPlay
-    loop
-    muted
-    playsInline
-  ></video>
+        {/* Video Background */}
+        <video
+          className="absolute inset-0 w-full h-full object-cover"
+          src="/video-hero.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+        ></video>
 
-  {/* Overlay for better text visibility */}
-  <div className="absolute inset-0 bg-black bg-opacity-30"></div>
+        {/* Overlay for better text visibility */}
+        <div className="absolute inset-0 bg-black bg-opacity-30"></div>
 
-  {/* Centered Content */}
-  <div className="relative z-10 text-center px-5">
-    <h1 className="font-heading text-3xl font-normal mb-4 text-white tracking-tight drop-shadow-lg">
-      Book Your Perfect Salon Experience
-    </h1>
-    <p className="font-body text-white/80 mb-8 text-lg drop-shadow-lg">
-      Discover top-rated salons and book beauty services with ease
-    </p>
+        {/* Centered Content */}
+        <div className="relative z-10 text-center px-5">
+          <h1 className="font-heading text-3xl font-normal mb-4 text-white tracking-tight drop-shadow-lg">
+            Book Your Perfect Salon Experience
+          </h1>
+          <p className="font-body text-white/80 mb-8 text-lg drop-shadow-lg">
+            Discover top-rated salons and book beauty services with ease
+          </p>
 
-    {/* Search Section */}
-    <div className="w-full max-w-4xl mx-auto">
-      <div className="bg-white p-4 rounded-lg shadow-sm">
-        <div className="flex flex-col gap-4">
-          {/* Search Bar */}
-          <div className="w-full">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder={
-                  selectedLanguage
-                    ? `Search services in ${selectedLanguage}...`
-                    : "Search for services or salons..."
-                }
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyPress={handleKeyPress}
-                className="font-body w-full p-3 pl-10 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6]"
-              />
-              <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              {(searchTerm || selectedLanguage) && (
-                <button
-                  onClick={clearSearch}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  <FaTimes />
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Language Search Link */}
-          <div className="flex justify-between items-center">
-            <button
-              onClick={() => setShowLanguageSearch(!showLanguageSearch)}
-              className="font-body text-[#A2B9C6] hover:text-[#91A7B4] text-sm flex items-center gap-2"
-            >
-              <FaLanguage />
-              Search by language
-            </button>
-            <button
-              onClick={handleSearch}
-              className="font-body px-6 py-2 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#91A7B4] transition duration-300"
-            >
-              Search
-            </button>
-          </div>
-
-          {/* Language Search Dropdown */}
-          {showLanguageSearch && (
-            <div className="relative mt-2">
-              <input
-                type="text"
-                placeholder="Type to search languages..."
-                value={selectedLanguage}
-                onChange={(e) => setSelectedLanguage(e.target.value)}
-                className="font-body w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6]"
-              />
-              {selectedLanguage && (
-                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-                  {languages
-                    .filter((lang) =>
-                      lang.name
-                        .toLowerCase()
-                        .includes(selectedLanguage.toLowerCase())
-                    )
-                    .map((lang) => (
+          {/* Search Section */}
+          <div className="w-full max-w-4xl mx-auto">
+            <div className="bg-white p-4 rounded-lg shadow-sm">
+              <div className="flex flex-col gap-4">
+                {/* Search Bar */}
+                <div className="w-full">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder={
+                        selectedLanguage
+                          ? `Search services in ${selectedLanguage}...`
+                          : "Search for services or salons..."
+                      }
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      className="font-body w-full p-3 pl-10 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6]"
+                    />
+                    <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    {(searchTerm || selectedLanguage) && (
                       <button
-                        key={lang.code}
-                        onClick={() => {
-                          setSelectedLanguage(lang.code);
-                          setShowLanguageSearch(false);
-                          handleSearch();
-                        }}
-                        className="font-body w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center"
+                        onClick={clearSearch}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                       >
-                        <img
-                          src={`https://flagcdn.com/w20/${lang.country}.png`}
-                          alt={lang.name}
-                          className="w-5 h-4 mr-2"
-                        />
-                        {lang.name}
+                        <FaTimes />
                       </button>
-                    ))}
+                    )}
+                  </div>
                 </div>
-              )}
+
+                {/* Language Search Link */}
+                <div className="flex justify-between items-center">
+                  <button
+                    onClick={() => setShowLanguageSearch(!showLanguageSearch)}
+                    className="font-body text-[#A2B9C6] hover:text-[#91A7B4] text-sm flex items-center gap-2"
+                  >
+                    <FaLanguage />
+                    Search by language
+                  </button>
+                  <button
+                    onClick={handleSearch}
+                    className="font-body px-6 py-2 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#91A7B4] transition duration-300"
+                  >
+                    Search
+                  </button>
+                </div>
+
+                {/* Language Search Dropdown */}
+                {showLanguageSearch && (
+                  <div className="relative mt-2">
+                    <input
+                      type="text"
+                      placeholder="Type to search languages..."
+                      value={selectedLanguage}
+                      onChange={(e) => setSelectedLanguage(e.target.value)}
+                      className="font-body w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6]"
+                    />
+                    {selectedLanguage && (
+                      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                        {languages
+                          .filter((lang) =>
+                            lang.name
+                              .toLowerCase()
+                              .includes(selectedLanguage.toLowerCase())
+                          )
+                          .map((lang) => (
+                            <button
+                              key={lang.code}
+                              onClick={() => {
+                                setSelectedLanguage(lang.name);
+                                setShowLanguageSearch(false);
+                              }}
+                              className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                            >
+                              {lang.name}
+                            </button>
+                          ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
-          )}
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
+      </section>
 
       {/* Special Offers Section */}
       <section className="py-10 px-5 bg-[#F8F8F8]">

@@ -2,12 +2,21 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
 import axios from "axios";
 import Select from "react-select";
-import Navbar from "../components/Navbar";
+import toast from 'react-hot-toast';
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
+/**
+ * BusinessDashboard component for salon owners to:
+ * 1. View and manage bookings
+ * 2. Update booking statuses (confirm/cancel)
+ * 3. View business analytics
+ * 4. Manage services and availability
+ */
 const BusinessDashboard = () => {
   const { user } = useAuth();
+
+  // State management
   const [salon, setSalon] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [services, setServices] = useState([]);
@@ -22,7 +31,9 @@ const BusinessDashboard = () => {
     languageSpoken: [],
   });
 
-  // Fetch languages from the API
+  /**
+   * Fetch languages from the API
+   */
   useEffect(() => {
     const fetchLanguages = async () => {
       try {
@@ -50,6 +61,10 @@ const BusinessDashboard = () => {
     fetchLanguages();
   }, []);
 
+  /**
+   * Handle language change event
+   * @param {object} selectedOptions - Selected language options
+   */
   const handleLanguageChange = (selectedOptions) => {
     setNewService({
       ...newService,
@@ -57,6 +72,9 @@ const BusinessDashboard = () => {
     });
   };
 
+  /**
+   * Fetch bookings, services, and salon data when component mounts
+   */
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -110,6 +128,10 @@ const BusinessDashboard = () => {
     fetchData();
   }, [user]);
 
+  /**
+   * Handle service submission
+   * @param {object} e - Event object
+   */
   const handleServiceSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -132,222 +154,310 @@ const BusinessDashboard = () => {
     }
   };
 
-  const handleBookingStatusUpdate = async (bookingId, status) => {
+  /**
+   * Handle booking status updates
+   * @param {string} bookingId - ID of the booking to update
+   * @param {string} status - New status ('confirmed' or 'cancelled')
+   */
+  const handleBookingStatus = async (bookingId, status) => {
     try {
-      await axios.patch(
-        `${API_URL}/api/bookings/${bookingId}`,
+      // Update booking status in the backend
+      await axios.put(`${API_URL}/api/business/bookings/${bookingId}/status`, 
         { status },
-        { headers: { Authorization: `Bearer ${user.token}` } }
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`
+          }
+        }
       );
-      setBookings(
-        bookings.map((booking) =>
+      
+      // Update local state
+      setBookings(prevBookings => 
+        prevBookings.map(booking => 
           booking.id === bookingId ? { ...booking, status } : booking
         )
       );
+      
+      // Show success notification
+      toast.success(`Booking ${status} successfully`);
     } catch (err) {
-      setError("Failed to update booking status");
-      console.error("Error updating booking:", err);
+      console.error('Error updating booking status:', err);
+      toast.error('Failed to update booking status');
     }
   };
 
-  if (loading)
+  // Loading state
+  if (loading) {
     return (
-      <>
-        <Navbar />
-        <div className="flex justify-center items-center h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-        </div>
-      </>
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+      </div>
     );
+  }
 
-  if (error) return (
-    <>
-      <Navbar />
+  // Error state
+  if (error) {
+    return (
       <div className="text-red-600 p-4">{error}</div>
-    </>
-  );
+    );
+  }
 
   return (
-    <>
-      <Navbar />
-      <div className="font-sans leading-relaxed text-[#4A4A4A] bg-white min-h-screen">
-        {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-white shadow-sm rounded-lg">
-            <div className="px-4 py-5 sm:p-6">
-              <h1 className="text-3xl font-light text-[#4A4A4A] mb-6">
-                Business Dashboard
-              </h1>
+    <div className="font-sans leading-relaxed text-[#4A4A4A] bg-white min-h-screen">
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="bg-white shadow-sm rounded-lg">
+          <div className="px-4 py-5 sm:p-6">
+            <h1 className="text-3xl font-light text-[#4A4A4A] mb-6">
+              Business Dashboard
+            </h1>
 
-              {/* Business Profile Section */}
-              <div className="bg-[#F8F8F8] p-4 rounded-lg mb-6 border border-[#E0E0E0]">
-                <h2 className="text-lg font-medium text-[#4A4A4A] mb-2">
-                  Business Profile
-                </h2>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-[#4A4A4A]/80">Business Name</p>
-                    <p className="text-[#4A4A4A]">{salon?.name || "N/A"}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-[#4A4A4A]/80">Email</p>
-                    <p className="text-[#4A4A4A]">{user.email}</p>
-                  </div>
+            {/* Business Profile Section */}
+            <div className="bg-[#F8F8F8] p-4 rounded-lg mb-6 border border-[#E0E0E0]">
+              <h2 className="text-lg font-medium text-[#4A4A4A] mb-2">
+                Business Profile
+              </h2>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-[#4A4A4A]/80">Business Name</p>
+                  <p className="text-[#4A4A4A]">{salon?.name || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-[#4A4A4A]/80">Email</p>
+                  <p className="text-[#4A4A4A]">{user.email}</p>
                 </div>
               </div>
+            </div>
 
-              {/* Add New Service Section */}
-              <div className="bg-[#F8F8F8] p-4 rounded-lg mb-6 border border-[#E0E0E0]">
-                <h2 className="text-lg font-medium text-[#4A4A4A] mb-4">
-                  Add New Service
-                </h2>
-                <form
-                  onSubmit={handleServiceSubmit}
-                  className="bg-[#F8F8F8] p-4 rounded-lg"
-                >
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-[#4A4A4A]">
-                        Service Name
-                      </label>
-                      <input
-                        type="text"
-                        value={newService.name}
-                        onChange={(e) =>
-                          setNewService({ ...newService, name: e.target.value })
-                        }
-                        className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-[#4A4A4A]">
-                        Price
-                      </label>
-                      <input
-                        type="number"
-                        value={newService.price}
-                        onChange={(e) =>
-                          setNewService({ ...newService, price: e.target.value })
-                        }
-                        className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-[#4A4A4A]">
-                        Duration (minutes)
-                      </label>
-                      <input
-                        type="number"
-                        value={newService.duration}
-                        onChange={(e) =>
-                          setNewService({
-                            ...newService,
-                            duration: e.target.value,
-                          })
-                        }
-                        className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-[#4A4A4A]">
-                        Description
-                      </label>
-                      <textarea
-                        value={newService.description}
-                        onChange={(e) =>
-                          setNewService({
-                            ...newService,
-                            description: e.target.value,
-                          })
-                        }
-                        className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
-                        required
-                      />
-                    </div>
+            {/* Bookings Section */}
+            <div className="bg-[#F8F8F8] p-4 rounded-lg mb-6 border border-[#E0E0E0]">
+              <h2 className="text-lg font-medium text-[#4A4A4A] mb-4">
+                Bookings
+              </h2>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Customer
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Service
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Date
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Time
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {bookings.map((booking) => (
+                      <tr key={booking.id}>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {booking.customerName}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {booking.serviceName}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {new Date(booking.date).toLocaleDateString()}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {booking.time}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`px-2 py-1 text-sm rounded-full ${
+                            booking.status === 'confirmed' ? 'bg-green-100 text-green-800' :
+                            booking.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>
+                            {booking.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {booking.status === 'pending' && (
+                            <div className="space-x-2">
+                              <button
+                                onClick={() => handleBookingStatus(booking.id, 'confirmed')}
+                                className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                              >
+                                Confirm
+                              </button>
+                              <button
+                                onClick={() => handleBookingStatus(booking.id, 'cancelled')}
+                                className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Add New Service Section */}
+            <div className="bg-[#F8F8F8] p-4 rounded-lg mb-6 border border-[#E0E0E0]">
+              <h2 className="text-lg font-medium text-[#4A4A4A] mb-4">
+                Add New Service
+              </h2>
+              <form
+                onSubmit={handleServiceSubmit}
+                className="bg-[#F8F8F8] p-4 rounded-lg"
+              >
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-[#4A4A4A]">
+                      Service Name
+                    </label>
+                    <input
+                      type="text"
+                      value={newService.name}
+                      onChange={(e) =>
+                        setNewService({ ...newService, name: e.target.value })
+                      }
+                      className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
+                      required
+                    />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-[#4A4A4A]">
-                      Languages Spoken
+                      Price
                     </label>
-                    <Select
-                      isMulti
-                      options={languages}
-                      onChange={handleLanguageChange}
-                      className="mt-1"
-                      placeholder="Select languages..."
+                    <input
+                      type="number"
+                      value={newService.price}
+                      onChange={(e) =>
+                        setNewService({ ...newService, price: e.target.value })
+                      }
+                      className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
+                      required
                     />
                   </div>
-                  <button
-                    type="submit"
-                    className="mt-4 bg-[#A2B9C6] text-white px-4 py-2 rounded-md hover:bg-[#8fa9b8] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-                  >
-                    Add Service
-                  </button>
-                </form>
-              </div>
-
-              {/* Services Section */}
-              <div className="mb-8">
-                <h2 className="text-lg font-medium text-[#4A4A4A] mb-4">
-                  Your Services
-                </h2>
-
-                {services.length === 0 ? (
-                  <div className="text-center py-8 bg-[#F8F8F8] rounded-lg border border-[#E0E0E0]">
-                    <p className="text-[#4A4A4A]/80">
-                      No services added yet. Add your first service using the form
-                      above.
-                    </p>
+                  <div>
+                    <label className="block text-sm font-medium text-[#4A4A4A]">
+                      Duration (minutes)
+                    </label>
+                    <input
+                      type="number"
+                      value={newService.duration}
+                      onChange={(e) =>
+                        setNewService({
+                          ...newService,
+                          duration: e.target.value,
+                        })
+                      }
+                      className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
+                      required
+                    />
                   </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-[#E0E0E0]">
-                      <thead className="bg-[#F8F8F8]">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-[#4A4A4A]/80 uppercase tracking-wider">
-                            Service
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-[#4A4A4A]/80 uppercase tracking-wider">
-                            Description
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-[#4A4A4A]/80 uppercase tracking-wider">
-                            Price
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-[#4A4A4A]/80 uppercase tracking-wider">
-                            Duration
-                          </th>
+                  <div>
+                    <label className="block text-sm font-medium text-[#4A4A4A]">
+                      Description
+                    </label>
+                    <textarea
+                      value={newService.description}
+                      onChange={(e) =>
+                        setNewService({
+                          ...newService,
+                          description: e.target.value,
+                        })
+                      }
+                      className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
+                      required
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#4A4A4A]">
+                    Languages Spoken
+                  </label>
+                  <Select
+                    isMulti
+                    options={languages}
+                    onChange={handleLanguageChange}
+                    className="mt-1"
+                    placeholder="Select languages..."
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="mt-4 bg-[#A2B9C6] text-white px-4 py-2 rounded-md hover:bg-[#8fa9b8] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                >
+                  Add Service
+                </button>
+              </form>
+            </div>
+
+            {/* Services Section */}
+            <div className="mb-8">
+              <h2 className="text-lg font-medium text-[#4A4A4A] mb-4">
+                Your Services
+              </h2>
+
+              {services.length === 0 ? (
+                <div className="text-center py-8 bg-[#F8F8F8] rounded-lg border border-[#E0E0E0]">
+                  <p className="text-[#4A4A4A]/80">
+                    No services added yet. Add your first service using the form
+                    above.
+                  </p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-[#E0E0E0]">
+                    <thead className="bg-[#F8F8F8]">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[#4A4A4A]/80 uppercase tracking-wider">
+                          Service
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[#4A4A4A]/80 uppercase tracking-wider">
+                          Description
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[#4A4A4A]/80 uppercase tracking-wider">
+                          Price
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[#4A4A4A]/80 uppercase tracking-wider">
+                          Duration
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-[#E0E0E0]">
+                      {services.map((service) => (
+                        <tr key={service._id}>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A4A4A]">
+                            {service.name}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-[#4A4A4A]">
+                            {service.description}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A4A4A]">
+                            ${service.price}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A4A4A]">
+                            {service.duration} mins
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-[#E0E0E0]">
-                        {services.map((service) => (
-                          <tr key={service._id}>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A4A4A]">
-                              {service.name}
-                            </td>
-                            <td className="px-6 py-4 text-sm text-[#4A4A4A]">
-                              {service.description}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A4A4A]">
-                              ${service.price}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A4A4A]">
-                              {service.duration} mins
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
