@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import './App.css'
 import Homepage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
@@ -15,10 +15,23 @@ import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from './context/ThemeContext'
 
 /**
+ * Layout component that wraps content with Navbar
+ * Used for all pages except HomePage and auth pages
+ */
+const NavbarLayout = ({ children }) => {
+  return (
+    <>
+      <Navbar />
+      {children}
+    </>
+  );
+};
+
+/**
  * Main App component that sets up:
  * 1. Routing with react-router-dom
  * 2. Authentication context provider
- * 3. Global navigation with Navbar
+ * 3. Conditional navigation with Navbar (not shown on HomePage)
  * 4. Protected routes for authenticated users
  * 5. Toast notifications system
  * 6. Theme provider for light/dark mode
@@ -27,47 +40,66 @@ const App = () => {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <Router>
-          <div className="min-h-screen bg-[#F8F8F8] dark:bg-gray-900">
-            {/* Global navigation bar */}
-            <Navbar />
+        <div className="min-h-screen bg-[#F8F8F8] dark:bg-gray-900">
+          {/* Route configuration */}
+          <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<Homepage />} />
+            <Route path="/salon/:salonId" element={
+              <NavbarLayout>
+                <SalonDetailsPage />
+              </NavbarLayout>
+            } />
+            <Route path="/search" element={
+              <NavbarLayout>
+                <SearchResults />
+              </NavbarLayout>
+            } />
+            <Route path="/login" element={
+              <NavbarLayout>
+                <LoginPage />
+              </NavbarLayout>
+            } />
+            <Route path="/signup" element={
+              <NavbarLayout>
+                <SignupPage />
+              </NavbarLayout>
+            } />
+            <Route path="/unauthorized" element={
+              <NavbarLayout>
+                <UnauthorizedPage />
+              </NavbarLayout>
+            } />
             
-            {/* Route configuration */}
-            <Routes>
-              {/* Public routes */}
-              <Route path="/" element={<Homepage />} />
-              <Route path="/salon/:salonId" element={<SalonDetailsPage />} />
-              <Route path="/search" element={<SearchResults />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/signup" element={<SignupPage />} />
-              <Route path="/unauthorized" element={<UnauthorizedPage />} />
-              
-              {/* Protected routes with role-based access */}
-              <Route
-                path="/customer-dashboard"
-                element={
-                  <ProtectedRoute allowedRoles={['customer']}>
+            {/* Protected routes with role-based access */}
+            <Route
+              path="/customer-dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['customer']}>
+                  <NavbarLayout>
                     <CustomerDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/business-dashboard"
-                element={
-                  <ProtectedRoute allowedRoles={['business']}>
+                  </NavbarLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/business-dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['business']}>
+                  <NavbarLayout>
                     <BusinessDashboard />
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
+                  </NavbarLayout>
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
 
-            {/* Global toast notifications */}
-            <Toaster position="top-center" />
-          </div>
-        </Router>
+          {/* Global toast notifications */}
+          <Toaster position="top-center" />
+        </div>
       </AuthProvider>
     </ThemeProvider>
   );
 };
 
-export default App
+export default App;

@@ -1,7 +1,32 @@
-import { Link } from "react-router-dom";
-import { FaFilter, FaMoon, FaSun } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import { FaFilter, FaMoon, FaSun, FaUser } from "react-icons/fa";
+import { useAuth } from "../hooks/useAuth";
+import { UserCircleIcon } from '@heroicons/react/24/outline';
 
 const Header = ({ theme, toggleTheme, showFilters, toggleFilters }) => {
+  // Get authentication state from context
+  const { user, logout, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  // Handle user logout
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
+  // Handle profile click
+  const handleProfileClick = () => {
+    if (user?.role === 'business') {
+      navigate('/business-dashboard');
+    } else if (user?.role === 'customer') {
+      navigate('/customer-dashboard');
+    }
+  };
+
   return (
     <header className="p-4 bg-[#eeeeee] dark:bg-gray-800 flex justify-between items-center shadow-sm border-b border-gray-200 dark:border-gray-700">
       <Link to="/" className="flex items-center">
@@ -54,12 +79,31 @@ const Header = ({ theme, toggleTheme, showFilters, toggleFilters }) => {
           {theme === 'light' ? <FaMoon className="text-[#4A4A4A]" /> : <FaSun className="text-gray-200" />}
         </button>
         
-        <Link
-          to="/login"
-          className="px-4 py-2 bg-[#FADADD] dark:bg-[#A2B9C6] text-[#4A4A4A] dark:text-gray-800 rounded-lg text-sm hover:bg-[#A2B9C6] dark:hover:bg-[#FADADD] hover:text-white dark:hover:text-[#4A4A4A] transition-colors font-medium"
-        >
-          Log In
-        </Link>
+        {/* Conditional rendering based on authentication state */}
+        {isAuthenticated ? (
+          <>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 bg-[#FADADD] text-[#4A4A4A] dark:bg-[#FADADD] dark:text-[#4A4A4A] rounded-lg text-sm hover:bg-[#F7C6C6] hover:text-white transition-colors"
+            >
+              Logout
+            </button>
+            <button
+              onClick={handleProfileClick}
+              className="flex items-center gap-2 px-4 py-2 bg-[#A2B9C6] text-white dark:bg-[#A2B9C6] dark:text-white rounded-lg text-sm hover:bg-[#8BA5B3] transition-colors"
+            >
+              <UserCircleIcon className="h-5 w-5" />
+              <span>{user.firstName || (user.role === 'business' ? 'Business Dashboard' : 'My Profile')}</span>
+            </button>
+          </>
+        ) : (
+          <Link
+            to="/login"
+            className="px-4 py-2 bg-[#FADADD] dark:bg-[#A2B9C6] text-[#4A4A4A] dark:text-gray-800 rounded-lg text-sm hover:bg-[#A2B9C6] dark:hover:bg-[#FADADD] hover:text-white dark:hover:text-[#4A4A4A] transition-colors font-medium"
+          >
+            Log In
+          </Link>
+        )}
       </div>
     </header>
   );
