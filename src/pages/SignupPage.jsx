@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import Navbar from "../components/Navbar";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
@@ -132,7 +131,6 @@ const SignupPage = () => {
   if (step === "role") {
     return (
       <div className="font-sans bg-[#F8F8F8] min-h-screen flex flex-col">
-        <Navbar />
         <div className="min-h-screen flex items-center justify-center bg-[#F8F8F8] py-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
             <div>
@@ -169,8 +167,6 @@ const SignupPage = () => {
 
   return (
     <div className="font-sans bg-[#F8F8F8] min-h-screen flex flex-col">
-      <Navbar />
-
       <div className="min-h-screen flex items-center justify-center bg-[#F8F8F8] py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
           <div>
