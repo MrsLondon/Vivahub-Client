@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
 import { AuthContext } from "./auth.context";
-import { useNavigate } from "react-router-dom";
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     // Check if user is logged in on mount
@@ -45,7 +43,6 @@ const AuthProvider = ({ children }) => {
     setUser(null);
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-    navigate('/');
   };
 
   if (loading) {
