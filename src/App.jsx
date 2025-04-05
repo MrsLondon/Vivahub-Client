@@ -50,9 +50,9 @@ const App = () => {
               {/* Public routes */}
               <Route path="/" element={<Homepage />} />
               <Route path="/salons/:salonId" element={
-                <NavbarLayout>
+               
                   <SalonDetailsPage />
-                </NavbarLayout>
+                
               } />
               <Route path="/search" element={
                 <NavbarLayout>
