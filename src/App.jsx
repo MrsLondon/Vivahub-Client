@@ -49,7 +49,7 @@ const App = () => {
               {/* Public routes */}
               <Route path="/" element={<Homepage />} />
               <Route
-                path="/salon/:salonId"
+                path="/salons/:salonId"
                 element={
                   <NavbarLayout>
                     <SalonDetailsPage />
