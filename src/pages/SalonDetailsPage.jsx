@@ -1,14 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
+import { Link, useParams } from "react-router-dom";
 import StarRating from "../components/StarRating";
+import BookingSidebar from "../components/BookingSidebar";
+import { BookingContext } from "../context/BookingContext";
 
 const SalonDetailsPage = () => {
   const { salonId } = useParams();
-  const navigate = useNavigate();
   const [salon, setSalon] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isBookingSidebarOpen, setIsBookingSidebarOpen] = useState(false);
+  const { addToBooking, bookingCount } = useContext(BookingContext);
 
   useEffect(() => {
     const fetchSalonDetails = async () => {
@@ -60,6 +63,19 @@ const SalonDetailsPage = () => {
         <Link to="/">
           <img src="/src/assets/logo.png" alt="VivaHub Logo" className="h-10" />
         </Link>
+        
+        {/* Booking button with counter */}
+        <button 
+          onClick={() => setIsBookingSidebarOpen(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded-lg hover:bg-[#f0c8cc] transition duration-300"
+        >
+          <span>My Booking</span>
+          {bookingCount > 0 && (
+            <span className="bg-white text-[#4A4A4A] text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              {bookingCount}
+            </span>
+          )}
+        </button>
       </header>
 
       {/* Salon Details Section */}
@@ -113,12 +129,13 @@ const SalonDetailsPage = () => {
                     <strong>Duration:</strong> {service.duration} minutes
                   </p>
                   <button
-                    onClick={() =>
-                      navigate(`/booking/${salonId}/${service._id}`)
-                    }
+                    onClick={() => {
+                      addToBooking(service);
+                      setIsBookingSidebarOpen(true);
+                    }}
                     className="w-full py-2 bg-[#FADADD] text-[#4A4A4A] rounded hover:bg-[#f0c8cc] transition duration-300"
                   >
-                    Book this service
+                    Add to booking
                   </button>
                 </li>
               ))}
@@ -237,6 +254,12 @@ const SalonDetailsPage = () => {
           )}
         </div>
       </section>
+
+      {/* Booking Sidebar */}
+      <BookingSidebar 
+        isOpen={isBookingSidebarOpen} 
+        onClose={() => setIsBookingSidebarOpen(false)} 
+      />
     </div>
   );
 };
