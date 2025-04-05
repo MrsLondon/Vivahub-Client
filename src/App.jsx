@@ -45,7 +45,7 @@ const App = () => {
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<Homepage />} />
-            <Route path="/salon/:salonId" element={
+            <Route path="/salons/:salonId" element={
               <NavbarLayout>
                 <SalonDetailsPage />
               </NavbarLayout>

@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import StarRating from "../components/StarRating";
+import axios from "axios";
+
+// Create axios instance with default config
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
+
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 const SalonDetailsPage = () => {
   const { salonId } = useParams();
@@ -13,18 +24,14 @@ const SalonDetailsPage = () => {
   useEffect(() => {
     const fetchSalonDetails = async () => {
       try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/salons/${salonId}`
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setSalon(data);
-        } else {
-          setError("Failed to fetch salon details");
-        }
+        const response = await api.get(`/api/salons/${salonId}`);
+        setSalon(response.data);
       } catch (error) {
         console.error("Error fetching salon details:", error);
-        setError("An error occurred while fetching salon details");
+        setError(
+          error.response?.data?.message ||
+            "An error occurred while fetching salon details"
+        );
       } finally {
         setLoading(false);
       }
@@ -32,15 +39,8 @@ const SalonDetailsPage = () => {
 
     const fetchReviews = async () => {
       try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/reviews/salon/${salonId}`
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setReviews(data);
-        } else {
-          console.error("Failed to fetch reviews");
-        }
+        const response = await api.get(`/api/reviews/salon/${salonId}`);
+        setReviews(response.data);
       } catch (error) {
         console.error("Error fetching reviews:", error);
       }
@@ -55,12 +55,7 @@ const SalonDetailsPage = () => {
 
   return (
     <div className="font-sans leading-relaxed text-[#4A4A4A] bg-white min-h-screen flex flex-col">
-      {/* Header */}
-      <header className="p-4 bg-[#eeeeee] flex justify-between items-center shadow-sm">
-        <Link to="/">
-          <img src="/src/assets/logo.png" alt="VivaHub Logo" className="h-10" />
-        </Link>
-      </header>
+  
 
       {/* Salon Details Section */}
       <section className="py-10 px-5 bg-white flex-grow">
@@ -76,19 +71,26 @@ const SalonDetailsPage = () => {
             <strong>Contact:</strong> {salon.phone}
           </p>
           <p className="text-sm text-[#4A4A4A]/60 mb-6">
-            <strong>Opening Hours:</strong>
-            {salon.openingHours ? (
-              <ul className="mt-2">
-                {Object.entries(salon.openingHours).map(([day, hours]) => (
-                  <li key={day} className="text-sm text-[#4A4A4A]/80">
-                    <strong>{day.charAt(0).toUpperCase() + day.slice(1)}:</strong> {hours}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              " Not available"
-            )}
-          </p>
+  <strong>Opening Hours:</strong>
+  {salon.openingHours ? (
+    <ul className="mt-2">
+      {Object.entries(salon.openingHours).map(([day, hours]) => {
+        // Check if hours is an object with open/close properties
+        const timeString = typeof hours === 'object' && hours !== null 
+          ? `${hours.open} - ${hours.close}`
+          : hours;
+        
+        return (
+          <li key={day} className="text-sm text-[#4A4A4A]/80">
+            <strong>{day.charAt(0).toUpperCase() + day.slice(1)}:</strong> {timeString}
+          </li>
+        );
+      })}
+    </ul>
+  ) : (
+    " Not available"
+  )}
+</p>
         </div>
       </section>
 
