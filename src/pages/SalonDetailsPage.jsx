@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import StarRating from "../components/StarRating";
 import axios from "axios";
 import { BookingContext } from "../context/BookingContext";
@@ -17,7 +17,6 @@ const api = axios.create({
 
 const SalonDetailsPage = () => {
   const { salonId } = useParams();
-  const navigate = useNavigate();
   const [salon, setSalon] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -62,9 +61,9 @@ const SalonDetailsPage = () => {
       {/* Header */}
       <header className="p-4 bg-[#eeeeee] flex justify-between items-center shadow-sm">
         {/* Logo */}
-      <Link to="/" className="flex items-center">
-        <img src="/logo.png" alt="VivaHub Logo" className="h-10"/>
-      </Link>
+        <Link to="/" className="flex items-center">
+          <img src="/logo.png" alt="VivaHub Logo" className="h-10"/>
+        </Link>
         
         {/* Booking button with counter */}
         <button 

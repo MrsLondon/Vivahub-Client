@@ -1,9 +1,12 @@
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { BookingContext } from "../context/BookingContext";
+import { AuthContext } from "../context/auth.context";
+import { createBooking } from "../services/api";
 
 const BookingPage = () => {
   const { bookingItems, removeFromBooking, totalPrice, totalDuration, clearBooking } = useContext(BookingContext);
+  const { user, isAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
@@ -15,6 +18,7 @@ const BookingPage = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Generate available time slots based on business hours (9am-5pm)
   const generateTimeSlots = () => {
@@ -46,22 +50,43 @@ const BookingPage = () => {
       return;
     }
 
+    if (!isAuthenticated || !user) {
+      navigate("/login");
+      return;
+    }
+
     setIsSubmitting(true);
+    setErrorMessage("");
 
-    // Simulate API call to submit booking
     try {
-      // In a real application, you would send this data to your backend
-      const bookingData = {
-        customerInfo: formData,
-        services: bookingItems,
-        totalPrice,
-        totalDuration
-      };
-
-      console.log("Booking data to be submitted:", bookingData);
+      // For each service in the booking, create a separate booking record
+      const bookingPromises = bookingItems.map(async (service) => {
+        // Convert time from "1:00 PM" format to 24-hour format "13:00"
+        const timeString = formData.time;
+        const [time, period] = timeString.split(' ');
+        const [hour, minute] = time.split(':');
+        let hour24 = parseInt(hour);
+        
+        if (period === 'PM' && hour24 < 12) {
+          hour24 += 12;
+        } else if (period === 'AM' && hour24 === 12) {
+          hour24 = 0;
+        }
+        
+        const time24 = `${hour24.toString().padStart(2, '0')}:${minute}`;
+        
+        const bookingData = {
+          serviceId: service._id,
+          appointmentDate: formData.date,
+          appointmentTime: time24,
+          notes: formData.notes
+        };
+        
+        return await createBooking(bookingData);
+      });
       
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const results = await Promise.all(bookingPromises);
+      console.log("Booking results:", results);
       
       // Clear booking after successful submission
       clearBooking();
@@ -78,7 +103,13 @@ const BookingPage = () => {
       });
     } catch (error) {
       console.error("Error submitting booking:", error);
-      alert("There was an error submitting your booking. Please try again.");
+      let message = "There was an error submitting your booking. Please try again.";
+      
+      if (error.response && error.response.data && error.response.data.message) {
+        message = error.response.data.message;
+      }
+      
+      setErrorMessage(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -89,9 +120,9 @@ const BookingPage = () => {
       {/* Header */}
       <header className="p-4 bg-[#eeeeee] flex justify-between items-center shadow-sm">
         {/* Logo */}
-      <Link to="/" className="flex items-center">
-        <img src="/logo.png" alt="VivaHub Logo" className="h-10"/>
-      </Link>
+        <Link to="/" className="flex items-center">
+          <img src="/logo.png" alt="VivaHub Logo" className="h-10"/>
+        </Link>
         <Link to="/test-booking" className="text-[#4A4A4A] hover:underline">
           Back to Services
         </Link>
@@ -263,6 +294,9 @@ const BookingPage = () => {
                   >
                     {isSubmitting ? "Processing..." : "Confirm Booking"}
                   </button>
+                  {errorMessage && (
+                    <p className="text-red-500 mt-2">{errorMessage}</p>
+                  )}
                 </form>
               </div>
             </div>
