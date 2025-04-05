@@ -53,6 +53,8 @@ const SalonDetailsPage = () => {
   if (loading) return <p className="text-center text-gray-500">Loading...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
+  
+
   return (
     <div className="font-sans leading-relaxed text-[#4A4A4A] bg-white min-h-screen flex flex-col">
      
@@ -95,43 +97,49 @@ const SalonDetailsPage = () => {
       </section>
 
       {/* Services Section */}
-      <section className="py-10 px-5 bg-[#F8F8F8]">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-xl font-medium text-[#4A4A4A] mb-6">Services</h2>
-          {salon.services.length > 0 ? (
-            <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-              {salon.services.map((service) => (
-                <li
-                  key={service._id}
-                  className="bg-white rounded-lg shadow-sm p-5 border border-[#E0E0E0] hover:shadow-md transition duration-300"
-                >
-                  <h3 className="text-lg font-medium text-[#4A4A4A] mb-2">
-                    {service.name}
-                  </h3>
-                  <p className="text-sm text-[#4A4A4A]/80 mb-1">
-                    <strong>Price:</strong> ${service.price}
-                  </p>
-                  <p className="text-sm text-[#4A4A4A]/80 mb-4">
-                    <strong>Duration:</strong> {service.duration} minutes
-                  </p>
-                  <button
-                    onClick={() =>
-                      navigate(`/booking/${salonId}/${service._id}`)
-                    }
-                    className="w-full py-2 bg-[#FADADD] text-[#4A4A4A] rounded hover:bg-[#f0c8cc] transition duration-300"
-                  >
-                    Book this service
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-center text-[#4A4A4A]/60">
-              No services available for this salon.
+<section className="py-10 px-5 bg-[#F8F8F8]">
+  <div className="max-w-4xl mx-auto">
+    <h2 className="text-xl font-medium text-[#4A4A4A] mb-6">Services</h2>
+    {salon.services && salon.services.length > 0 ? (
+      <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+        {salon.services.map((service) => (
+          <li
+            key={service._id}
+            className="bg-white rounded-lg shadow-sm p-5 border border-[#E0E0E0] hover:shadow-md transition duration-300"
+          >
+            <h3 className="text-lg font-medium text-[#4A4A4A] mb-2">
+              {service.name}
+            </h3>
+            {service.description && (
+              <p className="text-sm text-[#4A4A4A]/80 mb-1">
+                {service.description}
+              </p>
+            )}
+            <p className="text-sm text-[#4A4A4A]/80 mb-1">
+              <strong>Price:</strong> ${service.price}
             </p>
-          )}
-        </div>
-      </section>
+            <p className="text-sm text-[#4A4A4A]/80 mb-4">
+              <strong>Duration:</strong> {service.duration} minutes
+            </p>
+            <button
+              onClick={() => {
+                addToBooking(service);
+                setIsBookingSidebarOpen(true);
+              }}
+              className="w-full py-2 bg-[#FADADD] text-[#4A4A4A] rounded hover:bg-[#f0c8cc] transition duration-300"
+            >
+              Add to booking
+            </button>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p className="text-center text-[#4A4A4A]/60">
+        No services available for this salon.
+      </p>
+    )}
+  </div>
+</section>
 
       {/* Google Maps Placeholder Section */}
       <section className="py-10 px-5 bg-white">
