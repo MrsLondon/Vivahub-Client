@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../hooks/useAuth';
 import { Link } from 'react-router-dom';
@@ -21,7 +21,20 @@ const LoginPage = () => {
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
+  
+  // Extract returnUrl from query parameters if it exists
+  const [returnUrl, setReturnUrl] = useState('');
+  
+  useEffect(() => {
+    // Get returnUrl from query parameters when component mounts
+    const params = new URLSearchParams(location.search);
+    const returnPath = params.get('returnUrl');
+    if (returnPath) {
+      setReturnUrl(returnPath);
+    }
+  }, [location]);
 
   const handleChange = (e) => {
     setFormData({
@@ -39,7 +52,10 @@ const LoginPage = () => {
       console.log('Login successful:', { token, user });
       login({ ...user, token });
       
-      if (user.role === 'customer') {
+      // If there's a returnUrl, navigate there, otherwise go to the appropriate dashboard
+      if (returnUrl) {
+        navigate(returnUrl);
+      } else if (user.role === 'customer') {
         navigate('/customer-dashboard');
       } else if (user.role === 'business') {
         navigate('/business-dashboard');

@@ -6,7 +6,7 @@ import { BookingContext } from "../context/BookingContext";
 import BookingSidebar from "../components/BookingSidebar";
 
 // Create axios instance with default config
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
+const API_URL = import.meta.env.VITE_API_URL || "";
 
 const api = axios.create({
   baseURL: API_URL,
@@ -42,7 +42,7 @@ const SalonDetailsPage = () => {
 
     const fetchReviews = async () => {
       try {
-        const response = await api.get(`/api/reviews/salons/${salonId}`);
+        const response = await api.get(`/api/reviews/salon/${salonId}`);
         setReviews(response.data);
       } catch (error) {
         console.error("Error fetching reviews:", error);
@@ -92,7 +92,7 @@ const SalonDetailsPage = () => {
           <p className="text-sm text-[#4A4A4A]/60 mb-1">
             <strong>Contact:</strong> {salon.phone}
           </p>
-          <p className="text-sm text-[#4A4A4A]/60 mb-6">
+          <div className="text-sm text-[#4A4A4A]/60 mb-6">
             <strong>Opening Hours:</strong>
             {salon.openingHours ? (
               <ul className="mt-2">
@@ -112,7 +112,7 @@ const SalonDetailsPage = () => {
             ) : (
               " Not available"
             )}
-          </p>
+          </div>
         </div>
       </section>
 
@@ -172,41 +172,33 @@ const SalonDetailsPage = () => {
       </section>
 
       {/* Customer Reviews Section */}
-      <section className="py-10 px-5 bg-[#F8F8F8]">
+      <section className="py-10 px-5 bg-white">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-xl font-medium text-[#4A4A4A] mb-6">
-            Customer Reviews
-          </h2>
+          <h2 className="text-2xl font-medium text-[#4A4A4A] mb-6">Reviews</h2>
+          
           {reviews.length > 0 ? (
-            <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="space-y-6">
               {reviews.map((review) => (
-                <li
-                  key={review._id}
-                  className="bg-[#F8F8F8] p-5 rounded-lg shadow-sm border border-[#E0E0E0] hover:shadow-md transition duration-300"
-                >
-                  <h3 className="text-lg font-medium text-[#4A4A4A] mb-2">
-                    {review.title}
-                  </h3>
-                  <p className="text-sm text-[#4A4A4A]/80 mb-2">
-                    {review.comment}
-                  </p>
-                  <StarRating rating={review.rating} />
-                  <p className="text-sm text-[#4A4A4A]/60">
-                    <strong>Rating:</strong> {review.rating} / 5
-                  </p>
-                </li>
+                <div key={review._id} className="border-b pb-4">
+                  <div className="flex items-center mb-2">
+                    <div className="font-medium mr-2">{review.customerName}</div>
+                    <StarRating rating={review.rating} />
+                  </div>
+                  <p className="text-[#4A4A4A]/80">{review.comment}</p>
+                  <div className="text-sm text-[#4A4A4A]/60 mt-1">
+                    {new Date(review.createdAt).toLocaleDateString()}
+                  </div>
+                </div>
               ))}
-            </ul>
+            </div>
           ) : (
-            <p className="text-center text-[#4A4A4A]/60">
-              No reviews available for this salon.
-            </p>
+            <p className="text-[#4A4A4A]/80">No reviews available for this salon yet.</p>
           )}
         </div>
       </section>
 
       {/* Meet the Staff Section */}
-      <section className="py-10 px-5 bg-white">
+      <section className="py-10 px-5 bg-[#F8F8F8]">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-xl font-medium text-[#4A4A4A] mb-6">Meet the Staff</h2>
           {salon.staff && salon.staff.length > 0 ? (

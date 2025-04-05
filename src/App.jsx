@@ -16,6 +16,8 @@ import Navbar from "./components/Navbar";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "./context/ThemeContext";
 import { BookingProvider } from "./context/BookingContext";
+import TestBookingPage from "./pages/TestBookingPage";
+import BookingPage from "./pages/BookingPage";
 
 /**
  * Layout component that wraps content with Navbar
@@ -124,6 +126,10 @@ const App = () => {
                 <AboutPage />
                 </NavbarLayout>
                 } />
+              
+              {/* Booking routes */}
+              <Route path="/test-booking" element={<TestBookingPage />} />
+              <Route path="/booking" element={<BookingPage />} />
             </Routes>
 
             {/* Global toast notifications */}

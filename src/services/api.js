@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Get the API URL from environment variables, with a fallback
-const API_URL = import.meta.env.VITE_API_URL || '';
+const API_URL = import.meta.env.VITE_API_URL || 'https://vivahub-server.onrender.com';
 
 const api = axios.create({
   baseURL: API_URL,

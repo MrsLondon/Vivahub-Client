@@ -51,7 +51,9 @@ const BookingPage = () => {
     }
 
     if (!isAuthenticated || !user) {
-      navigate("/login");
+      // Save current path to redirect back after login
+      const currentPath = window.location.pathname;
+      navigate(`/login?returnUrl=${encodeURIComponent(currentPath)}`);
       return;
     }
 
