@@ -8,15 +8,15 @@ import CustomerDashboard from './pages/CustomerDashboard'
 import BusinessDashboard from './pages/BusinessDashboard'
 import ProtectedRoute from './components/ProtectedRoute'
 import AuthProvider from './context/AuthContext'
-import SalonDetailsPage from "./pages/SalonDetailsPage";
-import SearchResults from './pages/SearchResults';
-import Navbar from './components/Navbar';
-import { Toaster } from 'react-hot-toast';
+import SalonDetailsPage from "./pages/SalonDetailsPage"
+import SearchResults from './pages/SearchResults'
+import Navbar from './components/Navbar'
+import { Toaster } from 'react-hot-toast'
 import { ThemeProvider } from './context/ThemeContext'
 
 /**
  * Layout component that wraps content with Navbar
- * Used for all pages except HomePage and auth pages
+ * Used for all pages except HomePage
  */
 const NavbarLayout = ({ children }) => {
   return (
