@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { FaSearch, FaTimes, FaLanguage, FaUser } from "react-icons/fa";
@@ -80,6 +80,24 @@ const SearchResults = () => {
     setSearchResults(null);
     navigate('/search');
   };
+  
+  // Ref for dropdown
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowLanguageSearch(false); // Close the dropdown
+      }
+    };
+  
+    document.addEventListener("mousedown", handleClickOutside);
+  
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -132,7 +150,7 @@ const SearchResults = () => {
 
             {/* Language Search Dropdown */}
             {showLanguageSearch && (
-              <div className="relative mt-2">
+              <div className="relative mt-2" ref={dropdownRef}>
                 <input
                   type="text"
                   placeholder="Type to search languages..."
@@ -150,6 +168,7 @@ const SearchResults = () => {
                         className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center"
                         onClick={() => {
                           setSelectedLanguage(lang.code);
+                          setShowLanguageSearch(false);
                           handleSearch();
                         }}
                       >
