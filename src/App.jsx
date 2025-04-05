@@ -14,6 +14,7 @@ import SearchResults from "./pages/SearchResults";
 import Navbar from "./components/Navbar";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "./context/ThemeContext";
+import { BookingProvider } from "./context/BookingContext";
 
 /**
  * Layout component that wraps content with Navbar
@@ -41,82 +42,83 @@ const App = () => {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <div className="min-h-screen bg-[#F8F8F8] dark:bg-gray-900">
-          {/* Route configuration */}
-          <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<Homepage />} />
-            <Route
-              path="/salon/:salonId"
-              element={
-                <NavbarLayout>
-                  <SalonDetailsPage />
-                </NavbarLayout>
-              }
-            />
-            <Route
-              path="/search"
-              element={
-                <NavbarLayout>
-                  <SearchResults />
-                </NavbarLayout>
-              }
-            />
-            <Route
-              path="/login"
-              element={
-                <NavbarLayout>
-                  <LoginPage />
-                </NavbarLayout>
-              }
-            />
-            <Route
-              path="/signup"
-              element={
-                <NavbarLayout>
-                  <SignupPage />
-                </NavbarLayout>
-              }
-            />
-            <Route
-              path="/salons/update/:id"
-              element={
-                <NavbarLayout>
-                  <BusinessProfile />
-                </NavbarLayout>
-              }
-            />
-            <Route
-              path="/unauthorized"
-              element={
-                <NavbarLayout>
-                  <UnauthorizedPage />
-                </NavbarLayout>
-              }
-            />
+        <BookingProvider>
+          <div className="min-h-screen bg-[#F8F8F8] dark:bg-gray-900">
+            {/* Route configuration */}
+            <Routes>
+              {/* Public routes */}
+              <Route path="/" element={<Homepage />} />
+              <Route
+                path="/salon/:salonId"
+                element={
+                  <NavbarLayout>
+                    <SalonDetailsPage />
+                  </NavbarLayout>
+                }
+              />
+              <Route
+                path="/search"
+                element={
+                  <NavbarLayout>
+                    <SearchResults />
+                  </NavbarLayout>
+                }
+              />
+              <Route
+                path="/login"
+                element={
+                  <NavbarLayout>
+                    <LoginPage />
+                  </NavbarLayout>
+                }
+              />
+              <Route
+                path="/signup"
+                element={
+                  <NavbarLayout>
+                    <SignupPage />
+                  </NavbarLayout>
+                }
+              />
+              <Route
+                path="/salons/update/:id"
+                element={
+                  <NavbarLayout>
+                    <BusinessProfile />
+                  </NavbarLayout>
+                }
+              />
+              <Route
+                path="/unauthorized"
+                element={
+                  <NavbarLayout>
+                    <UnauthorizedPage />
+                  </NavbarLayout>
+                }
+              />
 
-            {/* Protected routes with role-based access */}
-            <Route
-              path="/customer-dashboard"
-              element={
-                <ProtectedRoute allowedRoles={["customer"]}>
-                  <NavbarLayout>
-                    <CustomerDashboard />
-                  </NavbarLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/business-dashboard"
-              element={
-                <ProtectedRoute allowedRoles={["business"]}>
-                  <NavbarLayout>
-                    <BusinessDashboard />
-                  </NavbarLayout>
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
+              {/* Protected routes with role-based access */}
+              <Route
+                path="/customer-dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={["customer"]}>
+                    <NavbarLayout>
+                      <CustomerDashboard />
+                    </NavbarLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/business-dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={["business"]}>
+                    <NavbarLayout>
+                      <BusinessDashboard />
+                    </NavbarLayout>
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
 
             {/* Global toast notifications */}
             <Toaster position="top-center" />
