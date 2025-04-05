@@ -3,10 +3,18 @@ import { useAuth } from "../hooks/useAuth";
 import axios from "axios";
 import Select from "react-select";
 import toast from "react-hot-toast";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaTrash, FaCheck, FaTimes } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
+
+// Create axios instance with default config
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 /**
  * BusinessDashboard component for salon owners to:
@@ -21,6 +29,8 @@ const BusinessDashboard = () => {
   const { user } = useAuth();
 
   // State management
+  const [editingServiceId, setEditingServiceId] = useState(null);
+  const [editedService, setEditedService] = useState({});
   const [salon, setSalon] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [services, setServices] = useState([]);
@@ -158,6 +168,68 @@ const BusinessDashboard = () => {
     }
   };
 
+  const handleEditClick = (service) => {
+    setEditingServiceId(service._id); // Define the ID of the service being edited
+    setEditedService({ ...service }); // Set the service data to be edited
+  };
+
+  const handleSaveClick = async () => {
+    try {
+      const response = await axios.put(
+        `${API_URL}/api/services/${editingServiceId}`,
+        editedService,
+        { headers: { Authorization: `Bearer ${user.token}` } }
+      );
+
+      // Update the local state with the edited service
+      setServices((prevServices) =>
+        prevServices.map((service) =>
+          service._id === editingServiceId ? response.data : service
+        )
+      );
+
+      toast.success("Service updated successfully!");
+      setEditingServiceId(null); // Stop editing mode
+      setEditedService({});
+    } catch (err) {
+      console.error("Error updating service:", err);
+      toast.error("Failed to update service.");
+    }
+  };
+
+  const handleCancelClick = () => {
+    setEditingServiceId(null); // Sai do modo de edição
+    setEditedService({}); // Limpa os dados do serviço em edição
+  };
+
+  /**
+   * Handle service deletion
+   * @param {string} serviceId - ID of the service to delete
+   */
+  const handleDeleteService = async (serviceId) => {
+    console.log("Deleting service with ID:", serviceId); // Verify the service ID
+    console.log("Token:", user.token); // Verify the token
+    console.log("API URL:", `${API_URL}/api/services/delete/${serviceId}`); // Log to verify the URL
+    if (window.confirm("Are you sure you want to delete this service?")) {
+      try {
+        console.log("API URL:", `${API_URL}/api/services/delete/${serviceId}`);
+        await axios.delete(`${API_URL}/api/services/delete/${serviceId}`, {
+          headers: { Authorization: `Bearer ${user.token}` },
+        });
+
+        // Update local state to remove the deleted service
+        setServices((prevServices) =>
+          prevServices.filter((service) => service._id !== serviceId)
+        );
+
+        toast.success("Service deleted successfully!");
+      } catch (err) {
+        console.error("Error deleting service:", err);
+        toast.error("Failed to delete service.");
+      }
+    }
+  };
+
   /**
    * Handle booking status updates
    * @param {string} bookingId - ID of the booking to update
@@ -251,85 +323,94 @@ const BusinessDashboard = () => {
               <h2 className="text-lg font-medium text-[#4A4A4A] mb-4">
                 Bookings
               </h2>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Customer
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Service
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Date
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Time
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {bookings.map((booking) => (
-                      <tr key={booking._id || booking.id || index}>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {booking.customerName}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {booking.serviceName}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {new Date(booking.date).toLocaleDateString()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {booking.time}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={`px-2 py-1 text-sm rounded-full ${
-                              booking.status === "confirmed"
-                                ? "bg-green-100 text-green-800"
-                                : booking.status === "pending"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-red-100 text-red-800"
-                            }`}
-                          >
-                            {booking.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {booking.status === "pending" && (
-                            <div className="space-x-2">
-                              <button
-                                onClick={() =>
-                                  handleBookingStatus(booking.id, "confirmed")
-                                }
-                                className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-                              >
-                                Confirm
-                              </button>
-                              <button
-                                onClick={() =>
-                                  handleBookingStatus(booking.id, "cancelled")
-                                }
-                                className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                              >
-                                Cancel
-                              </button>
-                            </div>
-                          )}
-                        </td>
+              {bookings.length === 0 ? (
+                <div className="text-center py-8 bg-white rounded-lg border border-[#E0E0E0]">
+                  <p className="text-[#4A4A4A]/80">
+                    No bookings found for this salon. Bookings will appear here
+                    once customers make reservations.
+                  </p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Customer
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Service
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Date
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Time
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Status
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Actions
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {bookings.map((booking) => (
+                        <tr key={booking._id || booking.id}>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {booking.customerName}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {booking.serviceName}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {new Date(booking.date).toLocaleDateString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {booking.time}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`px-2 py-1 text-sm rounded-full ${
+                                booking.status === "confirmed"
+                                  ? "bg-green-100 text-green-800"
+                                  : booking.status === "pending"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : "bg-red-100 text-red-800"
+                              }`}
+                            >
+                              {booking.status}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {booking.status === "pending" && (
+                              <div className="space-x-2">
+                                <button
+                                  onClick={() =>
+                                    handleBookingStatus(booking.id, "confirmed")
+                                  }
+                                  className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                                >
+                                  Confirm
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    handleBookingStatus(booking.id, "cancelled")
+                                  }
+                                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
 
             {/* Add New Service Section */}
@@ -455,22 +536,129 @@ const BusinessDashboard = () => {
                         <th className="px-6 py-3 text-left text-xs font-medium text-[#4A4A4A]/80 uppercase tracking-wider">
                           Duration
                         </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[#4A4A4A]/80 uppercase tracking-wider">
+                          Manage
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-[#E0E0E0]">
                       {services.map((service) => (
                         <tr key={service._id}>
+                          {/* Service Name */}
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A4A4A]">
-                            {service.name}
+                            {editingServiceId === service._id ? (
+                              <input
+                                type="text"
+                                value={editedService.name || ""}
+                                onChange={(e) =>
+                                  setEditedService({
+                                    ...editedService,
+                                    name: e.target.value,
+                                  })
+                                }
+                                className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
+                              />
+                            ) : (
+                              service.name
+                            )}
                           </td>
+
+                          {/* Description */}
                           <td className="px-6 py-4 text-sm text-[#4A4A4A]">
-                            {service.description}
+                            {editingServiceId === service._id ? (
+                              <textarea
+                                value={editedService.description || ""}
+                                onChange={(e) =>
+                                  setEditedService({
+                                    ...editedService,
+                                    description: e.target.value,
+                                  })
+                                }
+                                className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
+                              />
+                            ) : (
+                              service.description
+                            )}
                           </td>
+
+                          {/* Price */}
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A4A4A]">
-                            ${service.price}
+                            {editingServiceId === service._id ? (
+                              <input
+                                type="number"
+                                value={editedService.price || ""}
+                                onChange={(e) =>
+                                  setEditedService({
+                                    ...editedService,
+                                    price: e.target.value,
+                                  })
+                                }
+                                className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
+                              />
+                            ) : (
+                              `$${service.price}`
+                            )}
                           </td>
+
+                          {/* Duration */}
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A4A4A]">
-                            {service.duration} mins
+                            {editingServiceId === service._id ? (
+                              <input
+                                type="number"
+                                value={editedService.duration || ""}
+                                onChange={(e) =>
+                                  setEditedService({
+                                    ...editedService,
+                                    duration: e.target.value,
+                                  })
+                                }
+                                className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
+                              />
+                            ) : (
+                              `${service.duration} mins`
+                            )}
+                          </td>
+
+                          {/* Manage Buttons */}
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A4A4A]">
+                            <div className="flex space-x-2">
+                              {editingServiceId === service._id ? (
+                                <>
+                                  {/* Save */}
+                                  <button
+                                    onClick={handleSaveClick}
+                                    className="flex items-center justify-center w-8 h-8 bg-[#FADADD] text-[#4A4A4A] rounded-full hover:bg-[#A2B9C6] hover:text-white transition duration-300"
+                                  >
+                                    <FaCheck className="w-4 h-4" />
+                                  </button>
+
+                                  {/* Cancel */}
+                                  <button
+                                    onClick={handleCancelClick}
+                                    className="flex items-center justify-center w-8 h-8 bg-[#FF6B6B] text-white rounded-full hover:bg-[#e55a5a] focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]"
+                                  >
+                                    <FaTimes className="w-4 h-4" />
+                                  </button>
+                                </>
+                              ) : (
+                                <>
+                                  <button
+                                    onClick={() => handleEditClick(service)}
+                                    className="flex items-center justify-center w-8 h-8 bg-[#A2B9C6] text-white rounded-full hover:bg-[#FADADD] hover:text-[#4A4A4A] transition duration-300"
+                                  >
+                                    <FaEdit className="w-4 h-4" />
+                                  </button>
+                                  <button
+                                    onClick={() =>
+                                      handleDeleteService(service._id)
+                                    }
+                                    className="flex items-center justify-center w-8 h-8 bg-[#FF6B6B] text-white rounded-full hover:bg-[#e55a5a] focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]"
+                                  >
+                                    <FaTrash className="w-4 h-4" />
+                                  </button>
+                                </>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       ))}
