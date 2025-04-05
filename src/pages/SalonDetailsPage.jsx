@@ -1,6 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import StarRating from "../components/StarRating";
+import axios from "axios";
+import { BookingContext } from "../context/BookingContext";
+import BookingSidebar from "../components/BookingSidebar";
+
+// Create axios instance with default config
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
+
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 const SalonDetailsPage = () => {
   const { salonId } = useParams();
@@ -9,22 +22,20 @@ const SalonDetailsPage = () => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isBookingSidebarOpen, setIsBookingSidebarOpen] = useState(false);
+  const { addToBooking, bookingCount } = useContext(BookingContext);
 
   useEffect(() => {
     const fetchSalonDetails = async () => {
       try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/salons/${salonId}`
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setSalon(data);
-        } else {
-          setError("Failed to fetch salon details");
-        }
+        const response = await api.get(`/api/salons/${salonId}`);
+        setSalon(response.data);
       } catch (error) {
         console.error("Error fetching salon details:", error);
-        setError("An error occurred while fetching salon details");
+        setError(
+          error.response?.data?.message ||
+            "An error occurred while fetching salon details"
+        );
       } finally {
         setLoading(false);
       }
@@ -32,15 +43,8 @@ const SalonDetailsPage = () => {
 
     const fetchReviews = async () => {
       try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/reviews/salon/${salonId}`
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setReviews(data);
-        } else {
-          console.error("Failed to fetch reviews");
-        }
+        const response = await api.get(`/api/reviews/salons/${salonId}`);
+        setReviews(response.data);
       } catch (error) {
         console.error("Error fetching reviews:", error);
       }
@@ -57,9 +61,23 @@ const SalonDetailsPage = () => {
     <div className="font-sans leading-relaxed text-[#4A4A4A] bg-white min-h-screen flex flex-col">
       {/* Header */}
       <header className="p-4 bg-[#eeeeee] flex justify-between items-center shadow-sm">
-        <Link to="/">
-          <img src="/src/assets/logo.png" alt="VivaHub Logo" className="h-10" />
-        </Link>
+        {/* Logo */}
+      <Link to="/" className="flex items-center">
+        <img src="/logo.png" alt="VivaHub Logo" className="h-10"/>
+      </Link>
+        
+        {/* Booking button with counter */}
+        <button 
+          onClick={() => setIsBookingSidebarOpen(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-[#FADADD] text-[#4A4A4A] rounded-lg hover:bg-[#f0c8cc] transition duration-300"
+        >
+          <span>My Booking</span>
+          {bookingCount > 0 && (
+            <span className="bg-white text-[#4A4A4A] text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              {bookingCount}
+            </span>
+          )}
+        </button>
       </header>
 
       {/* Salon Details Section */}
@@ -79,11 +97,18 @@ const SalonDetailsPage = () => {
             <strong>Opening Hours:</strong>
             {salon.openingHours ? (
               <ul className="mt-2">
-                {Object.entries(salon.openingHours).map(([day, hours]) => (
-                  <li key={day} className="text-sm text-[#4A4A4A]/80">
-                    <strong>{day.charAt(0).toUpperCase() + day.slice(1)}:</strong> {hours}
-                  </li>
-                ))}
+                {Object.entries(salon.openingHours).map(([day, hours]) => {
+                  // Handle both string and object formats
+                  const hoursDisplay = typeof hours === 'object' 
+                    ? `${hours.open} - ${hours.close}`
+                    : hours;
+                  
+                  return (
+                    <li key={day} className="text-sm text-[#4A4A4A]/80">
+                      <strong>{day.charAt(0).toUpperCase() + day.slice(1)}:</strong> {hoursDisplay}
+                    </li>
+                  );
+                })}
               </ul>
             ) : (
               " Not available"
@@ -96,7 +121,7 @@ const SalonDetailsPage = () => {
       <section className="py-10 px-5 bg-[#F8F8F8]">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-xl font-medium text-[#4A4A4A] mb-6">Services</h2>
-          {salon.services.length > 0 ? (
+          {salon.services && salon.services.length > 0 ? (
             <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               {salon.services.map((service) => (
                 <li
@@ -106,6 +131,11 @@ const SalonDetailsPage = () => {
                   <h3 className="text-lg font-medium text-[#4A4A4A] mb-2">
                     {service.name}
                   </h3>
+                  {service.description && (
+                    <p className="text-sm text-[#4A4A4A]/80 mb-1">
+                      {service.description}
+                    </p>
+                  )}
                   <p className="text-sm text-[#4A4A4A]/80 mb-1">
                     <strong>Price:</strong> ${service.price}
                   </p>
@@ -113,12 +143,13 @@ const SalonDetailsPage = () => {
                     <strong>Duration:</strong> {service.duration} minutes
                   </p>
                   <button
-                    onClick={() =>
-                      navigate(`/booking/${salonId}/${service._id}`)
-                    }
+                    onClick={() => {
+                      addToBooking(service);
+                      setIsBookingSidebarOpen(true);
+                    }}
                     className="w-full py-2 bg-[#FADADD] text-[#4A4A4A] rounded hover:bg-[#f0c8cc] transition duration-300"
                   >
-                    Book this service
+                    Add to booking
                   </button>
                 </li>
               ))}
@@ -222,7 +253,7 @@ const SalonDetailsPage = () => {
                     {nearbySalon.location}
                   </p>
                   <Link
-                    to={`/salon/${nearbySalon._id}`}
+                    to={`/salons/${nearbySalon._id}`}
                     className="text-sm text-[#A2B9C6] hover:underline"
                   >
                     View Details
@@ -237,6 +268,12 @@ const SalonDetailsPage = () => {
           )}
         </div>
       </section>
+
+      {/* Booking Sidebar */}
+      <BookingSidebar 
+        isOpen={isBookingSidebarOpen} 
+        onClose={() => setIsBookingSidebarOpen(false)} 
+      />
     </div>
   );
 };
