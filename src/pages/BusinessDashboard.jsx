@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
 import axios from "axios";
 import Select from "react-select";
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
+import { FaEdit, FaTrash } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
@@ -14,6 +16,8 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
  * 4. Manage services and availability
  */
 const BusinessDashboard = () => {
+  const navigate = useNavigate();
+
   const { user } = useAuth();
 
   // State management
@@ -162,27 +166,28 @@ const BusinessDashboard = () => {
   const handleBookingStatus = async (bookingId, status) => {
     try {
       // Update booking status in the backend
-      await axios.put(`${API_URL}/api/business/bookings/${bookingId}/status`, 
+      await axios.put(
+        `${API_URL}/api/business/bookings/${bookingId}/status`,
         { status },
         {
           headers: {
-            Authorization: `Bearer ${user.token}`
-          }
+            Authorization: `Bearer ${user.token}`,
+          },
         }
       );
-      
+
       // Update local state
-      setBookings(prevBookings => 
-        prevBookings.map(booking => 
+      setBookings((prevBookings) =>
+        prevBookings.map((booking) =>
           booking.id === bookingId ? { ...booking, status } : booking
         )
       );
-      
+
       // Show success notification
       toast.success(`Booking ${status} successfully`);
     } catch (err) {
-      console.error('Error updating booking status:', err);
-      toast.error('Failed to update booking status');
+      console.error("Error updating booking status:", err);
+      toast.error("Failed to update booking status");
     }
   };
 
@@ -197,9 +202,7 @@ const BusinessDashboard = () => {
 
   // Error state
   if (error) {
-    return (
-      <div className="text-red-600 p-4">{error}</div>
-    );
+    return <div className="text-red-600 p-4">{error}</div>;
   }
 
   return (
@@ -226,6 +229,20 @@ const BusinessDashboard = () => {
                   <p className="text-sm text-[#4A4A4A]/80">Email</p>
                   <p className="text-[#4A4A4A]">{user.email}</p>
                 </div>
+              </div>
+              <div className="mt-4 flex space-x-4">
+                <button
+                  onClick={() => navigate(`/salons/${salon._id}`)}
+                  className="flex items-center justify-center w-10 h-10 bg-[#A2B9C6] text-white rounded-full hover:bg-[#8fa9b8] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                >
+                  <FaEdit className="w-5 h-5" />
+                </button>
+                <button
+                  //onClick={handleDeleteSalon}
+                  className="flex items-center justify-center w-10 h-10 bg-[#FF6B6B] text-white rounded-full hover:bg-[#e55a5a] focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]"
+                >
+                  <FaTrash className="w-5 h-5" />
+                </button>
               </div>
             </div>
 
@@ -260,7 +277,7 @@ const BusinessDashboard = () => {
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {bookings.map((booking) => (
-                      <tr key={booking.id}>
+                      <tr key={booking._id || booking.id || index}>
                         <td className="px-6 py-4 whitespace-nowrap">
                           {booking.customerName}
                         </td>
@@ -274,25 +291,33 @@ const BusinessDashboard = () => {
                           {booking.time}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 py-1 text-sm rounded-full ${
-                            booking.status === 'confirmed' ? 'bg-green-100 text-green-800' :
-                            booking.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-red-100 text-red-800'
-                          }`}>
+                          <span
+                            className={`px-2 py-1 text-sm rounded-full ${
+                              booking.status === "confirmed"
+                                ? "bg-green-100 text-green-800"
+                                : booking.status === "pending"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-red-100 text-red-800"
+                            }`}
+                          >
                             {booking.status}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          {booking.status === 'pending' && (
+                          {booking.status === "pending" && (
                             <div className="space-x-2">
                               <button
-                                onClick={() => handleBookingStatus(booking.id, 'confirmed')}
+                                onClick={() =>
+                                  handleBookingStatus(booking.id, "confirmed")
+                                }
                                 className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
                               >
                                 Confirm
                               </button>
                               <button
-                                onClick={() => handleBookingStatus(booking.id, 'cancelled')}
+                                onClick={() =>
+                                  handleBookingStatus(booking.id, "cancelled")
+                                }
                                 className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                               >
                                 Cancel

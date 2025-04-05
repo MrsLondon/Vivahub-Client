@@ -1,3 +1,4 @@
+
 import { Routes, Route } from 'react-router-dom'
 import './App.css'
 import Homepage from './pages/HomePage'
@@ -6,6 +7,7 @@ import SignupPage from './pages/SignupPage'
 import UnauthorizedPage from './pages/UnauthorizedPage'
 import CustomerDashboard from './pages/CustomerDashboard'
 import BusinessDashboard from './pages/BusinessDashboard'
+import BusinessProfile from "./pages/BusinessProfile";
 import ProtectedRoute from './components/ProtectedRoute'
 import AuthProvider from './context/AuthContext'
 import BookingProvider from './context/BookingProvider'
@@ -16,6 +18,7 @@ import BookingPage from './pages/BookingPage'
 import Navbar from './components/Navbar'
 import { Toaster } from 'react-hot-toast'
 import { ThemeProvider } from './context/ThemeContext'
+
 
 /**
  * Layout component that wraps content with Navbar
@@ -43,6 +46,7 @@ const App = () => {
   return (
     <ThemeProvider>
       <AuthProvider>
+
         <BookingProvider>
           <div className="min-h-screen bg-[#F8F8F8] dark:bg-gray-900">
             {/* Route configuration */}
@@ -69,6 +73,12 @@ const App = () => {
                   <SignupPage />
                 </NavbarLayout>
               } />
+              <Route path="/salons/:id" element={
+                <NavbarLayout>
+                  <BusinessProfile />
+                </NavbarLayout>
+              }
+            />
               <Route path="/unauthorized" element={
                 <NavbarLayout>
                   <UnauthorizedPage />
@@ -99,6 +109,7 @@ const App = () => {
                 }
               />
             </Routes>
+
 
             {/* Global toast notifications */}
             <Toaster position="top-center" />
