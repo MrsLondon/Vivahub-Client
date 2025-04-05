@@ -1,18 +1,19 @@
-import { Routes, Route } from 'react-router-dom'
-import './App.css'
-import Homepage from './pages/HomePage'
-import LoginPage from './pages/LoginPage'
-import SignupPage from './pages/SignupPage'
-import UnauthorizedPage from './pages/UnauthorizedPage'
-import CustomerDashboard from './pages/CustomerDashboard'
-import BusinessDashboard from './pages/BusinessDashboard'
-import ProtectedRoute from './components/ProtectedRoute'
-import AuthProvider from './context/AuthContext'
-import SalonDetailsPage from "./pages/SalonDetailsPage"
-import SearchResults from './pages/SearchResults'
-import Navbar from './components/Navbar'
-import { Toaster } from 'react-hot-toast'
-import { ThemeProvider } from './context/ThemeContext'
+import { Routes, Route } from "react-router-dom";
+import "./App.css";
+import Homepage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
+import UnauthorizedPage from "./pages/UnauthorizedPage";
+import CustomerDashboard from "./pages/CustomerDashboard";
+import BusinessDashboard from "./pages/BusinessDashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AuthProvider from "./context/AuthContext";
+import SalonDetailsPage from "./pages/SalonDetailsPage";
+import BusinessProfile from "./pages/BusinessProfile";
+import SearchResults from "./pages/SearchResults";
+import Navbar from "./components/Navbar";
+import { Toaster } from "react-hot-toast";
+import { ThemeProvider } from "./context/ThemeContext";
 
 /**
  * Layout component that wraps content with Navbar
@@ -45,37 +46,60 @@ const App = () => {
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<Homepage />} />
-            <Route path="/salon/:salonId" element={
-              <NavbarLayout>
-                <SalonDetailsPage />
-              </NavbarLayout>
-            } />
-            <Route path="/search" element={
-              <NavbarLayout>
-                <SearchResults />
-              </NavbarLayout>
-            } />
-            <Route path="/login" element={
-              <NavbarLayout>
-                <LoginPage />
-              </NavbarLayout>
-            } />
-            <Route path="/signup" element={
-              <NavbarLayout>
-                <SignupPage />
-              </NavbarLayout>
-            } />
-            <Route path="/unauthorized" element={
-              <NavbarLayout>
-                <UnauthorizedPage />
-              </NavbarLayout>
-            } />
-            
+            <Route
+              path="/salon/:salonId"
+              element={
+                <NavbarLayout>
+                  <SalonDetailsPage />
+                </NavbarLayout>
+              }
+            />
+            <Route
+              path="/search"
+              element={
+                <NavbarLayout>
+                  <SearchResults />
+                </NavbarLayout>
+              }
+            />
+            <Route
+              path="/login"
+              element={
+                <NavbarLayout>
+                  <LoginPage />
+                </NavbarLayout>
+              }
+            />
+            <Route
+              path="/signup"
+              element={
+                <NavbarLayout>
+                  <SignupPage />
+                </NavbarLayout>
+              }
+            />
+            <Route
+              path="/salons/:id"
+              element={
+                <NavbarLayout>
+                  <BusinessProfile />
+                </NavbarLayout>
+              }
+            />
+            <Route
+              path="/unauthorized"
+              element={
+                <NavbarLayout>
+                  <UnauthorizedPage />
+                </NavbarLayout>
+              }
+            />
+
             {/* Protected routes with role-based access */}
             <Route
               path="/customer-dashboard"
               element={
-                <ProtectedRoute allowedRoles={['customer']}>
+                <ProtectedRoute allowedRoles={["customer"]}>
                   <NavbarLayout>
                     <CustomerDashboard />
                   </NavbarLayout>
@@ -85,7 +109,7 @@ const App = () => {
             <Route
               path="/business-dashboard"
               element={
-                <ProtectedRoute allowedRoles={['business']}>
+                <ProtectedRoute allowedRoles={["business"]}>
                   <NavbarLayout>
                     <BusinessDashboard />
                   </NavbarLayout>
