@@ -1,7 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
-import { FaFilter, FaMoon, FaSun, FaUser } from "react-icons/fa";
+import { FaSlidersH, FaMoon, FaSun } from "react-icons/fa";
 import { useAuth } from "../hooks/useAuth";
 import { UserCircleIcon } from '@heroicons/react/24/outline';
+
 
 const Header = ({ theme, toggleTheme, showFilters, toggleFilters }) => {
   // Get authentication state from context
@@ -49,12 +50,12 @@ const Header = ({ theme, toggleTheme, showFilters, toggleFilters }) => {
       </div>
       
       <div className="flex items-center gap-4">
-      <div className="md:hidden relative z-50">
+      <div className="md:hidden relative z-50 flex items-center">
   <button
     onClick={toggleFilters}
-    className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] transition-colors"
+    className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] transition-colors flex items-center justify-center"
   >
-    <FaFilter size={20} />
+    <FaSlidersH className="text-xl leading-none relative top-[1px]" /> {/* Adjust alignment */}
   </button>
   {showFilters && (
     <div className="absolute top-10 right-0 w-48 bg-white dark:bg-gray-800 shadow-lg z-50 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
