@@ -9,8 +9,8 @@ import BusinessDashboard from "./pages/BusinessDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthProvider from "./context/AuthContext";
 import SalonDetailsPage from "./pages/SalonDetailsPage";
-import BookingPage from './pages/BookingPage'
 import BusinessProfile from "./pages/BusinessProfile";
+import { AboutPage } from "./pages/AboutPage";
 import SearchResults from "./pages/SearchResults";
 import Navbar from "./components/Navbar";
 import { Toaster } from "react-hot-toast";
@@ -80,11 +80,7 @@ const App = () => {
                     <SignupPage />
                  
                 }
-                
               />
-
-              <Route path="/booking" element={<BookingPage />} />
-
               <Route
                 path="/salons/update/:id"
                 element={
@@ -123,6 +119,11 @@ const App = () => {
                   </ProtectedRoute>
                 }
               />
+              <Route path="/about" element={
+                <NavbarLayout>
+                <AboutPage />
+                </NavbarLayout>
+                } />
             </Routes>
 
             {/* Global toast notifications */}

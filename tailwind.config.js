@@ -13,6 +13,15 @@ export default {
         'dusty-blue': '#A2B9C6',
         'dark-gray': '#4A4A4A',
       },
+      animation: {
+        'fade-in': 'fadeIn 1s ease-in-out',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+      },
     },
   },
   variants: {
