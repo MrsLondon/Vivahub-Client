@@ -1,14 +1,29 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { BookingContext } from "../context/BookingContext";
+import { AuthContext } from "../context/auth.context";
 
 function BookingSidebar({ isOpen, onClose }) {
   const { bookingItems, removeFromBooking, totalPrice, totalDuration, bookingCount } = useContext(BookingContext);
+  const { user, isAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
   
   const handleProceedToBooking = () => {
+    // Check if user is logged in and is a customer
+    if (isAuthenticated && user && user.role === 'customer') {
+      onClose();
+      navigate("/booking");
+    } else {
+      // Show login popup if not logged in or not a customer
+      setShowLoginPopup(true);
+    }
+  };
+
+  const handleLoginRedirect = () => {
     onClose();
-    navigate("/booking");
+    setShowLoginPopup(false);
+    navigate("/login");
   };
 
   return (
@@ -63,6 +78,39 @@ function BookingSidebar({ isOpen, onClose }) {
           </button>
         </div>
       </div>
+
+      {/* Login Popup */}
+      {showLoginPopup && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-black opacity-50" onClick={() => setShowLoginPopup(false)}></div>
+          <div className="bg-white p-6 rounded-lg shadow-xl z-10 max-w-md w-full mx-4">
+            <button 
+              className="absolute top-4 right-4 text-gray-600 text-xl" 
+              onClick={() => setShowLoginPopup(false)}
+            >
+              ✕
+            </button>
+            <h3 className="text-xl font-bold text-[#4A4A4A] mb-4">Login Required</h3>
+            <p className="text-gray-600 mb-6">
+              You need to be logged in as a customer to proceed with your booking. Please log in to continue.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={handleLoginRedirect}
+                className="flex-1 py-2 bg-[#FADADD] text-[#4A4A4A] rounded hover:bg-[#f0c8cc] transition duration-300"
+              >
+                Go to Login
+              </button>
+              <button
+                onClick={() => setShowLoginPopup(false)}
+                className="flex-1 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition duration-300"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
