@@ -232,7 +232,7 @@ const BusinessDashboard = () => {
               </div>
               <div className="mt-4 flex space-x-4">
                 <button
-                  onClick={() => navigate(`/salons/${salon._id}`)}
+                  onClick={() => navigate(`/salons/update/${salon._id}`)}
                   className="flex items-center justify-center w-10 h-10 bg-[#A2B9C6] text-white rounded-full hover:bg-[#8fa9b8] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
                 >
                   <FaEdit className="w-5 h-5" />
