@@ -118,7 +118,7 @@ const SignupPage = () => {
   if (step === "role") {
     return (
       <div className="font-sans bg-[#F8F8F8] min-h-screen flex flex-col">
-        <Navbar />
+        
         <div className="flex-grow flex items-center justify-center">
           <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
             <h2 className="text-center text-3xl font-extrabold text-[#4A4A4A]">
@@ -149,7 +149,7 @@ const SignupPage = () => {
 
   return (
     <div className="font-sans bg-[#F8F8F8] min-h-screen flex flex-col">
-      <Navbar />
+   
       <div className="flex-grow flex items-center justify-center">
         <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
           <h2 className="text-center text-3xl font-extrabold text-[#4A4A4A]">
