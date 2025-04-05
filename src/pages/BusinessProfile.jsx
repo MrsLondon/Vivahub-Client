@@ -90,7 +90,7 @@ const BusinessProfile = () => {
     console.log("Data being sent:", sanitizedData); // Verificar os dados no console
 
     try {
-      await axios.put(`${API_URL}/api/salons/${id}`, sanitizedData, {
+      await axios.put(`${API_URL}/api/salons/update/${id}`, sanitizedData, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       toast.success("Salon updated successfully!");
@@ -237,7 +237,7 @@ const BusinessProfile = () => {
                 <div className="flex items-center gap-2 w-3/4">
                   <input
                     type="time"
-                    value={salon.openingHours[day].open}
+                    value={salon.openingHours[day].open || ""} // Fallback to empty string if null
                     onChange={(e) =>
                       handleNestedChange(day, "open", e.target.value)
                     }
@@ -246,7 +246,7 @@ const BusinessProfile = () => {
                   <span className="text-xs text-gray-500">to</span>
                   <input
                     type="time"
-                    value={salon.openingHours[day].close}
+                    value={salon.openingHours[day].close || ""} // Fallback to empty string if null
                     onChange={(e) =>
                       handleNestedChange(day, "close", e.target.value)
                     }
