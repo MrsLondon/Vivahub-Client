@@ -7,7 +7,7 @@ import { useState } from "react";
 /**
  * Navbar component that handles navigation and authentication state
  * Features:
- * - Shows navigation links for different service categories
+ * - Shows navigation links for different service categories (only on search page)
  * - Responsive design with mobile menu
  * - Conditional rendering of login/profile based on auth state
  */
@@ -19,6 +19,9 @@ const Navbar = () => {
   
   // Check if we're on login or signup page
   const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
+  
+  // Check if we're on the search results page
+  const isSearchPage = location.pathname === '/search';
   
   // State for mobile menu
   const [showFilters, setShowFilters] = useState(false);
@@ -47,8 +50,8 @@ const Navbar = () => {
     }
   };
 
-  // Don't show navbar on auth pages
-  if (isAuthPage) {
+  // Don't show navbar on homepage
+  if (location.pathname === '/') {
     return null;
   }
 
@@ -59,43 +62,47 @@ const Navbar = () => {
         <img src="/logo.png" alt="VivaHub Logo" className="h-10"/>
       </Link>
       
-      {/* Desktop Navigation Links */}
-      <div className="hidden md:flex space-x-4">
-        <Link to="/filter/hair" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium">Hair</Link>
-        <Link to="/filter/nails" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium">Nails</Link>
-        <Link to="/filter/spa" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium">Spa</Link>
-        <Link to="/filter/makeup" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium">Makeup</Link>
-        <Link to="/filter/facials" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium">Facials</Link>
-        <Link to="/filter/waxing" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium">Waxing</Link>
-        <Link to="/filter/massage" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium">Massage</Link>
-        <Link to="/filter/language" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium">Language</Link>
-      </div>
+      {/* Desktop Navigation Links - Only shown on search page */}
+      {isSearchPage && (
+        <div className="hidden md:flex space-x-4">
+          <Link to="/filter/hair" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium">Hair</Link>
+          <Link to="/filter/nails" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium">Nails</Link>
+          <Link to="/filter/spa" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium">Spa</Link>
+          <Link to="/filter/makeup" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium">Makeup</Link>
+          <Link to="/filter/facials" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium">Facials</Link>
+          <Link to="/filter/waxing" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium">Waxing</Link>
+          <Link to="/filter/massage" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium">Massage</Link>
+          <Link to="/filter/language" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium">Language</Link>
+        </div>
+      )}
 
       <div className="flex items-center space-x-4">
-        {/* Mobile Menu Button */}
-        <div className="md:hidden relative">
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="text-[#4A4A4A] hover:text-[#A2B9C6] transition duration-300"
-          >
-            <FaFilter size={20} />
-          </button>
-          
-          {/* Mobile Menu Dropdown */}
-          {showFilters && (
-            <div className="absolute top-10 right-0 w-48 bg-white shadow-lg z-10 p-4 rounded-lg">
-              <div className="flex flex-col space-y-2">
-                <Link to="/filter/hair" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium" onClick={() => setShowFilters(false)}>Hair</Link>
-                <Link to="/filter/nails" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium" onClick={() => setShowFilters(false)}>Nails</Link>
-                <Link to="/filter/spa" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium" onClick={() => setShowFilters(false)}>Spa</Link>
-                <Link to="/filter/makeup" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium" onClick={() => setShowFilters(false)}>Makeup</Link>
-                <Link to="/filter/facials" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium" onClick={() => setShowFilters(false)}>Facials</Link>
-                <Link to="/filter/waxing" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium" onClick={() => setShowFilters(false)}>Waxing</Link>
-                <Link to="/filter/massage" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium" onClick={() => setShowFilters(false)}>Massage</Link>
+        {/* Mobile Menu Button - Only shown on search page */}
+        {isSearchPage && (
+          <div className="md:hidden relative">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="text-[#4A4A4A] hover:text-[#A2B9C6] transition duration-300"
+            >
+              <FaFilter size={20} />
+            </button>
+            
+            {/* Mobile Menu Dropdown */}
+            {showFilters && (
+              <div className="absolute top-10 right-0 w-48 bg-white shadow-lg z-10 p-4 rounded-lg">
+                <div className="flex flex-col space-y-2">
+                  <Link to="/filter/hair" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium" onClick={() => setShowFilters(false)}>Hair</Link>
+                  <Link to="/filter/nails" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium" onClick={() => setShowFilters(false)}>Nails</Link>
+                  <Link to="/filter/spa" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium" onClick={() => setShowFilters(false)}>Spa</Link>
+                  <Link to="/filter/makeup" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium" onClick={() => setShowFilters(false)}>Makeup</Link>
+                  <Link to="/filter/facials" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium" onClick={() => setShowFilters(false)}>Facials</Link>
+                  <Link to="/filter/waxing" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium" onClick={() => setShowFilters(false)}>Waxing</Link>
+                  <Link to="/filter/massage" className="text-[#4A4A4A] hover:text-[#A2B9C6] font-medium" onClick={() => setShowFilters(false)}>Massage</Link>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
 
         {/* Authentication Buttons */}
         {isAuthenticated ? (

@@ -83,24 +83,6 @@ const SearchResults = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navbar */}
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex">
-              <Link to="/" className="flex items-center">
-                <span className="text-xl font-semibold text-[#4A4A4A]">VivaHub</span>
-              </Link>
-            </div>
-            <div className="flex items-center">
-              <Link to="/profile" className="p-2 text-gray-600 hover:text-gray-900">
-                <FaUser />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
-
       {/* Search Section */}
       <div className="max-w-4xl mx-auto px-4 py-6">
         <div className="bg-white p-4 rounded-lg shadow-sm">
@@ -202,54 +184,40 @@ const SearchResults = () => {
                 {searchResults.length} {searchResults.length === 1 ? 'result' : 'results'} found
               </span>
             </div>
-            
+
             {searchResults.length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-gray-600 text-lg">No services found matching your search.</p>
-                <p className="text-gray-500 mt-2">Try adjusting your search terms or filters.</p>
+              <div className="text-center py-10">
+                <p className="text-gray-500">No results found for your search.</p>
+                <p className="text-gray-500 mt-2">Try different keywords or filters.</p>
               </div>
             ) : (
-              <div className="space-y-6">
-                {searchResults.map((service) => (
-                  <div 
-                    key={service._id} 
-                    className="bg-gray-50 p-6 rounded-lg hover:shadow-md transition-shadow duration-300"
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {searchResults.map((result) => (
+                  <Link
+                    key={result._id}
+                    to={`/salon/${result._id}`}
+                    className="block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition duration-300"
                   >
-                    <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
-                      <div className="flex-grow">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h3 className="text-lg font-semibold text-[#4A4A4A]">{service.name}</h3>
-                            {service.salon && (
-                              <p className="text-sm text-[#A2B9C6] mt-1">at {service.salon.name}</p>
-                            )}
-                          </div>
-                          <div className="text-right">
-                            <span className="text-lg font-semibold text-[#A2B9C6]">£{service.price}</span>
-                            <p className="text-sm text-gray-500">({service.duration} min)</p>
-                          </div>
-                        </div>
-                        <p className="text-gray-600 mt-3">{service.description}</p>
-                        {service.languageSpoken?.length > 0 && (
-                          <div className="mt-4 flex flex-wrap gap-2">
-                            {service.languageSpoken.map((lang) => (
-                              <span 
-                                key={lang} 
-                                className="px-3 py-1 bg-white text-[#A2B9C6] text-sm rounded-full border border-[#A2B9C6]"
-                              >
-                                {lang}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                      <div className="md:ml-6 flex-shrink-0">
-                        <button className="w-full md:w-auto px-6 py-2 bg-[#FADADD] text-[#4A4A4A] rounded-lg hover:bg-[#f0c8cc] transition-colors duration-300">
-                          Book Now
-                        </button>
+                    <div className="h-40 bg-gray-200 relative">
+                      <img
+                        src={result.images?.[0] || 'https://via.placeholder.com/300x200?text=No+Image'}
+                        alt={result.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-semibold text-lg text-[#4A4A4A] mb-1">{result.name}</h3>
+                      <p className="text-sm text-gray-500 mb-2">{result.address}</p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-[#A2B9C6]">
+                          {result.services?.length || 0} services
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          {result.languages?.join(', ') || 'English'}
+                        </span>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}
