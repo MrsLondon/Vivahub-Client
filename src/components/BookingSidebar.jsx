@@ -5,17 +5,15 @@ import { AuthContext } from "../context/auth.context";
 
 function BookingSidebar({ isOpen, onClose }) {
   const { bookingItems, removeFromBooking, totalPrice, totalDuration, bookingCount } = useContext(BookingContext);
-  const { user, isAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useContext(AuthContext);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   
   const handleProceedToBooking = () => {
-    // Check if user is logged in and is a customer
     if (isAuthenticated && user && user.role === 'customer') {
       onClose();
       navigate("/booking");
     } else {
-      // Show login popup if not logged in or not a customer
       setShowLoginPopup(true);
     }
   };
@@ -23,7 +21,9 @@ function BookingSidebar({ isOpen, onClose }) {
   const handleLoginRedirect = () => {
     onClose();
     setShowLoginPopup(false);
-    navigate("/login");
+    // Get the current path to redirect back after login
+    const currentPath = window.location.pathname;
+    navigate(`/login?returnUrl=${encodeURIComponent(currentPath)}`);
   };
 
   return (
