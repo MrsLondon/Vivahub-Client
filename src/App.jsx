@@ -51,9 +51,9 @@ const App = () => {
               <Route
                 path="/salons/:salonId"
                 element={
-                  <NavbarLayout>
+                  
                     <SalonDetailsPage />
-                  </NavbarLayout>
+                
                 }
               />
               <Route
@@ -75,9 +75,9 @@ const App = () => {
               <Route
                 path="/signup"
                 element={
-                  <NavbarLayout>
+                
                     <SignupPage />
-                  </NavbarLayout>
+                 
                 }
               />
               <Route
