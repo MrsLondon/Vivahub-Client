@@ -49,27 +49,27 @@ const Header = ({ theme, toggleTheme, showFilters, toggleFilters }) => {
       </div>
       
       <div className="flex items-center gap-4">
-        <div className="md:hidden relative">
-          <button
-            onClick={toggleFilters}
-            className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] transition-colors"
-          >
-            <FaFilter size={20} />
-          </button>
-          {showFilters && (
-            <div className="absolute top-10 right-0 w-48 bg-white dark:bg-gray-800 shadow-lg z-10 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
-              <div className="flex flex-col space-y-2">
-                <Link to="/filter/hair" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Hair</Link>
-                <Link to="/filter/nails" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Nails</Link>
-                <Link to="/filter/spa" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Spa</Link>
-                <Link to="/filter/makeup" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Makeup</Link>
-                <Link to="/filter/facials" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Facials</Link>
-                <Link to="/filter/waxing" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Waxing</Link>
-                <Link to="/filter/massage" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Massage</Link>
-              </div>
-            </div>
-          )}
-        </div>
+      <div className="md:hidden relative z-50">
+  <button
+    onClick={toggleFilters}
+    className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] transition-colors"
+  >
+    <FaFilter size={20} />
+  </button>
+  {showFilters && (
+    <div className="absolute top-10 right-0 w-48 bg-white dark:bg-gray-800 shadow-lg z-50 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+      <div className="flex flex-col space-y-2">
+        <Link to="/filter/hair" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Hair</Link>
+        <Link to="/filter/nails" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Nails</Link>
+        <Link to="/filter/spa" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Spa</Link>
+        <Link to="/filter/makeup" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Makeup</Link>
+        <Link to="/filter/facials" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Facials</Link>
+        <Link to="/filter/waxing" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Waxing</Link>
+        <Link to="/filter/massage" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Massage</Link>
+      </div>
+    </div>
+  )}
+</div>
         
         <button
           onClick={toggleTheme}

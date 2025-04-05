@@ -88,9 +88,10 @@ const BookingPage = () => {
     <div className="font-sans leading-relaxed text-[#4A4A4A] bg-white min-h-screen flex flex-col">
       {/* Header */}
       <header className="p-4 bg-[#eeeeee] flex justify-between items-center shadow-sm">
-        <Link to="/">
-          <h1 className="text-xl font-bold">VivaHub</h1>
-        </Link>
+        {/* Logo */}
+      <Link to="/" className="flex items-center">
+        <img src="/logo.png" alt="VivaHub Logo" className="h-10"/>
+      </Link>
         <Link to="/test-booking" className="text-[#4A4A4A] hover:underline">
           Back to Services
         </Link>

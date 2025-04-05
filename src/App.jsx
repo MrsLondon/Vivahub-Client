@@ -9,6 +9,7 @@ import BusinessDashboard from "./pages/BusinessDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthProvider from "./context/AuthContext";
 import SalonDetailsPage from "./pages/SalonDetailsPage";
+import BookingPage from './pages/BookingPage'
 import BusinessProfile from "./pages/BusinessProfile";
 import SearchResults from "./pages/SearchResults";
 import Navbar from "./components/Navbar";
@@ -79,7 +80,11 @@ const App = () => {
                     <SignupPage />
                  
                 }
+                
               />
+
+              <Route path="/booking" element={<BookingPage />} />
+
               <Route
                 path="/salons/update/:id"
                 element={
