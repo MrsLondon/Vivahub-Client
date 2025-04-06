@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../components/Navbar";
+import { useTheme } from "../context/ThemeContext";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
@@ -13,6 +14,7 @@ const api = axios.create({
 });
 
 const SignupPage = () => {
+  const { theme } = useTheme();
   const [step, setStep] = useState("role"); // 'role', 'form'
   const [role, setRole] = useState("");
   const [formData, setFormData] = useState({
@@ -21,7 +23,6 @@ const SignupPage = () => {
     confirmPassword: "",
     firstName: "",
     lastName: "",
-    // Business specific fields
     businessName: "",
     address: "",
     description: "",
@@ -48,7 +49,7 @@ const SignupPage = () => {
     const { name, value } = e.target;
 
     if (name.startsWith("openingHours")) {
-      const [_, day, time] = name.split("."); // Exemple: "openingHours.monday.open"
+      const [_, day, time] = name.split(".");
       setFormData((prevFormData) => ({
         ...prevFormData,
         openingHours: {
@@ -77,7 +78,6 @@ const SignupPage = () => {
     }
   
     try {
-      // User data
       const signupData = {
         email: formData.email,
         password: formData.password,
@@ -86,9 +86,7 @@ const SignupPage = () => {
         role: role,
       };
   
-      // Including salon data if the user is a business
       if (role === "business") {
-        // Structure the data to match exactly what your backend expects
         const salonData = {
           name: formData.businessName,
           location: formData.address,
@@ -96,28 +94,17 @@ const SignupPage = () => {
           phone: formData.phone,
           email: formData.email,
           openingHours: formData.openingHours,
-          // Note: closedDays is not in your form but your backend accepts it
-          // If you need it, you should add it to your form state
         };
   
-        // First create the user
         const userResponse = await api.post("/api/auth/register", signupData);
-        console.log("User created:", userResponse.data);
-  
-        // Then create the salon with the user's ID
         const salonResponse = await api.post("/api/salons", salonData, {
           headers: {
-            Authorization: `Bearer ${userResponse.data.token}`, // Assuming your register endpoint returns a token
+            Authorization: `Bearer ${userResponse.data.token}`,
           },
         });
-        console.log("Salon created:", salonResponse.data);
-  
-        // Redirect the user to the login page
         navigate("/login");
       } else {
-        // For customers, just create the user
         const userResponse = await api.post("/api/auth/register", signupData);
-        console.log("Signup successful:", userResponse.data);
         navigate("/login");
       }
     } catch (err) {
@@ -130,26 +117,44 @@ const SignupPage = () => {
 
   if (step === "role") {
     return (
-      <div className="font-sans bg-[#F8F8F8] min-h-screen flex flex-col">
+      <div className={`font-sans min-h-screen flex flex-col ${
+        theme === "light" ? "bg-[#eeeeee]" : "bg-gray-900"
+      }`}>
         <Navbar />
         <div className="flex-grow flex items-center justify-center">
-          <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
-            <h2 className="text-center text-3xl font-extrabold text-[#4A4A4A]">
+          <div className={`max-w-md w-full space-y-8 p-8 rounded-lg shadow-sm border ${
+            theme === "light" 
+              ? "bg-white border-gray-200" 
+              : "bg-gray-800 border-gray-700"
+          }`}>
+            <h2 className={`text-center text-3xl font-extrabold ${
+              theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+            }`}>
               Create your account
             </h2>
-            <p className="text-center text-sm text-[#4A4A4A]/80">
+            <p className={`text-center text-sm ${
+              theme === "light" ? "text-[#4A4A4A]/80" : "text-gray-300"
+            }`}>
               Choose your account type
             </p>
             <div className="mt-8 space-y-4">
               <button
                 onClick={() => handleRoleSelect("customer")}
-                className="w-full py-3 px-4 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#8fa9b8] transition duration-300"
+                className={`w-full py-3 px-4 rounded-lg transition duration-300 ${
+                  theme === "light"
+                    ? "bg-[#A2B9C6] text-white hover:bg-[#8fa9b8]"
+                    : "bg-[#FADADD] text-[#4A4A4A] hover:bg-[#f0c8cc]"
+                }`}
               >
                 I'm a Customer
               </button>
               <button
                 onClick={() => handleRoleSelect("business")}
-                className="w-full py-3 px-4 bg-[#FADADD] text-[#4A4A4A] rounded-lg hover:bg-[#f0c8cc] transition duration-300"
+                className={`w-full py-3 px-4 rounded-lg transition duration-300 ${
+                  theme === "light"
+                    ? "bg-[#FADADD] text-[#4A4A4A] hover:bg-[#f0c8cc]"
+                    : "bg-[#A2B9C6] text-white hover:bg-[#8fa9b8]"
+                }`}
               >
                 I'm a Business
               </button>
@@ -161,20 +166,28 @@ const SignupPage = () => {
   }
 
   return (
-    <div className="font-sans bg-[#F8F8F8] min-h-screen flex flex-col">
+    <div className={`font-sans min-h-screen flex flex-col ${
+      theme === "light" ? "bg-[#eeeeee]" : "bg-gray-900"
+    }`}>
       <Navbar />
       <div className="flex-grow flex items-center justify-center p-4">
-        <div className="w-full max-w-4xl"> {/* Increased max width for large screens */}
-          <div className="bg-white rounded-lg shadow-md overflow-hidden"> {/* Added overflow-hidden */}
-            {/* Two-column layout for large screens */}
+        <div className="w-full max-w-4xl">
+          <div className={`rounded-lg shadow-sm border ${
+            theme === "light" 
+              ? "bg-white border-gray-200" 
+              : "bg-gray-800 border-gray-700"
+          }`}>
             <div className="md:flex">
-              {/* Left side - decorative image/branding (only on large screens) */}
-              <div className="hidden md:block md:w-1/3 bg-[#E0E0E0] p-8 flex items-center justify-center">
+              <div className={`hidden md:block md:w-1/3 p-8 flex items-center justify-center ${
+                theme === "light" ? "bg-[#E0E0E0]" : "bg-gray-700"
+              }`}>
                 <div className="text-center">
-                  <h2 className="text-2xl font-bold text-[#4A4A4A] mb-4">
+                  <h2 className={`text-2xl font-bold mb-4 ${
+                    theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+                  }`}>
                     {role === "business" ? "Grow Your Business" : "Find Your Perfect Style"}
                   </h2>
-                  <p className="text-[#4A4A4A]">
+                  <p className={theme === "light" ? "text-[#4A4A4A]" : "text-gray-300"}>
                     {role === "business" 
                       ? "Join our platform and connect with thousands of potential customers"
                       : "Discover the best salons and book appointments with ease"}
@@ -182,27 +195,35 @@ const SignupPage = () => {
                 </div>
               </div>
               
-              {/* Right side - form content */}
               <div className="w-full md:w-2/3 p-6 md:p-8">
-                <h2 className="text-center text-3xl font-extrabold text-[#4A4A4A]">
+                <h2 className={`text-center text-3xl font-extrabold ${
+                  theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+                }`}>
                   Create your {role} account
                 </h2>
                 
                 {error && (
-                  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4" role="alert">
+                  <div className={`mt-4 p-3 rounded-lg ${
+                    theme === "light" 
+                      ? "bg-red-100 border border-red-400 text-red-700" 
+                      : "bg-red-900 border border-red-700 text-red-100"
+                  }`}>
                     <span className="block sm:inline">{error}</span>
                   </div>
                 )}
                 
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                   <div className="space-y-4">
-                    {/* Name fields in row on large screens */}
                     <div className="flex flex-col md:flex-row gap-4">
                       <input
                         name="firstName"
                         type="text"
                         required
-                        className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                        className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                          theme === "light"
+                            ? "border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] text-[#4A4A4A]"
+                            : "border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700 text-gray-200"
+                        }`}
                         placeholder="First Name"
                         value={formData.firstName}
                         onChange={handleChange}
@@ -211,7 +232,11 @@ const SignupPage = () => {
                         name="lastName"
                         type="text"
                         required
-                        className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                        className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                          theme === "light"
+                            ? "border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] text-[#4A4A4A]"
+                            : "border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700 text-gray-200"
+                        }`}
                         placeholder="Last Name"
                         value={formData.lastName}
                         onChange={handleChange}
@@ -222,7 +247,11 @@ const SignupPage = () => {
                       name="email"
                       type="email"
                       required
-                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                        theme === "light"
+                          ? "border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] text-[#4A4A4A]"
+                          : "border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700 text-gray-200"
+                      }`}
                       placeholder="Email address"
                       value={formData.email}
                       onChange={handleChange}
@@ -234,7 +263,11 @@ const SignupPage = () => {
                           name="businessName"
                           type="text"
                           required
-                          className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                            theme === "light"
+                              ? "border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] text-[#4A4A4A]"
+                              : "border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700 text-gray-200"
+                          }`}
                           placeholder="Business Name"
                           value={formData.businessName}
                           onChange={handleChange}
@@ -244,7 +277,11 @@ const SignupPage = () => {
                           name="address"
                           type="text"
                           required
-                          className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                            theme === "light"
+                              ? "border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] text-[#4A4A4A]"
+                              : "border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700 text-gray-200"
+                          }`}
                           placeholder="Business Address"
                           value={formData.address}
                           onChange={handleChange}
@@ -252,7 +289,11 @@ const SignupPage = () => {
                         
                         <textarea
                           name="description"
-                          className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                            theme === "light"
+                              ? "border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] text-[#4A4A4A]"
+                              : "border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700 text-gray-200"
+                          }`}
                           placeholder="Business Description"
                           value={formData.description}
                           onChange={handleChange}
@@ -262,15 +303,24 @@ const SignupPage = () => {
                         <input
                           name="phone"
                           type="text"
-                          className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                            theme === "light"
+                              ? "border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] text-[#4A4A4A]"
+                              : "border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700 text-gray-200"
+                          }`}
                           placeholder="Phone Number"
                           value={formData.phone}
                           onChange={handleChange}
                         />
                         
-                        {/* Opening Hours - now in a scrollable panel */}
-                        <div className="border border-[#E0E0E0] rounded-lg p-4">
-                          <h3 className="text-lg font-semibold text-[#4A4A4A] mb-3">
+                        <div className={`border rounded-lg p-4 ${
+                          theme === "light" 
+                            ? "border-gray-300 bg-[#F8F8F8]" 
+                            : "border-gray-600 bg-gray-700"
+                        }`}>
+                          <h3 className={`text-lg font-semibold mb-3 ${
+                            theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+                          }`}>
                             Opening Hours
                           </h3>
                           
@@ -297,30 +347,37 @@ const SignupPage = () => {
                                 }
                               }}
                             />
-                            <label htmlFor="sameHoursAllDays">Same hours for all days</label>
+                            <label htmlFor="sameHoursAllDays" className={
+                              theme === "light" ? "text-[#4A4A4A]" : "text-gray-300"
+                            }>
+                              Same hours for all days
+                            </label>
                           </div>
                           
                           <div className="max-h-60 overflow-y-auto pr-2 space-y-3">
                             {Object.keys(formData.openingHours).map((day) => (
                               <div key={day} className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                                <label className="w-24 capitalize font-medium">{day}:</label>
+                                <label className={`w-24 capitalize font-medium ${
+                                  theme === "light" ? "text-[#4A4A4A]" : "text-gray-300"
+                                }`}>
+                                  {day}:
+                                </label>
                                 <div className="flex-1 grid grid-cols-2 gap-2">
-                                  {/* Open time dropdown */}
-                                  <div className="relative">
                                   <select
                                     name={`openingHours.${day}.open`}
                                     value={formData.openingHours[day].open}
                                     onChange={handleChange}
-                                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] appearance-none"
+                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                                      theme === "light"
+                                        ? "border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] text-[#4A4A4A]"
+                                        : "border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700 text-gray-200"
+                                    }`}
                                   >
                                     <option value="">Closed</option>
                                     {Array.from({ length: 49 }, (_, i) => {
-                                      // 00:00 to 24:00 in 30-minute increments
                                       const hours = Math.floor(i / 2);
                                       const minutes = i % 2 === 0 ? '00' : '30';
                                       const timeValue = `${String(hours).padStart(2, '0')}:${minutes}`;
-                                      
-                                      // Display in 24-hour format (e.g., "09:00", "17:30")
                                       return (
                                         <option key={`open-${day}-${i}`} value={timeValue}>
                                           {timeValue}
@@ -328,20 +385,16 @@ const SignupPage = () => {
                                       );
                                     })}
                                   </select>
-                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                                      <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                                      </svg>
-                                    </div>
-                                  </div>
                                   
-                                  {/* Close time dropdown */}
-                                  <div className="relative">
                                   <select
                                     name={`openingHours.${day}.close`}
                                     value={formData.openingHours[day].close}
                                     onChange={handleChange}
-                                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] appearance-none"
+                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                                      theme === "light"
+                                        ? "border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] text-[#4A4A4A]"
+                                        : "border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700 text-gray-200"
+                                    }`}
                                     disabled={!formData.openingHours[day].open}
                                   >
                                     <option value="">Closed</option>
@@ -350,7 +403,6 @@ const SignupPage = () => {
                                         const hours = Math.floor(i / 2);
                                         const minutes = i % 2 === 0 ? '00' : '30';
                                         const timeValue = `${String(hours).padStart(2, '0')}:${minutes}`;
-                                        
                                         return (
                                           <option key={`close-${day}-${i}`} value={timeValue}>
                                             {timeValue}
@@ -359,12 +411,6 @@ const SignupPage = () => {
                                       })
                                     }
                                   </select>
-                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                                      <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                                      </svg>
-                                    </div>
-                                  </div>
                                 </div>
                               </div>
                             ))}
@@ -377,7 +423,11 @@ const SignupPage = () => {
                       name="password"
                       type="password"
                       required
-                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                        theme === "light"
+                          ? "border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] text-[#4A4A4A]"
+                          : "border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700 text-gray-200"
+                      }`}
                       placeholder="Password"
                       value={formData.password}
                       onChange={handleChange}
@@ -387,7 +437,11 @@ const SignupPage = () => {
                       name="confirmPassword"
                       type="password"
                       required
-                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                        theme === "light"
+                          ? "border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] text-[#4A4A4A]"
+                          : "border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700 text-gray-200"
+                      }`}
                       placeholder="Confirm Password"
                       value={formData.confirmPassword}
                       onChange={handleChange}
@@ -396,7 +450,11 @@ const SignupPage = () => {
                   
                   <button
                     type="submit"
-                    className="w-full py-3 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#8fa9b8] transition duration-300"
+                    className={`w-full py-3 rounded-lg transition duration-300 ${
+                      theme === "light"
+                        ? "bg-[#A2B9C6] text-white hover:bg-[#8fa9b8]"
+                        : "bg-[#FADADD] text-[#4A4A4A] hover:bg-[#f0c8cc]"
+                    }`}
                   >
                     Sign up
                   </button>
@@ -405,7 +463,11 @@ const SignupPage = () => {
                 <div className="text-center mt-4">
                   <Link
                     to="/login"
-                    className="text-sm text-[#A2B9C6] hover:text-[#8fa9b8] transition duration-300"
+                    className={`text-sm transition duration-300 ${
+                      theme === "light"
+                        ? "text-[#A2B9C6] hover:text-[#8fa9b8]"
+                        : "text-[#FADADD] hover:text-[#f0c8cc]"
+                    }`}
                   >
                     Already have an account? Sign in
                   </Link>
@@ -416,9 +478,7 @@ const SignupPage = () => {
         </div>
       </div>
     </div>
-  ); 
-
+  );
 };
 
 export default SignupPage;
-
