@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link, useParams } from "react-router-dom";
 import StarRating from "../components/StarRating";
+import ReviewItem from "../components/ReviewItem";
+import ReviewForm from "../components/ReviewForm";
 import axios from "axios";
 import { BookingContext } from "../context/BookingContext";
 import BookingSidebar from "../components/BookingSidebar";
+import { useAuth } from "../hooks/useAuth";
 
 // Create axios instance with default config
 const API_URL = import.meta.env.VITE_API_URL || "";
@@ -23,6 +26,8 @@ const SalonDetailsPage = () => {
   const [error, setError] = useState(null);
   const [isBookingSidebarOpen, setIsBookingSidebarOpen] = useState(false);
   const { addToBooking, bookingCount } = useContext(BookingContext);
+  const { user, isAuthenticated } = useAuth();
+  const [showReviewForm, setShowReviewForm] = useState(false);
 
   useEffect(() => {
     const fetchSalonDetails = async () => {
@@ -52,6 +57,14 @@ const SalonDetailsPage = () => {
     fetchSalonDetails();
     fetchReviews();
   }, [salonId]);
+
+  // Handle new review submission
+  const handleReviewSubmitted = (newReview) => {
+    // Add the new review to the reviews array
+    setReviews([newReview, ...reviews]);
+    // Hide the review form after submission
+    setShowReviewForm(false);
+  };
 
   if (loading) return <p className="text-center text-gray-500">Loading...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
@@ -179,20 +192,45 @@ const SalonDetailsPage = () => {
           {reviews.length > 0 ? (
             <div className="space-y-6">
               {reviews.map((review) => (
-                <div key={review._id} className="border-b pb-4">
-                  <div className="flex items-center mb-2">
-                    <div className="font-medium mr-2">{review.customerName}</div>
-                    <StarRating rating={review.rating} />
-                  </div>
-                  <p className="text-[#4A4A4A]/80">{review.comment}</p>
-                  <div className="text-sm text-[#4A4A4A]/60 mt-1">
-                    {new Date(review.createdAt).toLocaleDateString()}
-                  </div>
-                </div>
+                <ReviewItem key={review._id} review={review} />
               ))}
             </div>
           ) : (
             <p className="text-[#4A4A4A]/80">No reviews available for this salon yet.</p>
+          )}
+          
+          {isAuthenticated && user?.role === 'customer' ? (
+            showReviewForm ? (
+              <div className="mt-8">
+                <ReviewForm 
+                  salonId={salonId} 
+                  onReviewSubmitted={handleReviewSubmitted} 
+                />
+                <button
+                  onClick={() => setShowReviewForm(false)}
+                  className="mt-4 text-[#4A4A4A] underline"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowReviewForm(true)}
+                className="mt-6 px-6 py-2 bg-[#FADADD] text-[#4A4A4A] rounded hover:bg-[#f0c8cc] transition duration-300"
+              >
+                Write a Review
+              </button>
+            )
+          ) : isAuthenticated ? (
+            <p className="mt-6 text-[#4A4A4A]/80 italic">
+              Only customers can write reviews.
+            </p>
+          ) : (
+            <p className="mt-6 text-[#4A4A4A]/80 italic">
+              <Link to="/login" className="text-[#FADADD] hover:underline">
+                Log in
+              </Link> to write a review.
+            </p>
           )}
         </div>
       </section>

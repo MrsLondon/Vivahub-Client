@@ -3,8 +3,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../hooks/useAuth';
 import { Link } from 'react-router-dom';
+import Header from '../components/Header';
+import { useTheme } from '../context/ThemeContext';
 
-// Create axios instance with default config
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 const api = axios.create({
@@ -15,6 +16,7 @@ const api = axios.create({
 });
 
 const LoginPage = () => {
+  const { theme, toggleTheme } = useTheme();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -24,11 +26,9 @@ const LoginPage = () => {
   const location = useLocation();
   const { login } = useAuth();
   
-  // Extract returnUrl from query parameters if it exists
   const [returnUrl, setReturnUrl] = useState('');
   
   useEffect(() => {
-    // Get returnUrl from query parameters when component mounts
     const params = new URLSearchParams(location.search);
     const returnPath = params.get('returnUrl');
     if (returnPath) {
@@ -52,7 +52,6 @@ const LoginPage = () => {
       console.log('Login successful:', { token, user });
       login({ ...user, token });
       
-      // If there's a returnUrl, navigate there, otherwise go to the appropriate dashboard
       if (returnUrl) {
         navigate(returnUrl);
       } else if (user.role === 'customer') {
@@ -73,68 +72,94 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F8F8F8] py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
-        <div>
-          <h2 className="text-center text-2xl font-medium text-[#4A4A4A]">
+    <div className={`min-h-screen font-body transition-colors duration-300 ${
+      theme === "light" ? "bg-white text-[#4A4A4A]" : "bg-gray-900 text-gray-200"
+    }`}>
+      {/* Header */}
+      <Header theme={theme} toggleTheme={toggleTheme} />
+
+      <div className="max-w-4xl mx-auto px-4 py-16">
+        <div className={`rounded-xl p-8 shadow-sm ${
+          theme === "light" ? "bg-white" : "bg-gray-800"
+        }`}>
+          <h2 className="text-3xl font-heading font-semibold mb-2 text-center">
             Sign in to your account
           </h2>
-          <p className="mt-2 text-center text-sm text-[#4A4A4A]/80">
-            Access your VivaHub dashboard
-          </p>
-        </div>
+          <div className="w-24 h-1 bg-[#A2B9C6] mx-auto mb-8"></div>
 
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-            <span className="block sm:inline">{error}</span>
-          </div>
-        )}
-
-        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="email" className="sr-only">Email address</label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-[#E0E0E0] placeholder-[#4A4A4A]/60 text-[#4A4A4A] rounded-t-md focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] sm:text-sm"
-                placeholder="Email address"
-                value={formData.email}
-                onChange={handleChange}
-              />
+          {error && (
+            <div className={`mb-4 p-3 rounded-lg ${
+              theme === "light" 
+                ? "bg-red-100 text-red-700" 
+                : "bg-red-900 text-red-100"
+            }`}>
+              {error}
             </div>
-            <div>
-              <label htmlFor="password" className="sr-only">Password</label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-[#E0E0E0] placeholder-[#4A4A4A]/60 text-[#4A4A4A] rounded-b-md focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] sm:text-sm"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
+          )}
 
-          <div>
+          <form className="space-y-6" onSubmit={handleLogin}>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="email" className="sr-only">Email address</label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                    theme === "light"
+                      ? "border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6]"
+                      : "border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700"
+                  }`}
+                  placeholder="Email address"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label htmlFor="password" className="sr-only">Password</label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                    theme === "light"
+                      ? "border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6]"
+                      : "border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700"
+                  }`}
+                  placeholder="Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#A2B9C6] hover:bg-[#8BA5B3] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#A2B9C6]"
+              className={`w-full py-3 rounded-lg transition-colors ${
+                theme === "light"
+                  ? "bg-[#A2B9C6] text-white hover:bg-[#8fa9b8]"
+                  : "bg-[#FADADD] text-[#4A4A4A] hover:bg-[#f0c8cc]"
+              }`}
             >
               Sign in
             </button>
-          </div>
-          
-          <div className="text-center">
-            <Link to="/signup" className="text-sm text-[#A2B9C6] hover:text-[#8BA5B3]">
-              Don't have an account? Sign up
-            </Link>
-          </div>
-        </form>
+            
+            <div className="text-center">
+              <Link
+                to="/signup"
+                className={`text-sm ${
+                  theme === "light"
+                    ? "text-[#A2B9C6] hover:text-[#8fa9b8]"
+                    : "text-[#FADADD] hover:text-[#f0c8cc]"
+                }`}
+              >
+                Don't have an account? Sign up
+              </Link>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

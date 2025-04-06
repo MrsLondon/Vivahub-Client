@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import Navbar from "../components/Navbar";
+import Header from "../components/Header";
+import { useTheme } from "../context/ThemeContext";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
@@ -13,7 +14,8 @@ const api = axios.create({
 });
 
 const SignupPage = () => {
-  const [step, setStep] = useState("role"); // 'role', 'form'
+  const { theme, toggleTheme } = useTheme();
+  const [step, setStep] = useState("role");
   const [role, setRole] = useState("");
   const [formData, setFormData] = useState({
     email: "",
@@ -21,7 +23,6 @@ const SignupPage = () => {
     confirmPassword: "",
     firstName: "",
     lastName: "",
-    // Business specific fields
     businessName: "",
     address: "",
     description: "",
@@ -48,7 +49,7 @@ const SignupPage = () => {
     const { name, value } = e.target;
 
     if (name.startsWith("openingHours")) {
-      const [_, day, time] = name.split("."); // Exemple: "openingHours.monday.open"
+      const [_, day, time] = name.split(".");
       setFormData((prevFormData) => ({
         ...prevFormData,
         openingHours: {
@@ -70,15 +71,13 @@ const SignupPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
-    // Verify if the password and confirm password match
+  
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       return;
     }
-
+  
     try {
-      // User data
       const signupData = {
         email: formData.email,
         password: formData.password,
@@ -86,27 +85,28 @@ const SignupPage = () => {
         lastName: formData.lastName,
         role: role,
       };
-
-      // Including salon data if the user is a business
+  
       if (role === "business") {
-        signupData.businessDetails = {
-          businessName: formData.businessName,
-          address: formData.address,
+        const salonData = {
+          name: formData.businessName,
+          location: formData.address,
           description: formData.description,
           phone: formData.phone,
-          email: formData.email, // the same email as the user
+          email: formData.email,
           openingHours: formData.openingHours,
         };
+  
+        const userResponse = await api.post("/api/auth/register", signupData);
+        const salonResponse = await api.post("/api/salons", salonData, {
+          headers: {
+            Authorization: `Bearer ${userResponse.data.token}`,
+          },
+        });
+        navigate("/login");
+      } else {
+        const userResponse = await api.post("/api/auth/register", signupData);
+        navigate("/login");
       }
-
-      console.log("Signup data being sent:", signupData);
-
-      // Send data to the backend
-      const userResponse = await api.post("/api/auth/register", signupData);
-      console.log("Signup successful:", userResponse.data);
-
-      // Redirect the user to the login page
-      navigate("/login");
     } catch (err) {
       console.error("Signup error:", err);
       setError(
@@ -115,90 +115,86 @@ const SignupPage = () => {
     }
   };
 
-  if (step === "role") {
-    return (
-      <div className="font-sans bg-[#F8F8F8] min-h-screen flex flex-col">
-        <Navbar />
-        <div className="flex-grow flex items-center justify-center">
-          <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
-            <h2 className="text-center text-3xl font-extrabold text-[#4A4A4A]">
-              Create your account
-            </h2>
-            <p className="text-center text-sm text-[#4A4A4A]/80">
-              Choose your account type
-            </p>
-            <div className="mt-8 space-y-4">
-              <button
-                onClick={() => handleRoleSelect("customer")}
-                className="w-full py-3 px-4 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#8fa9b8] transition duration-300"
-              >
-                I'm a Customer
-              </button>
-              <button
-                onClick={() => handleRoleSelect("business")}
-                className="w-full py-3 px-4 bg-[#FADADD] text-[#4A4A4A] rounded-lg hover:bg-[#f0c8cc] transition duration-300"
-              >
-                I'm a Business
-              </button>
+  return (
+
+    <div className={`min-h-screen font-body transition-colors duration-300 ${
+      theme === "light" ? "bg-white text-[#4A4A4A]" : "bg-gray-900 text-gray-200"
+    }`}>
+      {/* Header */}
+      <Header theme={theme} toggleTheme={toggleTheme} />
+
+      <div className="max-w-4xl mx-auto px-4 py-16">
+        {step === "role" ? (
+          <div className="flex-grow flex items-center justify-center">
+            <div className={`max-w-md w-full space-y-8 p-8 rounded-xl shadow-sm ${
+              theme === "light" ? "bg-white" : "bg-gray-800"
+            }`}>
+              <div className="text-center">
+                <h2 className="text-3xl font-heading font-semibold mb-2">
+                  Create your account
+                </h2>
+                <div className="w-24 h-1 bg-[#A2B9C6] mx-auto mb-8"></div>
+                <p className="text-sm">
+                  Choose your account type
+                </p>
+              </div>
+              
+              <div className="mt-8 space-y-4">
+                <button
+                  onClick={() => handleRoleSelect("customer")}
+                  className={`w-full py-3 px-4 rounded-lg transition-colors ${
+                    theme === "light"
+                      ? "bg-[#A2B9C6] text-white hover:bg-[#8fa9b8]"
+                      : "bg-[#FADADD] text-[#4A4A4A] hover:bg-[#f0c8cc]"
+                  }`}
+                >
+                  I'm a Customer
+                </button>
+                <button
+                  onClick={() => handleRoleSelect("business")}
+                  className={`w-full py-3 px-4 rounded-lg transition-colors ${
+                    theme === "light"
+                      ? "bg-[#FADADD] text-[#4A4A4A] hover:bg-[#f0c8cc]"
+                      : "bg-[#A2B9C6] text-white hover:bg-[#8fa9b8]"
+                  }`}
+                >
+                  I'm a Business
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="font-sans bg-[#F8F8F8] min-h-screen flex flex-col">
-      <Navbar />
-      <div className="flex-grow flex items-center justify-center p-4">
-        <div className="w-full max-w-4xl">
-          {" "}
-          {/* Increased max width for large screens */}
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            {" "}
-            {/* Added overflow-hidden */}
-            {/* Two-column layout for large screens */}
-            <div className="md:flex">
-              {/* Left side - decorative image/branding (only on large screens) */}
-              <div className="hidden md:block md:w-1/3 bg-[#E0E0E0] p-8 flex items-center justify-center">
-                <div className="text-center">
-                  <h2 className="text-2xl font-bold text-[#4A4A4A] mb-4">
-                    {role === "business"
-                      ? "Grow Your Business"
-                      : "Find Your Perfect Style"}
-                  </h2>
-                  <p className="text-[#4A4A4A]">
-                    {role === "business"
-                      ? "Join our platform and connect with thousands of potential customers"
-                      : "Discover the best salons and book appointments with ease"}
-                  </p>
-                </div>
+        ) : (
+          <div className={`rounded-xl p-8 shadow-sm ${
+            theme === "light" ? "bg-white" : "bg-gray-800"
+          }`}>
+            <h2 className="text-3xl font-heading font-semibold mb-2 text-center">
+              Create your {role} account
+            </h2>
+            <div className="w-24 h-1 bg-[#A2B9C6] mx-auto mb-8"></div>
+            
+            {error && (
+              <div className={`mb-4 p-3 rounded-lg ${
+                theme === "light" 
+                  ? "bg-red-100 text-red-700" 
+                  : "bg-red-900 text-red-100"
+              }`}>
+                {error}
               </div>
-
-              {/* Right side - form content */}
-              <div className="w-full md:w-2/3 p-6 md:p-8">
-                <h2 className="text-center text-3xl font-extrabold text-[#4A4A4A]">
-                  Create your {role} account
-                </h2>
-
-                {error && (
-                  <div
-                    className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4"
-                    role="alert"
-                  >
-                    <span className="block sm:inline">{error}</span>
-                  </div>
-                )}
+            )}
+                
 
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                   <div className="space-y-4">
-                    {/* Name fields in row on large screens */}
                     <div className="flex flex-col md:flex-row gap-4">
                       <input
                         name="firstName"
                         type="text"
                         required
-                        className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                        className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                          theme === "light"
+                            ? "border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] text-[#4A4A4A]"
+                            : "border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700 text-gray-200"
+                        }`}
                         placeholder="First Name"
                         value={formData.firstName}
                         onChange={handleChange}
@@ -207,7 +203,11 @@ const SignupPage = () => {
                         name="lastName"
                         type="text"
                         required
-                        className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                        className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                          theme === "light"
+                            ? "border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] text-[#4A4A4A]"
+                            : "border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700 text-gray-200"
+                        }`}
                         placeholder="Last Name"
                         value={formData.lastName}
                         onChange={handleChange}
@@ -218,7 +218,11 @@ const SignupPage = () => {
                       name="email"
                       type="email"
                       required
-                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                        theme === "light"
+                          ? "border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] text-[#4A4A4A]"
+                          : "border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700 text-gray-200"
+                      }`}
                       placeholder="Email address"
                       value={formData.email}
                       onChange={handleChange}
@@ -230,7 +234,11 @@ const SignupPage = () => {
                           name="businessName"
                           type="text"
                           required
-                          className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                            theme === "light"
+                              ? "border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] text-[#4A4A4A]"
+                              : "border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700 text-gray-200"
+                          }`}
                           placeholder="Business Name"
                           value={formData.businessName}
                           onChange={handleChange}
@@ -240,7 +248,11 @@ const SignupPage = () => {
                           name="address"
                           type="text"
                           required
-                          className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                            theme === "light"
+                              ? "border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] text-[#4A4A4A]"
+                              : "border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700 text-gray-200"
+                          }`}
                           placeholder="Business Address"
                           value={formData.address}
                           onChange={handleChange}
@@ -248,7 +260,11 @@ const SignupPage = () => {
 
                         <textarea
                           name="description"
-                          className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                            theme === "light"
+                              ? "border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] text-[#4A4A4A]"
+                              : "border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700 text-gray-200"
+                          }`}
                           placeholder="Business Description"
                           value={formData.description}
                           onChange={handleChange}
@@ -258,15 +274,26 @@ const SignupPage = () => {
                         <input
                           name="phone"
                           type="text"
-                          className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                            theme === "light"
+                              ? "border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] text-[#4A4A4A]"
+                              : "border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700 text-gray-200"
+                          }`}
                           placeholder="Phone Number"
                           value={formData.phone}
                           onChange={handleChange}
                         />
 
-                        {/* Opening Hours - now in a scrollable panel */}
-                        <div className="border border-[#E0E0E0] rounded-lg p-4">
-                          <h3 className="text-lg font-semibold text-[#4A4A4A] mb-3">
+                        
+                        <div className={`border rounded-lg p-4 ${
+                          theme === "light" 
+                            ? "border-gray-300 bg-[#F8F8F8]" 
+                            : "border-gray-600 bg-gray-700"
+                        }`}>
+                          <h3 className={`text-lg font-semibold mb-3 ${
+                            theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+                          }`}>
+
                             Opening Hours
                           </h3>
 
@@ -293,114 +320,74 @@ const SignupPage = () => {
                                 }
                               }}
                             />
-                            <label htmlFor="sameHoursAllDays">
+
+                            <label htmlFor="sameHoursAllDays" className={
+                              theme === "light" ? "text-[#4A4A4A]" : "text-gray-300"
+                            }>
+
                               Same hours for all days
                             </label>
                           </div>
 
                           <div className="max-h-60 overflow-y-auto pr-2 space-y-3">
                             {Object.keys(formData.openingHours).map((day) => (
-                              <div
-                                key={day}
-                                className="flex flex-col sm:flex-row items-start sm:items-center gap-3"
-                              >
-                                <label className="w-24 capitalize font-medium">
+
+                              <div key={day} className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                                <label className={`w-24 capitalize font-medium ${
+                                  theme === "light" ? "text-[#4A4A4A]" : "text-gray-300"
+                                }`}>
                                   {day}:
                                 </label>
                                 <div className="flex-1 grid grid-cols-2 gap-2">
-                                  {/* Open time dropdown */}
-                                  <div className="relative">
-                                    <select
-                                      name={`openingHours.${day}.open`}
-                                      value={formData.openingHours[day].open}
-                                      onChange={handleChange}
-                                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] appearance-none"
-                                    >
-                                      <option value="">Closed</option>
-                                      {Array.from({ length: 25 }, (_, i) => {
-                                        const hour = i % 12 || 12;
-                                        const ampm = i < 12 ? "AM" : "PM";
-                                        const time = `${hour}:${
-                                          i % 2 === 0 ? "00" : "30"
-                                        } ${ampm}`;
-                                        const value = `${String(
-                                          Math.floor(i / 2)
-                                        ).padStart(2, "0")}:${
-                                          i % 2 === 0 ? "00" : "30"
-                                        }`;
+                                  <select
+                                    name={`openingHours.${day}.open`}
+                                    value={formData.openingHours[day].open}
+                                    onChange={handleChange}
+                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                                      theme === "light"
+                                        ? "border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] text-[#4A4A4A]"
+                                        : "border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700 text-gray-200"
+                                    }`}
+                                  >
+                                    <option value="">Closed</option>
+                                    {Array.from({ length: 49 }, (_, i) => {
+                                      const hours = Math.floor(i / 2);
+                                      const minutes = i % 2 === 0 ? '00' : '30';
+                                      const timeValue = `${String(hours).padStart(2, '0')}:${minutes}`;
+                                      return (
+                                        <option key={`open-${day}-${i}`} value={timeValue}>
+                                          {timeValue}
+                                        </option>
+                                      );
+                                    })}
+                                  </select>
+                                  
+                                  <select
+                                    name={`openingHours.${day}.close`}
+                                    value={formData.openingHours[day].close}
+                                    onChange={handleChange}
+                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                                      theme === "light"
+                                        ? "border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] text-[#4A4A4A]"
+                                        : "border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700 text-gray-200"
+                                    }`}
+                                    disabled={!formData.openingHours[day].open}
+                                  >
+                                    <option value="">Closed</option>
+                                    {formData.openingHours[day].open && 
+                                      Array.from({ length: 49 }, (_, i) => {
+                                        const hours = Math.floor(i / 2);
+                                        const minutes = i % 2 === 0 ? '00' : '30';
+                                        const timeValue = `${String(hours).padStart(2, '0')}:${minutes}`;
                                         return (
-                                          <option
-                                            key={`open-${day}-${i}`}
-                                            value={value}
-                                          >
-                                            {time}
+                                          <option key={`close-${day}-${i}`} value={timeValue}>
+                                            {timeValue}
                                           </option>
                                         );
-                                      })}
-                                    </select>
-                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                                      <svg
-                                        className="h-5 w-5 text-gray-400"
-                                        fill="currentColor"
-                                        viewBox="0 0 20 20"
-                                      >
-                                        <path
-                                          fillRule="evenodd"
-                                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                          clipRule="evenodd"
-                                        />
-                                      </svg>
-                                    </div>
-                                  </div>
+                                      })
+                                    }
+                                  </select>
 
-                                  {/* Close time dropdown */}
-                                  <div className="relative">
-                                    <select
-                                      name={`openingHours.${day}.close`}
-                                      value={formData.openingHours[day].close}
-                                      onChange={handleChange}
-                                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] appearance-none"
-                                      disabled={
-                                        !formData.openingHours[day].open
-                                      }
-                                    >
-                                      <option value="">Closed</option>
-                                      {formData.openingHours[day].open &&
-                                        Array.from({ length: 25 }, (_, i) => {
-                                          const hour = i % 12 || 12;
-                                          const ampm = i < 12 ? "AM" : "PM";
-                                          const time = `${hour}:${
-                                            i % 2 === 0 ? "00" : "30"
-                                          } ${ampm}`;
-                                          const value = `${String(
-                                            Math.floor(i / 2)
-                                          ).padStart(2, "0")}:${
-                                            i % 2 === 0 ? "00" : "30"
-                                          }`;
-                                          return (
-                                            <option
-                                              key={`close-${day}-${i}`}
-                                              value={value}
-                                            >
-                                              {time}
-                                            </option>
-                                          );
-                                        })}
-                                    </select>
-                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                                      <svg
-                                        className="h-5 w-5 text-gray-400"
-                                        fill="currentColor"
-                                        viewBox="0 0 20 20"
-                                      >
-                                        <path
-                                          fillRule="evenodd"
-                                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                          clipRule="evenodd"
-                                        />
-                                      </svg>
-                                    </div>
-                                  </div>
                                 </div>
                               </div>
                             ))}
@@ -413,7 +400,11 @@ const SignupPage = () => {
                       name="password"
                       type="password"
                       required
-                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                        theme === "light"
+                          ? "border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] text-[#4A4A4A]"
+                          : "border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700 text-gray-200"
+                      }`}
                       placeholder="Password"
                       value={formData.password}
                       onChange={handleChange}
@@ -423,7 +414,11 @@ const SignupPage = () => {
                       name="confirmPassword"
                       type="password"
                       required
-                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                        theme === "light"
+                          ? "border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] text-[#4A4A4A]"
+                          : "border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700 text-gray-200"
+                      }`}
                       placeholder="Confirm Password"
                       value={formData.confirmPassword}
                       onChange={handleChange}
@@ -432,24 +427,19 @@ const SignupPage = () => {
 
                   <button
                     type="submit"
-                    className="w-full py-3 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#8fa9b8] transition duration-300"
+                    className={`w-full py-3 rounded-lg transition duration-300 ${
+                      theme === "light"
+                        ? "bg-[#A2B9C6] text-white hover:bg-[#8fa9b8]"
+                        : "bg-[#FADADD] text-[#4A4A4A] hover:bg-[#f0c8cc]"
+                    }`}
                   >
                     Sign up
                   </button>
-                </form>
 
-                <div className="text-center mt-4">
-                  <Link
-                    to="/login"
-                    className="text-sm text-[#A2B9C6] hover:text-[#8fa9b8] transition duration-300"
-                  >
-                    Already have an account? Sign in
-                  </Link>
-                </div>
-              </div>
-            </div>
+                  </form>
+
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
