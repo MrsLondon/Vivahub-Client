@@ -19,6 +19,7 @@ import { FAQsPage } from "./pages/FAQsPage";
 import { CookiePolicyPage } from "./pages/CookiePolicyPage";
 import { PrivacyPolicyPage } from "./pages/PrivacyPolicyPage";
 import { TermsOfServicePage } from "./pages/TermsOfServicePage";
+import { ClaimOfferPage } from "./pages/ClaimOfferPage";
 import SearchResults from "./pages/SearchResults";
 import Navbar from "./components/Navbar";
 import { Toaster } from "react-hot-toast";
@@ -182,6 +183,12 @@ const App = () => {
                 path="/cookie-policy"
                 element={
                     <CookiePolicyPage />
+                }
+              />
+              <Route
+                path="/claim-offer"
+                element={
+                    <ClaimOfferPage />
                 }
               />
 

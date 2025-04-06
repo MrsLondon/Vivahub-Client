@@ -15,7 +15,7 @@ const SpecialOffers = () => {
             Claim your exclusive discount coupon for your next salon visit.
           </p>
           <Link
-            to="/special-offers"
+            to="/claim-offer"
             className="font-body px-6 py-2 bg-[#A2B9C6] dark:bg-[#FADADD] text-white dark:text-[#4A4A4A] rounded-lg hover:bg-[#91A7B4] dark:hover:bg-[#f0c8cc] transition-colors"
           >
             Claim Now
