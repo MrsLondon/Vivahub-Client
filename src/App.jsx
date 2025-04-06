@@ -72,18 +72,18 @@ const App = () => {
               <Route
                 path="/login"
                 element={
-                  <NavbarLayout>
+                  
                     <LoginPage />
-                  </NavbarLayout>
+                 
                 }
               />
               <Route path="/signup" element={<SignupPage />} />
               <Route
                 path="/salons/update/:id"
                 element={
-                  <NavbarLayout>
+                  
                     <BusinessProfile />
-                  </NavbarLayout>
+                
                 }
               />
               <Route

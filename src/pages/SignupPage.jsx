@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import Navbar from "../components/Navbar";
+import Header from "../components/Header";
 import { useTheme } from "../context/ThemeContext";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
@@ -14,8 +14,8 @@ const api = axios.create({
 });
 
 const SignupPage = () => {
-  const { theme } = useTheme();
-  const [step, setStep] = useState("role"); // 'role', 'form'
+  const { theme, toggleTheme } = useTheme();
+  const [step, setStep] = useState("role");
   const [role, setRole] = useState("");
   const [formData, setFormData] = useState({
     email: "",
@@ -115,102 +115,71 @@ const SignupPage = () => {
     }
   };
 
-  if (step === "role") {
-    return (
-      <div className={`font-sans min-h-screen flex flex-col ${
-        theme === "light" ? "bg-[#eeeeee]" : "bg-gray-900"
-      }`}>
-        <Navbar />
-        <div className="flex-grow flex items-center justify-center">
-          <div className={`max-w-md w-full space-y-8 p-8 rounded-lg shadow-sm border ${
-            theme === "light" 
-              ? "bg-white border-gray-200" 
-              : "bg-gray-800 border-gray-700"
-          }`}>
-            <h2 className={`text-center text-3xl font-extrabold ${
-              theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-            }`}>
-              Create your account
-            </h2>
-            <p className={`text-center text-sm ${
-              theme === "light" ? "text-[#4A4A4A]/80" : "text-gray-300"
-            }`}>
-              Choose your account type
-            </p>
-            <div className="mt-8 space-y-4">
-              <button
-                onClick={() => handleRoleSelect("customer")}
-                className={`w-full py-3 px-4 rounded-lg transition duration-300 ${
-                  theme === "light"
-                    ? "bg-[#A2B9C6] text-white hover:bg-[#8fa9b8]"
-                    : "bg-[#FADADD] text-[#4A4A4A] hover:bg-[#f0c8cc]"
-                }`}
-              >
-                I'm a Customer
-              </button>
-              <button
-                onClick={() => handleRoleSelect("business")}
-                className={`w-full py-3 px-4 rounded-lg transition duration-300 ${
-                  theme === "light"
-                    ? "bg-[#FADADD] text-[#4A4A4A] hover:bg-[#f0c8cc]"
-                    : "bg-[#A2B9C6] text-white hover:bg-[#8fa9b8]"
-                }`}
-              >
-                I'm a Business
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className={`font-sans min-h-screen flex flex-col ${
-      theme === "light" ? "bg-[#eeeeee]" : "bg-gray-900"
+    <div className={`min-h-screen font-body transition-colors duration-300 ${
+      theme === "light" ? "bg-white text-[#4A4A4A]" : "bg-gray-900 text-gray-200"
     }`}>
-      <Navbar />
-      <div className="flex-grow flex items-center justify-center p-4">
-        <div className="w-full max-w-4xl">
-          <div className={`rounded-lg shadow-sm border ${
-            theme === "light" 
-              ? "bg-white border-gray-200" 
-              : "bg-gray-800 border-gray-700"
-          }`}>
-            <div className="md:flex">
-              <div className={`hidden md:block md:w-1/3 p-8 flex items-center justify-center ${
-                theme === "light" ? "bg-[#E0E0E0]" : "bg-gray-700"
-              }`}>
-                <div className="text-center">
-                  <h2 className={`text-2xl font-bold mb-4 ${
-                    theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-                  }`}>
-                    {role === "business" ? "Grow Your Business" : "Find Your Perfect Style"}
-                  </h2>
-                  <p className={theme === "light" ? "text-[#4A4A4A]" : "text-gray-300"}>
-                    {role === "business" 
-                      ? "Join our platform and connect with thousands of potential customers"
-                      : "Discover the best salons and book appointments with ease"}
-                  </p>
-                </div>
+      {/* Header */}
+      <Header theme={theme} toggleTheme={toggleTheme} />
+
+      <div className="max-w-4xl mx-auto px-4 py-16">
+        {step === "role" ? (
+          <div className="flex-grow flex items-center justify-center">
+            <div className={`max-w-md w-full space-y-8 p-8 rounded-xl shadow-sm ${
+              theme === "light" ? "bg-white" : "bg-gray-800"
+            }`}>
+              <div className="text-center">
+                <h2 className="text-3xl font-heading font-semibold mb-2">
+                  Create your account
+                </h2>
+                <div className="w-24 h-1 bg-[#A2B9C6] mx-auto mb-8"></div>
+                <p className="text-sm">
+                  Choose your account type
+                </p>
               </div>
               
-              <div className="w-full md:w-2/3 p-6 md:p-8">
-                <h2 className={`text-center text-3xl font-extrabold ${
-                  theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-                }`}>
-                  Create your {role} account
-                </h2>
-                
-                {error && (
-                  <div className={`mt-4 p-3 rounded-lg ${
-                    theme === "light" 
-                      ? "bg-red-100 border border-red-400 text-red-700" 
-                      : "bg-red-900 border border-red-700 text-red-100"
-                  }`}>
-                    <span className="block sm:inline">{error}</span>
-                  </div>
-                )}
+              <div className="mt-8 space-y-4">
+                <button
+                  onClick={() => handleRoleSelect("customer")}
+                  className={`w-full py-3 px-4 rounded-lg transition-colors ${
+                    theme === "light"
+                      ? "bg-[#A2B9C6] text-white hover:bg-[#8fa9b8]"
+                      : "bg-[#FADADD] text-[#4A4A4A] hover:bg-[#f0c8cc]"
+                  }`}
+                >
+                  I'm a Customer
+                </button>
+                <button
+                  onClick={() => handleRoleSelect("business")}
+                  className={`w-full py-3 px-4 rounded-lg transition-colors ${
+                    theme === "light"
+                      ? "bg-[#FADADD] text-[#4A4A4A] hover:bg-[#f0c8cc]"
+                      : "bg-[#A2B9C6] text-white hover:bg-[#8fa9b8]"
+                  }`}
+                >
+                  I'm a Business
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className={`rounded-xl p-8 shadow-sm ${
+            theme === "light" ? "bg-white" : "bg-gray-800"
+          }`}>
+            <h2 className="text-3xl font-heading font-semibold mb-2 text-center">
+              Create your {role} account
+            </h2>
+            <div className="w-24 h-1 bg-[#A2B9C6] mx-auto mb-8"></div>
+            
+            {error && (
+              <div className={`mb-4 p-3 rounded-lg ${
+                theme === "light" 
+                  ? "bg-red-100 text-red-700" 
+                  : "bg-red-900 text-red-100"
+              }`}>
+                {error}
+              </div>
+            )}
                 
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                   <div className="space-y-4">
@@ -458,24 +427,9 @@ const SignupPage = () => {
                   >
                     Sign up
                   </button>
-                </form>
-                
-                <div className="text-center mt-4">
-                  <Link
-                    to="/login"
-                    className={`text-sm transition duration-300 ${
-                      theme === "light"
-                        ? "text-[#A2B9C6] hover:text-[#8fa9b8]"
-                        : "text-[#FADADD] hover:text-[#f0c8cc]"
-                    }`}
-                  >
-                    Already have an account? Sign in
-                  </Link>
-                </div>
-              </div>
-            </div>
+                  </form>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
