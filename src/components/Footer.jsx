@@ -73,7 +73,7 @@ const Footer = () => {
           <ul className="space-y-2 text-sm text-white/80 dark:text-gray-400">
             <li>
               <Link
-                to="/privacy"
+                to="/privacy-policy"
                 className="font-body hover:text-[#FADADD] dark:hover:text-[#FADADD]"
               >
                 Privacy
@@ -81,7 +81,7 @@ const Footer = () => {
             </li>
             <li>
               <Link
-                to="/terms"
+                to="/terms-of-service"
                 className="font-body hover:text-[#FADADD] dark:hover:text-[#FADADD]"
               >
                 Terms

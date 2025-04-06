@@ -16,6 +16,9 @@ import { CareersPage } from "./pages/CareersPage";
 import { PressPage } from "./pages/PressPage";
 import { HelpCenterPage } from "./pages/HelpCenterPage";
 import { FAQsPage } from "./pages/FAQsPage";
+import { CookiePolicyPage } from "./pages/CookiePolicyPage";
+import { PrivacyPolicyPage } from "./pages/PrivacyPolicyPage";
+import { TermsOfServicePage } from "./pages/TermsOfServicePage";
 import SearchResults from "./pages/SearchResults";
 import Navbar from "./components/Navbar";
 import { Toaster } from "react-hot-toast";
@@ -157,9 +160,28 @@ const App = () => {
               <Route
                 path="/faqs"
                 element={
-                  
                     <FAQsPage />
-                  
+                }
+              />
+
+              <Route
+                path="/privacy-policy"
+                element={
+                    <PrivacyPolicyPage />
+                }
+              />
+
+              <Route
+                path="/terms-of-service"
+                element={
+                    <TermsOfServicePage />
+                }
+              /> 
+
+              <Route
+                path="/cookie-policy"
+                element={
+                    <CookiePolicyPage />
                 }
               />
 
