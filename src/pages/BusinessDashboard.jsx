@@ -3,12 +3,11 @@ import { useAuth } from "../hooks/useAuth";
 import axios from "axios";
 import Select from "react-select";
 import toast from "react-hot-toast";
-import { FaEdit, FaTrash, FaCheck, FaTimes } from "react-icons/fa";
+import { FaEdit, FaTrash, FaCheck, FaTimes, FaPhone, FaMapMarkerAlt, FaClock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
-// Create axios instance with default config
 const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -16,25 +15,17 @@ const api = axios.create({
   },
 });
 
-/**
- * BusinessDashboard component for salon owners to:
- * 1. View and manage bookings
- * 2. Update booking statuses (confirm/cancel)
- * 3. View business analytics
- * 4. Manage services and availability
- */
 const BusinessDashboard = () => {
   const navigate = useNavigate();
-
   const { user } = useAuth();
 
   // State management
   const [editingServiceId, setEditingServiceId] = useState(null);
   const [editedService, setEditedService] = useState({});
-  const [salon, setSalon] = useState([]);
+  const [salon, setSalon] = useState({});
   const [bookings, setBookings] = useState([]);
   const [services, setServices] = useState([]);
-  const [languages, setLanguages] = useState([]); // State to store languages
+  const [languages, setLanguages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [newService, setNewService] = useState({
@@ -45,9 +36,16 @@ const BusinessDashboard = () => {
     languageSpoken: [],
   });
 
-  /**
-   * Fetch languages from the API
-   */
+  // Format opening hours for display
+  const formatOpeningHours = (hours) => {
+    return Object.entries(hours).map(([day, { open, close }]) => {
+      if (!open && !close) {
+        return `${day.charAt(0).toUpperCase() + day.slice(1)}: Closed`;
+      }
+      return `${day.charAt(0).toUpperCase() + day.slice(1)}: ${open} - ${close}`;
+    });
+  };
+
   useEffect(() => {
     const fetchLanguages = async () => {
       try {
@@ -58,7 +56,7 @@ const BusinessDashboard = () => {
             label: (
               <div className="flex items-center">
                 <img
-                  src={`https://flagcdn.com/w40/${lang.country}.png`} // URL to flag image
+                  src={`https://flagcdn.com/w40/${lang.country}.png`}
                   alt={lang.name}
                   className="w-5 h-5 mr-2"
                 />
@@ -75,20 +73,13 @@ const BusinessDashboard = () => {
     fetchLanguages();
   }, []);
 
-  /**
-   * Handle language change event
-   * @param {object} selectedOptions - Selected language options
-   */
   const handleLanguageChange = (selectedOptions) => {
     setNewService({
       ...newService,
-      languageSpoken: selectedOptions.map((option) => option.value), // only store the language code
+      languageSpoken: selectedOptions.map((option) => option.value),
     });
   };
 
-  /**
-   * Fetch bookings, services, and salon data when component mounts
-   */
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -99,7 +90,7 @@ const BusinessDashboard = () => {
             })
             .catch((err) => {
               if (err.response?.status === 404) {
-                return { data: [] }; // Return empty array if no bookings found
+                return { data: [] };
               }
               throw err;
             }),
@@ -109,7 +100,7 @@ const BusinessDashboard = () => {
             })
             .catch((err) => {
               if (err.response?.status === 404) {
-                return { data: [] }; // Return empty array if no services found
+                return { data: [] };
               }
               throw err;
             }),
@@ -119,16 +110,15 @@ const BusinessDashboard = () => {
             })
             .catch((err) => {
               if (err.response?.status === 404) {
-                return { data: [] }; // Return empty array if no salon found
+                return { data: {} };
               }
               throw err;
             }),
         ]);
 
-        // update the state with the fetched data
         setBookings(bookingsRes.data);
         setServices(servicesRes.data);
-        setSalon(salonRes.data); // store salon data
+        setSalon(salonRes.data);
       } catch (err) {
         if (!err.response || err.response.status !== 404) {
           setError("Failed to fetch dashboard data");
@@ -142,10 +132,6 @@ const BusinessDashboard = () => {
     fetchData();
   }, [user]);
 
-  /**
-   * Handle service submission
-   * @param {object} e - Event object
-   */
   const handleServiceSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -167,8 +153,8 @@ const BusinessDashboard = () => {
   };
 
   const handleEditClick = (service) => {
-    setEditingServiceId(service._id); // Define the ID of the service being edited
-    setEditedService({ ...service }); // Set the service data to be edited
+    setEditingServiceId(service._id);
+    setEditedService({ ...service });
   };
 
   const handleSaveClick = async () => {
@@ -179,7 +165,6 @@ const BusinessDashboard = () => {
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
 
-      // Update the local state with the edited service
       setServices((prevServices) =>
         prevServices.map((service) =>
           service._id === editingServiceId ? response.data : service
@@ -187,7 +172,7 @@ const BusinessDashboard = () => {
       );
 
       toast.success("Service updated successfully!");
-      setEditingServiceId(null); // Stop editing mode
+      setEditingServiceId(null);
       setEditedService({});
     } catch (err) {
       console.error("Error updating service:", err);
@@ -196,26 +181,17 @@ const BusinessDashboard = () => {
   };
 
   const handleCancelClick = () => {
-    setEditingServiceId(null); // Sai do modo de edição
-    setEditedService({}); // Limpa os dados do serviço em edição
+    setEditingServiceId(null);
+    setEditedService({});
   };
 
-  /**
-   * Handle service deletion
-   * @param {string} serviceId - ID of the service to delete
-   */
   const handleDeleteService = async (serviceId) => {
-    console.log("Deleting service with ID:", serviceId); // Verify the service ID
-    console.log("Token:", user.token); // Verify the token
-    console.log("API URL:", `${API_URL}/api/services/delete/${serviceId}`); // Log to verify the URL
     if (window.confirm("Are you sure you want to delete this service?")) {
       try {
-        console.log("API URL:", `${API_URL}/api/services/delete/${serviceId}`);
         await axios.delete(`${API_URL}/api/services/delete/${serviceId}`, {
           headers: { Authorization: `Bearer ${user.token}` },
         });
 
-        // Update local state to remove the deleted service
         setServices((prevServices) =>
           prevServices.filter((service) => service._id !== serviceId)
         );
@@ -228,14 +204,8 @@ const BusinessDashboard = () => {
     }
   };
 
-  /**
-   * Handle booking status updates
-   * @param {string} bookingId - ID of the booking to update
-   * @param {string} status - New status ('confirmed' or 'cancelled')
-   */
   const handleBookingStatus = async (bookingId, status) => {
     try {
-      // Update booking status in the backend
       await axios.put(
         `${API_URL}/api/business/bookings/${bookingId}/status`,
         { status },
@@ -246,14 +216,12 @@ const BusinessDashboard = () => {
         }
       );
 
-      // Update local state
       setBookings((prevBookings) =>
         prevBookings.map((booking) =>
           booking.id === bookingId ? { ...booking, status } : booking
         )
       );
 
-      // Show success notification
       toast.success(`Booking ${status} successfully`);
     } catch (err) {
       console.error("Error updating booking status:", err);
@@ -261,7 +229,6 @@ const BusinessDashboard = () => {
     }
   };
 
-  // Loading state
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -270,159 +237,182 @@ const BusinessDashboard = () => {
     );
   }
 
-  // Error state
   if (error) {
     return <div className="text-red-600 p-4">{error}</div>;
   }
 
   return (
-    <div className="font-sans leading-relaxed text-[#4A4A4A] bg-white min-h-screen">
+    <div className="font-sans leading-relaxed text-[#4A4A4A] bg-gray-50 min-h-screen">
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white shadow-sm rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <h1 className="text-3xl font-light text-[#4A4A4A] mb-6">
+        <div className="space-y-8">
+          {/* Header */}
+          <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-light text-[#4A4A4A]">
               Business Dashboard
             </h1>
-
-            {/* Business Profile Section */}
-            <div className="bg-[#F8F8F8] p-4 rounded-lg mb-6 border border-[#E0E0E0]">
-              <h2 className="text-lg font-medium text-[#4A4A4A] mb-2">
-                Business Profile
-              </h2>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-[#4A4A4A]/80">Business Name</p>
-                  <p className="text-[#4A4A4A]">{salon?.name || "N/A"}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-[#4A4A4A]/80">Email</p>
-                  <p className="text-[#4A4A4A]">{user.email}</p>
-                </div>
-              </div>
-              <div className="mt-4 flex space-x-4">
-                <button
-                  onClick={() => navigate(`/salons/update/${salon._id}`)}
-                  className="flex items-center justify-center w-10 h-10 bg-[#A2B9C6] text-white rounded-full hover:bg-[#8fa9b8] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-                >
-                  <FaEdit className="w-5 h-5" />
-                </button>
-                <button
-                  //onClick={handleDeleteSalon}
-                  className="flex items-center justify-center w-10 h-10 bg-[#FF6B6B] text-white rounded-full hover:bg-[#e55a5a] focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]"
-                >
-                  <FaTrash className="w-5 h-5" />
-                </button>
-              </div>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => navigate(`/salons/update/${salon._id}`)}
+                className="flex items-center space-x-2 px-4 py-2 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#8fa9b8] transition-colors"
+              >
+                <FaEdit className="w-4 h-4" />
+                <span>Edit Salon</span>
+              </button>
             </div>
+          </div>
 
-            {/* Bookings Section */}
-            <div className="bg-[#F8F8F8] p-4 rounded-lg mb-6 border border-[#E0E0E0]">
-              <h2 className="text-lg font-medium text-[#4A4A4A] mb-4">
-                Bookings
-              </h2>
-              {bookings.length === 0 ? (
-                <div className="text-center py-8 bg-white rounded-lg border border-[#E0E0E0]">
-                  <p className="text-[#4A4A4A]/80">
-                    No bookings found for this salon. Bookings will appear here
-                    once customers make reservations.
+          {/* Business Profile Card - Enhanced with more salon info */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <h2 className="text-xl font-semibold text-[#4A4A4A] mb-4">
+              Business Profile
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-gray-500">Business Name</p>
+                  <p className="text-lg text-[#4A4A4A]">{salon?.name || "N/A"}</p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-gray-500 flex items-center">
+                    <FaPhone className="mr-2" /> Phone
                   </p>
+                  <p className="text-lg text-[#4A4A4A]">{salon?.phone || "N/A"}</p>
                 </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Customer
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Service
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Date
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Time
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Status
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {bookings.map((booking) => (
-                        <tr key={booking._id || booking.id}>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {booking.customerName}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {booking.serviceName}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {new Date(booking.date).toLocaleDateString()}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {booking.time}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span
-                              className={`px-2 py-1 text-sm rounded-full ${
-                                booking.status === "confirmed"
-                                  ? "bg-green-100 text-green-800"
-                                  : booking.status === "pending"
-                                  ? "bg-yellow-100 text-yellow-800"
-                                  : "bg-red-100 text-red-800"
-                              }`}
-                            >
-                              {booking.status}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {booking.status === "pending" && (
-                              <div className="space-x-2">
-                                <button
-                                  onClick={() =>
-                                    handleBookingStatus(booking.id, "confirmed")
-                                  }
-                                  className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-                                >
-                                  Confirm
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    handleBookingStatus(booking.id, "cancelled")
-                                  }
-                                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                                >
-                                  Cancel
-                                </button>
-                              </div>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-gray-500">Email</p>
+                  <p className="text-lg text-[#4A4A4A]">{user.email}</p>
                 </div>
-              )}
+              </div>
+              
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-gray-500 flex items-center">
+                    <FaMapMarkerAlt className="mr-2" /> Address
+                  </p>
+                  <p className="text-lg text-[#4A4A4A]">{salon?.location || "N/A"}</p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-gray-500 flex items-center">
+                    <FaClock className="mr-2" /> Opening Hours
+                  </p>
+                  <div className="text-lg text-[#4A4A4A]">
+                    {salon?.openingHours ? (
+                      <ul className="space-y-1">
+                        {formatOpeningHours(salon.openingHours).map((hours, index) => (
+                          <li key={index}>{hours}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      "N/A"
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
 
-            {/* Add New Service Section */}
-            <div className="bg-[#F8F8F8] p-4 rounded-lg mb-6 border border-[#E0E0E0]">
-              <h2 className="text-lg font-medium text-[#4A4A4A] mb-4">
+          {/* Bookings Section */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold text-[#4A4A4A]">Bookings</h2>
+              <div className="text-sm text-gray-500">
+                {bookings.length} total bookings
+              </div>
+            </div>
+            
+            {bookings.length === 0 ? (
+              <div className="text-center py-12 bg-gray-50 rounded-lg">
+                <p className="text-gray-500">
+                  No bookings found. Bookings will appear here once customers make reservations.
+                </p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      {["Customer", "Service", "Date", "Time", "Status", "Actions"].map((header) => (
+                        <th 
+                          key={header}
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          {header}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {bookings.map((booking) => (
+                      <tr key={booking._id || booking.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="font-medium text-[#4A4A4A]">
+                            {booking.customerName}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {booking.serviceName}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {new Date(booking.date).toLocaleDateString()}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {booking.time}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span
+                            className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                              booking.status === "confirmed"
+                                ? "bg-green-100 text-green-800"
+                                : booking.status === "pending"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-red-100 text-red-800"
+                            }`}
+                          >
+                            {booking.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          {booking.status === "pending" && (
+                            <div className="flex space-x-2">
+                              <button
+                                onClick={() =>
+                                  handleBookingStatus(booking.id, "confirmed")
+                                }
+                                className="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
+                              >
+                                Confirm
+                              </button>
+                              <button
+                                onClick={() =>
+                                  handleBookingStatus(booking.id, "cancelled")
+                                }
+                                className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          {/* Services Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Add New Service Card */}
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+              <h2 className="text-xl font-semibold text-[#4A4A4A] mb-6">
                 Add New Service
               </h2>
-              <form
-                onSubmit={handleServiceSubmit}
-                className="bg-[#F8F8F8] p-4 rounded-lg"
-              >
-                <div className="grid grid-cols-2 gap-4">
+              <form onSubmit={handleServiceSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-[#4A4A4A]">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
                       Service Name
                     </label>
                     <input
@@ -431,43 +421,47 @@ const BusinessDashboard = () => {
                       onChange={(e) =>
                         setNewService({ ...newService, name: e.target.value })
                       }
-                      className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] transition-colors"
                       required
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-[#4A4A4A]">
-                      Price
-                    </label>
-                    <input
-                      type="number"
-                      value={newService.price}
-                      onChange={(e) =>
-                        setNewService({ ...newService, price: e.target.value })
-                      }
-                      className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
-                      required
-                    />
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Price ($)
+                      </label>
+                      <input
+                        type="number"
+                        value={newService.price}
+                        onChange={(e) =>
+                          setNewService({ ...newService, price: e.target.value })
+                        }
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] transition-colors"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Duration (mins)
+                      </label>
+                      <input
+                        type="number"
+                        value={newService.duration}
+                        onChange={(e) =>
+                          setNewService({
+                            ...newService,
+                            duration: e.target.value,
+                          })
+                        }
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] transition-colors"
+                        required
+                      />
+                    </div>
                   </div>
+                  
                   <div>
-                    <label className="block text-sm font-medium text-[#4A4A4A]">
-                      Duration (minutes)
-                    </label>
-                    <input
-                      type="number"
-                      value={newService.duration}
-                      onChange={(e) =>
-                        setNewService({
-                          ...newService,
-                          duration: e.target.value,
-                        })
-                      }
-                      className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-[#4A4A4A]">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
                       Description
                     </label>
                     <textarea
@@ -478,190 +472,165 @@ const BusinessDashboard = () => {
                           description: e.target.value,
                         })
                       }
-                      className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
+                      rows={3}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] transition-colors"
                       required
                     />
                   </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Languages Spoken
+                    </label>
+                    <Select
+                      isMulti
+                      options={languages}
+                      onChange={handleLanguageChange}
+                      className="mt-1"
+                      classNamePrefix="select"
+                      placeholder="Select languages..."
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#4A4A4A]">
-                    Languages Spoken
-                  </label>
-                  <Select
-                    isMulti
-                    options={languages}
-                    onChange={handleLanguageChange}
-                    className="mt-1"
-                    placeholder="Select languages..."
-                  />
-                </div>
+                
                 <button
                   type="submit"
-                  className="mt-4 bg-[#A2B9C6] text-white px-4 py-2 rounded-md hover:bg-[#8fa9b8] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                  className="w-full mt-4 bg-[#A2B9C6] text-white px-6 py-3 rounded-lg hover:bg-[#8fa9b8] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] transition-colors"
                 >
                   Add Service
                 </button>
               </form>
             </div>
 
-            {/* Services Section */}
-            <div className="mb-8">
-              <h2 className="text-lg font-medium text-[#4A4A4A] mb-4">
-                Your Services
-              </h2>
+            {/* Services List Card */}
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-semibold text-[#4A4A4A]">
+                  Your Services
+                </h2>
+                <div className="text-sm text-gray-500">
+                  {services.length} services
+                </div>
+              </div>
 
               {services.length === 0 ? (
-                <div className="text-center py-8 bg-[#F8F8F8] rounded-lg border border-[#E0E0E0]">
-                  <p className="text-[#4A4A4A]/80">
-                    No services added yet. Add your first service using the form
-                    above.
+                <div className="text-center py-12 bg-gray-50 rounded-lg">
+                  <p className="text-gray-500">
+                    No services added yet. Add your first service using the form.
                   </p>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-[#E0E0E0]">
-                    <thead className="bg-[#F8F8F8]">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#4A4A4A]/80 uppercase tracking-wider">
-                          Service
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#4A4A4A]/80 uppercase tracking-wider">
-                          Description
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#4A4A4A]/80 uppercase tracking-wider">
-                          Price
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#4A4A4A]/80 uppercase tracking-wider">
-                          Duration
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#4A4A4A]/80 uppercase tracking-wider">
-                          Manage
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-[#E0E0E0]">
-                      {services.map((service) => (
-                        <tr key={service._id}>
-                          {/* Service Name */}
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A4A4A]">
-                            {editingServiceId === service._id ? (
-                              <input
-                                type="text"
-                                value={editedService.name || ""}
-                                onChange={(e) =>
-                                  setEditedService({
-                                    ...editedService,
-                                    name: e.target.value,
-                                  })
-                                }
-                                className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
-                              />
-                            ) : (
-                              service.name
-                            )}
-                          </td>
-
-                          {/* Description */}
-                          <td className="px-6 py-4 text-sm text-[#4A4A4A]">
-                            {editingServiceId === service._id ? (
-                              <textarea
-                                value={editedService.description || ""}
-                                onChange={(e) =>
-                                  setEditedService({
-                                    ...editedService,
-                                    description: e.target.value,
-                                  })
-                                }
-                                className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
-                              />
-                            ) : (
-                              service.description
-                            )}
-                          </td>
-
-                          {/* Price */}
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A4A4A]">
-                            {editingServiceId === service._id ? (
-                              <input
-                                type="number"
-                                value={editedService.price || ""}
-                                onChange={(e) =>
-                                  setEditedService({
-                                    ...editedService,
-                                    price: e.target.value,
-                                  })
-                                }
-                                className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
-                              />
-                            ) : (
-                              `$${service.price}`
-                            )}
-                          </td>
-
-                          {/* Duration */}
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A4A4A]">
-                            {editingServiceId === service._id ? (
-                              <input
-                                type="number"
-                                value={editedService.duration || ""}
-                                onChange={(e) =>
-                                  setEditedService({
-                                    ...editedService,
-                                    duration: e.target.value,
-                                  })
-                                }
-                                className="mt-1 block w-full rounded-md border-[#E0E0E0] shadow-sm focus:border-[#A2B9C6] focus:ring-[#A2B9C6] sm:text-sm"
-                              />
-                            ) : (
-                              `${service.duration} mins`
-                            )}
-                          </td>
-
-                          {/* Manage Buttons */}
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4A4A4A]">
-                            <div className="flex space-x-2">
-                              {editingServiceId === service._id ? (
-                                <>
-                                  {/* Save */}
-                                  <button
-                                    onClick={handleSaveClick}
-                                    className="flex items-center justify-center w-8 h-8 bg-[#FADADD] text-[#4A4A4A] rounded-full hover:bg-[#A2B9C6] hover:text-white transition duration-300"
-                                  >
-                                    <FaCheck className="w-4 h-4" />
-                                  </button>
-
-                                  {/* Cancel */}
-                                  <button
-                                    onClick={handleCancelClick}
-                                    className="flex items-center justify-center w-8 h-8 bg-[#FF6B6B] text-white rounded-full hover:bg-[#e55a5a] focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]"
-                                  >
-                                    <FaTimes className="w-4 h-4" />
-                                  </button>
-                                </>
-                              ) : (
-                                <>
-                                  <button
-                                    onClick={() => handleEditClick(service)}
-                                    className="flex items-center justify-center w-8 h-8 bg-[#A2B9C6] text-white rounded-full hover:bg-[#FADADD] hover:text-[#4A4A4A] transition duration-300"
-                                  >
-                                    <FaEdit className="w-4 h-4" />
-                                  </button>
-                                  <button
-                                    onClick={() =>
-                                      handleDeleteService(service._id)
-                                    }
-                                    className="flex items-center justify-center w-8 h-8 bg-[#FF6B6B] text-white rounded-full hover:bg-[#e55a5a] focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]"
-                                  >
-                                    <FaTrash className="w-4 h-4" />
-                                  </button>
-                                </>
-                              )}
+                <div className="space-y-4">
+                  {services.map((service) => (
+                    <div 
+                      key={service._id} 
+                      className="p-4 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow"
+                    >
+                      {editingServiceId === service._id ? (
+                        <div className="space-y-4">
+                          <input
+                            type="text"
+                            value={editedService.name || ""}
+                            onChange={(e) =>
+                              setEditedService({
+                                ...editedService,
+                                name: e.target.value,
+                              })
+                            }
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6]"
+                            placeholder="Service Name"
+                          />
+                          <textarea
+                            value={editedService.description || ""}
+                            onChange={(e) =>
+                              setEditedService({
+                                ...editedService,
+                                description: e.target.value,
+                              })
+                            }
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6]"
+                            placeholder="Description"
+                            rows={2}
+                          />
+                          <div className="grid grid-cols-2 gap-4">
+                            <input
+                              type="number"
+                              value={editedService.price || ""}
+                              onChange={(e) =>
+                                setEditedService({
+                                  ...editedService,
+                                  price: e.target.value,
+                                })
+                              }
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6]"
+                              placeholder="Price"
+                            />
+                            <input
+                              type="number"
+                              value={editedService.duration || ""}
+                              onChange={(e) =>
+                                setEditedService({
+                                  ...editedService,
+                                  duration: e.target.value,
+                                })
+                              }
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6]"
+                              placeholder="Duration (mins)"
+                            />
+                          </div>
+                          <div className="flex justify-end space-x-2">
+                            <button
+                              onClick={handleSaveClick}
+                              className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                            >
+                              <FaCheck className="inline mr-2" />
+                              Save
+                            </button>
+                            <button
+                              onClick={handleCancelClick}
+                              className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors"
+                            >
+                              <FaTimes className="inline mr-2" />
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h3 className="font-medium text-lg text-[#4A4A4A]">
+                              {service.name}
+                            </h3>
+                            <p className="text-gray-600 mt-1">
+                              {service.description}
+                            </p>
+                            <div className="flex space-x-4 mt-2">
+                              <span className="text-sm text-gray-500">
+                                ${service.price}
+                              </span>
+                              <span className="text-sm text-gray-500">
+                                {service.duration} mins
+                              </span>
                             </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                          </div>
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => handleEditClick(service)}
+                              className="p-2 text-[#A2B9C6] hover:text-[#8fa9b8] transition-colors"
+                            >
+                              <FaEdit className="w-5 h-5" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteService(service._id)}
+                              className="p-2 text-red-500 hover:text-red-600 transition-colors"
+                            >
+                              <FaTrash className="w-5 h-5" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
