@@ -111,9 +111,9 @@ const App = () => {
               <Route
                 path="/about"
                 element={
-                  <NavbarLayout>
+                
                     <AboutPage />
-                  </NavbarLayout>
+                  
                 }
               />
 
