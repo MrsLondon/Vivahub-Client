@@ -39,14 +39,14 @@ const Header = ({ theme, toggleTheme, showFilters, toggleFilters }) => {
       </Link>
       
       <div className="hidden md:flex space-x-4">
-        <Link to="/filter/hair" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium">Hair</Link>
-        <Link to="/filter/nails" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium">Nails</Link>
-        <Link to="/filter/spa" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium">Spa</Link>
-        <Link to="/filter/makeup" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium">Makeup</Link>
-        <Link to="/filter/facials" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium">Facials</Link>
-        <Link to="/filter/waxing" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium">Waxing</Link>
-        <Link to="/filter/massage" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium">Massage</Link>
-        <Link to="/filter/language" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium">Language</Link>
+        <Link to="/search?query=hair" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium">Hair</Link>
+        <Link to="/search?query=nails" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium">Nails</Link>
+        <Link to="/search?query=spa" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium">Spa</Link>
+        <Link to="/search?query=makeup" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium">Makeup</Link>
+        <Link to="/search?query=facials" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium">Facials</Link>
+        <Link to="/search?query=waxing" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium">Waxing</Link>
+        <Link to="/search?query=massage" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium">Massage</Link>
+        <Link to="/search?query=language" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium">Language</Link>
       </div>
       
       <div className="flex items-center gap-4">
@@ -60,13 +60,13 @@ const Header = ({ theme, toggleTheme, showFilters, toggleFilters }) => {
   {showFilters && (
     <div className="absolute top-10 right-0 w-48 bg-white dark:bg-gray-800 shadow-lg z-50 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
       <div className="flex flex-col space-y-2">
-        <Link to="/filter/hair" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Hair</Link>
-        <Link to="/filter/nails" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Nails</Link>
-        <Link to="/filter/spa" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Spa</Link>
-        <Link to="/filter/makeup" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Makeup</Link>
-        <Link to="/filter/facials" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Facials</Link>
-        <Link to="/filter/waxing" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Waxing</Link>
-        <Link to="/filter/massage" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Massage</Link>
+        <Link to="/search?query=hair" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Hair</Link>
+        <Link to="/search?query=nails" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Nails</Link>
+        <Link to="/search?query=spa" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Spa</Link>
+        <Link to="/search?query=makeup" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Makeup</Link>
+        <Link to="/search?query=facials" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Facials</Link>
+        <Link to="/search?query=waxing" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Waxing</Link>
+        <Link to="/search?query=massage" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium" onClick={() => toggleFilters(false)}>Massage</Link>
       </div>
     </div>
   )}
