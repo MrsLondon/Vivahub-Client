@@ -51,14 +51,7 @@ const App = () => {
             <Routes>
               {/* Public routes */}
               <Route path="/" element={<Homepage />} />
-              <Route
-                path="/salons/:salonId"
-                element={
-                  
-                    <SalonDetailsPage />
-                
-                }
-              />
+              <Route path="/salons/:salonId" element={<SalonDetailsPage />} />
               <Route
                 path="/search"
                 element={
@@ -75,14 +68,7 @@ const App = () => {
                   </NavbarLayout>
                 }
               />
-              <Route
-                path="/signup"
-                element={
-                
-                    <SignupPage />
-                 
-                }
-              />
+              <Route path="/signup" element={<SignupPage />} />
               <Route
                 path="/salons/update/:id"
                 element={
@@ -121,12 +107,16 @@ const App = () => {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/about" element={
-                <NavbarLayout>
-                <AboutPage />
-                </NavbarLayout>
-                } />
-              
+
+              <Route
+                path="/about"
+                element={
+                  <NavbarLayout>
+                    <AboutPage />
+                  </NavbarLayout>
+                }
+              />
+
               {/* Booking routes */}
               <Route path="/test-booking" element={<TestBookingPage />} />
               <Route path="/booking" element={<BookingPage />} />
