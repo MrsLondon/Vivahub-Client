@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../hooks/useAuth";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ReviewForm from "../components/ReviewForm";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
@@ -15,6 +16,8 @@ const CustomerDashboard = () => {
   const [newDate, setNewDate] = useState("");
   const [newTime, setNewTime] = useState("");
   const [bookingToCancel, setBookingToCancel] = useState(null);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [selectedBookingForReview, setSelectedBookingForReview] = useState(null);
 
   const handleRescheduleBooking = async () => {
     console.log("Selected Booking:", selectedBooking);
@@ -91,36 +94,50 @@ const CustomerDashboard = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        const response = await axios
-          .get(`${API_URL}/api/bookings`, {
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-            },
-          })
-          .catch((err) => {
-            if (err.response?.status === 404) {
-              return { data: [] };
-            }
-            throw err;
-          });
-
-        setBookings(response.data);
-      } catch (err) {
-        if (!err.response || err.response.status !== 404) {
-          setError("Failed to fetch bookings");
-          console.error("Error fetching bookings:", err);
-          toast.error("Failed to fetch bookings");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
+  const handleReviewSubmitted = () => {
+    setShowReviewForm(false);
+    setSelectedBookingForReview(null);
+    // Refresh bookings to update UI
     fetchBookings();
+  };
+
+  const openReviewForm = (booking) => {
+    setSelectedBookingForReview(booking);
+    setShowReviewForm(true);
+  };
+
+  // Function to fetch bookings - wrapped in useCallback to prevent unnecessary re-renders
+  const fetchBookings = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await axios
+        .get(`${API_URL}/api/bookings`, {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        })
+        .catch((err) => {
+          if (err.response?.status === 404) {
+            return { data: [] };
+          }
+          throw err;
+        });
+
+      setBookings(response.data);
+    } catch (err) {
+      if (!err.response || err.response.status !== 404) {
+        setError("Failed to fetch bookings");
+        console.error("Error fetching bookings:", err);
+        toast.error("Failed to fetch bookings");
+      }
+    } finally {
+      setLoading(false);
+    }
   }, [user]);
+
+  useEffect(() => {
+    fetchBookings();
+  }, [user, fetchBookings]);
 
   if (loading)
     return (
@@ -223,6 +240,44 @@ const CustomerDashboard = () => {
               >
                 Yes, Cancel
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Review Form Modal */}
+      {showReviewForm && selectedBookingForReview && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+              <h2 className="text-lg font-semibold text-[#4A4A4A]">Leave a Review</h2>
+              <button
+                onClick={() => setShowReviewForm(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-4">
+              <div className="mb-4">
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Salon:</span> {selectedBookingForReview.salonId?.name || "Unknown Salon"}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Service:</span> {selectedBookingForReview.serviceId?.name || "Unknown Service"}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Date:</span> {new Date(selectedBookingForReview.appointmentDate).toLocaleDateString()}
+                </p>
+              </div>
+              <ReviewForm 
+                bookingId={selectedBookingForReview._id}
+                salonId={selectedBookingForReview.salonId?._id}
+                serviceId={selectedBookingForReview.serviceId?._id}
+                onReviewSubmitted={handleReviewSubmitted}
+              />
             </div>
           </div>
         </div>
@@ -333,11 +388,21 @@ const CustomerDashboard = () => {
                                   Cancel
                                 </button>
                               </div>
+                            ) : booking.bookingStatus === "Service Completed" ? (
+                              <div className="flex flex-col space-y-2 items-center">
+                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-600">
+                                  Service Completed
+                                </span>
+                                <button
+                                  onClick={() => openReviewForm(booking)}
+                                  className="px-4 py-1 bg-[#FADADD] text-[#4A4A4A] rounded-lg text-xs hover:bg-[#f0c8cc] transition duration-300"
+                                >
+                                  Leave Review
+                                </button>
+                              </div>
                             ) : (
                               <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-600">
-                                {booking.bookingStatus === "Service Completed"
-                                  ? "Service Completed"
-                                  : "Service Canceled"}
+                                Service Canceled
                               </span>
                             )}
                           </td>
