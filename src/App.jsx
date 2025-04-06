@@ -11,6 +11,14 @@ import AuthProvider from "./context/AuthContext";
 import SalonDetailsPage from "./pages/SalonDetailsPage";
 import BusinessProfile from "./pages/BusinessProfile";
 import { AboutPage } from "./pages/AboutPage";
+import { BlogPage } from "./pages/BlogPage";
+import { CareersPage } from "./pages/CareersPage";
+import { PressPage } from "./pages/PressPage";
+import { HelpCenterPage } from "./pages/HelpCenterPage";
+import { FAQsPage } from "./pages/FAQsPage";
+import { CookiePolicyPage } from "./pages/CookiePolicyPage";
+import { PrivacyPolicyPage } from "./pages/PrivacyPolicyPage";
+import { TermsOfServicePage } from "./pages/TermsOfServicePage";
 import SearchResults from "./pages/SearchResults";
 import Navbar from "./components/Navbar";
 import { Toaster } from "react-hot-toast";
@@ -108,12 +116,72 @@ const App = () => {
                 }
               />
 
+              {/* Static pages */}
               <Route
                 path="/about"
                 element={
-                
-                    <AboutPage />
                   
+                    <AboutPage />
+                 
+                }
+              />
+              <Route
+                path="/careers"
+                element={
+                  
+                    <CareersPage />
+                  
+                }
+              />
+              <Route
+                path="/press"
+                element={
+                 
+                    <PressPage />
+                 
+                }
+              />
+              <Route
+                path="/help-center"
+                element={
+                 
+                    <HelpCenterPage />
+                  
+                }
+              />
+              <Route
+                path="/blog"
+                element={
+                
+                    <BlogPage />
+                  
+                }
+              />
+              <Route
+                path="/faqs"
+                element={
+                    <FAQsPage />
+                }
+              />
+
+              <Route
+                path="/privacy-policy"
+                element={
+                    <PrivacyPolicyPage />
+                }
+              />
+
+              <Route
+                path="/terms-of-service"
+                element={
+                    <TermsOfServicePage />
+                }
+              /> 
+
+              <Route
+                path="/cookie-policy"
+                element={
+                    <CookiePolicyPage />
                 }
               />
 
