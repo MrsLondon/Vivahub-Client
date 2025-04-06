@@ -2,6 +2,9 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { FaSearch, FaTimes, FaLanguage, FaUser } from "react-icons/fa";
+import { useTheme } from "../context/ThemeContext";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
@@ -9,6 +12,7 @@ const SearchResults = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
+  const { theme, toggleTheme } = useTheme();
 
   const [searchTerm, setSearchTerm] = useState(searchParams.get('query') || '');
   const [loading, setLoading] = useState(false);
@@ -100,10 +104,21 @@ const SearchResults = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div
+      className={`min-h-screen font-body transition-colors duration-300 ${
+        theme === "light" ? "bg-white text-[#4A4A4A]" : "bg-gray-900 text-gray-200"
+      }`}
+    >
+      {/* Header */}
+      <Header theme={theme} toggleTheme={toggleTheme} />
+
       {/* Search Section */}
       <div className="max-w-4xl mx-auto px-4 py-6">
-        <div className="bg-white p-4 rounded-lg shadow-sm">
+        <div
+          className={`p-4 rounded-lg shadow-sm ${
+            theme === "light" ? "bg-white" : "bg-gray-800"
+          }`}
+        >
           <div className="flex flex-col gap-4">
             {/* Search Bar */}
             <div className="w-full">
@@ -114,7 +129,11 @@ const SearchResults = () => {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  className="w-full p-3 pl-10 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6]"
+                  className={`w-full p-3 pl-10 pr-10 rounded-lg focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] ${
+                    theme === "light"
+                      ? "border border-gray-300"
+                      : "border border-gray-600 bg-gray-700 text-white"
+                  }`}
                 />
                 <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 {(searchTerm || selectedLanguage) && (
@@ -132,7 +151,9 @@ const SearchResults = () => {
             <div className="flex justify-between items-center">
               <button
                 onClick={() => setShowLanguageSearch(!showLanguageSearch)}
-                className="text-[#A2B9C6] hover:text-[#91A7B4] text-sm flex items-center gap-2"
+                className={`text-[#A2B9C6] hover:text-[#91A7B4] text-sm flex items-center gap-2 ${
+                  theme === "dark" ? "text-[#A2B9C6]" : ""
+                }`}
               >
                 <FaLanguage />
                 Search by language
@@ -156,16 +177,30 @@ const SearchResults = () => {
                   placeholder="Type to search languages..."
                   value={selectedLanguage}
                   onChange={(e) => setSelectedLanguage(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6]"
+                  className={`w-full p-2 rounded-md focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] ${
+                    theme === "light"
+                      ? "border border-gray-300"
+                      : "border border-gray-600 bg-gray-700 text-white"
+                  }`}
                 />
                 {selectedLanguage && (
-                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                  <div
+                    className={`absolute z-10 w-full mt-1 border rounded-md shadow-lg max-h-60 overflow-auto ${
+                      theme === "light"
+                        ? "bg-white border-gray-300"
+                        : "bg-gray-800 border-gray-600"
+                    }`}
+                  >
                     {languages.filter(lang => 
                       lang.name.toLowerCase().includes(selectedLanguage.toLowerCase())
                     ).map(lang => (
                       <button
                         key={lang.code}
-                        className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center"
+                        className={`w-full px-4 py-2 text-left flex items-center ${
+                          theme === "light"
+                            ? "hover:bg-gray-100"
+                            : "hover:bg-gray-700"
+                        }`}
                         onClick={() => {
                           setSelectedLanguage(lang.code);
                           setShowLanguageSearch(false);
@@ -189,25 +224,55 @@ const SearchResults = () => {
 
         {/* Error Message */}
         {error && (
-          <div className="mt-6 p-3 bg-red-100 text-red-700 rounded-md">
+          <div
+            className={`mt-6 p-3 rounded-md ${
+              theme === "light"
+                ? "bg-red-100 text-red-700"
+                : "bg-red-900 text-red-200"
+            }`}
+          >
             {error}
           </div>
         )}
 
         {/* Search Results */}
         {searchResults && (
-          <div className="mt-6 bg-white rounded-lg shadow-sm p-6">
+          <div
+            className={`mt-6 rounded-lg shadow-sm p-6 ${
+              theme === "light" ? "bg-white" : "bg-gray-800"
+            }`}
+          >
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold text-[#4A4A4A]">Search Results</h2>
-              <span className="text-sm text-gray-500">
+              <h2
+                className={`text-xl font-semibold ${
+                  theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+                }`}
+              >
+                Search Results
+              </h2>
+              <span
+                className={`text-sm ${
+                  theme === "light" ? "text-gray-500" : "text-gray-400"
+                }`}
+              >
                 {searchResults.length} {searchResults.length === 1 ? 'result' : 'results'} found
               </span>
             </div>
 
             {searchResults.length === 0 ? (
               <div className="text-center py-10">
-                <p className="text-gray-500">No results found for your search.</p>
-                <p className="text-gray-500 mt-2">Try different keywords or filters.</p>
+                <p
+                  className={theme === "light" ? "text-gray-500" : "text-gray-400"}
+                >
+                  No results found for your search.
+                </p>
+                <p
+                  className={`mt-2 ${
+                    theme === "light" ? "text-gray-500" : "text-gray-400"
+                  }`}
+                >
+                  Try different keywords or filters.
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -215,7 +280,11 @@ const SearchResults = () => {
                   <Link
                     key={result._id}
                     to={`/salons/${result._id}`}
-                    className="block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition duration-300"
+                    className={`block border rounded-lg overflow-hidden hover:shadow-md transition duration-300 ${
+                      theme === "light"
+                        ? "bg-white border-gray-200"
+                        : "bg-gray-700 border-gray-600"
+                    }`}
                   >
                     <div className="h-40 bg-gray-200 relative">
                       <img
@@ -225,13 +294,29 @@ const SearchResults = () => {
                       />
                     </div>
                     <div className="p-4">
-                      <h3 className="font-semibold text-lg text-[#4A4A4A] mb-1">{result.name}</h3>
-                      <p className="text-sm text-gray-500 mb-2">{result.address}</p>
+                      <h3
+                        className={`font-semibold text-lg mb-1 ${
+                          theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+                        }`}
+                      >
+                        {result.name}
+                      </h3>
+                      <p
+                        className={`text-sm mb-2 ${
+                          theme === "light" ? "text-gray-500" : "text-gray-400"
+                        }`}
+                      >
+                        {result.address}
+                      </p>
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-[#A2B9C6]">
                           {result.services?.length || 0} services
                         </span>
-                        <span className="text-sm text-gray-500">
+                        <span
+                          className={`text-sm ${
+                            theme === "light" ? "text-gray-500" : "text-gray-400"
+                          }`}
+                        >
                           {result.languages?.join(', ') || 'English'}
                         </span>
                       </div>
@@ -243,6 +328,9 @@ const SearchResults = () => {
           </div>
         )}
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
