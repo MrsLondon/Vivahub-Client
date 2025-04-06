@@ -149,11 +149,9 @@ const BusinessDashboard = () => {
   const handleServiceSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        `${API_URL}/api/services`,
-        { ...newService, businessId: user.id },
-        { headers: { Authorization: `Bearer ${user.token}` } }
-      );
+      const response = await axios.post(`${API_URL}/api/services`, newService, {
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
       setServices([...services, response.data]);
       setNewService({
         name: "",
@@ -176,7 +174,7 @@ const BusinessDashboard = () => {
   const handleSaveClick = async () => {
     try {
       const response = await axios.put(
-        `${API_URL}/api/services/${editingServiceId}`,
+        `${API_URL}/api/services/update/${editingServiceId}`,
         editedService,
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
