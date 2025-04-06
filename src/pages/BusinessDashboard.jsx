@@ -3,23 +3,25 @@ import { useAuth } from "../hooks/useAuth";
 import axios from "axios";
 import Select from "react-select";
 import toast from "react-hot-toast";
-import { FaEdit, FaTrash, FaCheck, FaTimes, FaPhone, FaMapMarkerAlt, FaClock } from "react-icons/fa";
+import {
+  FaEdit,
+  FaTrash,
+  FaCheck,
+  FaTimes,
+  FaPhone,
+  FaMapMarkerAlt,
+  FaClock,
+} from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
-const api = axios.create({
-  baseURL: API_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
 const BusinessDashboard = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   // State management
+  const [bookingToCancel, setBookingToCancel] = useState(null);
   const [editingServiceId, setEditingServiceId] = useState(null);
   const [editedService, setEditedService] = useState({});
   const [salon, setSalon] = useState({});
@@ -42,7 +44,9 @@ const BusinessDashboard = () => {
       if (!open && !close) {
         return `${day.charAt(0).toUpperCase() + day.slice(1)}: Closed`;
       }
-      return `${day.charAt(0).toUpperCase() + day.slice(1)}: ${open} - ${close}`;
+      return `${
+        day.charAt(0).toUpperCase() + day.slice(1)
+      }: ${open} - ${close}`;
     });
   };
 
@@ -52,7 +56,8 @@ const BusinessDashboard = () => {
       try {
         const response = await axios.get(`${API_URL}/api/services/languages`);
         const options = response.data.map((lang) => ({
-          value: lang.code,
+          key: `${lang.code}-${lang.country}`,
+          value: `${lang.code}-${lang.country}`,
           label: (
             <div className="flex items-center">
               <img
@@ -78,7 +83,7 @@ const BusinessDashboard = () => {
   const handleLanguageChange = (selectedOptions) => {
     setNewService({
       ...newService,
-      languageSpoken: selectedOptions.map(option => option.value),
+      languageSpoken: selectedOptions.map((option) => option.value),
     });
   };
 
@@ -86,13 +91,13 @@ const BusinessDashboard = () => {
   const handleEditLanguageChange = (selectedOptions) => {
     setEditedService({
       ...editedService,
-      languageSpoken: selectedOptions.map(option => option.value),
+      languageSpoken: selectedOptions.map((option) => option.value),
     });
   };
 
   // Get current language selections for a service
   const getCurrentLanguages = (languageCodes) => {
-    return languageOptions.filter(option => 
+    return languageOptions.filter((option) =>
       languageCodes?.includes(option.value)
     );
   };
@@ -102,15 +107,21 @@ const BusinessDashboard = () => {
     const fetchData = async () => {
       try {
         const [bookingsRes, servicesRes, salonRes] = await Promise.all([
-          axios.get(`${API_URL}/api/bookings`, {
-            headers: { Authorization: `Bearer ${user.token}` },
-          }).catch(() => ({ data: [] })),
-          axios.get(`${API_URL}/api/services/user`, {
-            headers: { Authorization: `Bearer ${user.token}` },
-          }).catch(() => ({ data: [] })),
-          axios.get(`${API_URL}/api/salons/user`, {
-            headers: { Authorization: `Bearer ${user.token}` },
-          }).catch(() => ({ data: {} })),
+          axios
+            .get(`${API_URL}/api/bookings`, {
+              headers: { Authorization: `Bearer ${user.token}` },
+            })
+            .catch(() => ({ data: [] })),
+          axios
+            .get(`${API_URL}/api/services/user`, {
+              headers: { Authorization: `Bearer ${user.token}` },
+            })
+            .catch(() => ({ data: [] })),
+          axios
+            .get(`${API_URL}/api/salons/user`, {
+              headers: { Authorization: `Bearer ${user.token}` },
+            })
+            .catch(() => ({ data: {} })),
         ]);
 
         setBookings(bookingsRes.data);
@@ -130,15 +141,33 @@ const BusinessDashboard = () => {
     fetchData();
   }, [user]);
 
+  const handleDeleteSalon = async (salonId) => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this salon? This action cannot be undone."
+      )
+    ) {
+      try {
+        await axios.delete(`${API_URL}/api/salons/delete/${salonId}`, {
+          headers: { Authorization: `Bearer ${user.token}` },
+        });
+        toast.success("Salon deleted successfully!");
+        logout(); // Logout user after deletion
+        navigate("/"); // Redirect user to the homepage
+      } catch (err) {
+        console.error("Error deleting salon:", err);
+        toast.error("Failed to delete salon. Please try again.");
+      }
+    }
+  };
+
   const handleServiceSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        `${API_URL}/api/services`, 
-        newService,
-        { headers: { Authorization: `Bearer ${user.token}` } }
-      );
-      
+      const response = await axios.post(`${API_URL}/api/services`, newService, {
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
+
       setServices([...services, response.data]);
       setNewService({
         name: "",
@@ -156,9 +185,9 @@ const BusinessDashboard = () => {
 
   const handleEditClick = (service) => {
     setEditingServiceId(service._id);
-    setEditedService({ 
+    setEditedService({
       ...service,
-      languageSpoken: service.languageSpoken || [] 
+      languageSpoken: service.languageSpoken || [],
     });
   };
 
@@ -170,9 +199,11 @@ const BusinessDashboard = () => {
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
 
-      setServices(services.map(service =>
-        service._id === editingServiceId ? response.data : service
-      ));
+      setServices(
+        services.map((service) =>
+          service._id === editingServiceId ? response.data : service
+        )
+      );
 
       toast.success("Service updated successfully!");
       setEditingServiceId(null);
@@ -189,28 +220,63 @@ const BusinessDashboard = () => {
   };
 
   const handleDeleteService = async (serviceId) => {
-    toast.custom((t) => (
-      <div className="bg-white p-4 rounded-lg shadow-lg">
-        <p className="mb-4">Are you sure you want to delete this service?</p>
-        <div className="flex justify-end space-x-2">
-          <button
-            onClick={() => {
-              toast.dismiss(t.id);
-              performDeleteService(serviceId);
-            }}
-            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-          >
-            Delete
-          </button>
-          <button
-            onClick={() => toast.dismiss(t.id)}
-            className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-          >
-            Cancel
-          </button>
+    toast.custom(
+      (t) => (
+        <div className="bg-white p-4 rounded-lg shadow-lg">
+          <p className="mb-4">Are you sure you want to delete this service?</p>
+          <div className="flex justify-end space-x-2">
+            <button
+              onClick={() => {
+                toast.dismiss(t.id);
+                performDeleteService(serviceId);
+              }}
+              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            >
+              Delete
+            </button>
+            <button
+              onClick={() => toast.dismiss(t.id)}
+              className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
-      </div>
-    ), { duration: 60000 });
+      ),
+      { duration: 60000 }
+    );
+  };
+
+  // Open cancel confirmation modal
+  const openCancelConfirmation = (bookingId) => {
+    console.log("openCancelConfirmation called with booking ID:", bookingId);
+    setBookingToCancel(bookingId);
+  };
+
+  // Close cancel confirmation modal
+  const closeCancelConfirmation = () => {
+    setBookingToCancel(null);
+  };
+
+  // Handle booking cancellation
+  const handleCancelBooking = async () => {
+    if (!bookingToCancel) return;
+    console.log("Booking to cancel:", bookingToCancel);
+
+    try {
+      await axios.delete(`${API_URL}/api/bookings/${bookingToCancel}`, {
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
+
+      setBookings(
+        bookings.filter((booking) => booking._id !== bookingToCancel)
+      );
+      toast.success("Booking canceled successfully!");
+      closeCancelConfirmation();
+    } catch (err) {
+      console.error("Error canceling booking:", err);
+      toast.error("Failed to cancel booking. Please try again.");
+    }
   };
 
   const performDeleteService = async (serviceId) => {
@@ -219,7 +285,7 @@ const BusinessDashboard = () => {
         headers: { Authorization: `Bearer ${user.token}` },
       });
 
-      setServices(services.filter(service => service._id !== serviceId));
+      setServices(services.filter((service) => service._id !== serviceId));
       toast.success("Service deleted successfully!");
     } catch (err) {
       console.error("Error deleting service:", err);
@@ -235,9 +301,11 @@ const BusinessDashboard = () => {
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
 
-      setBookings(bookings.map(booking =>
-        booking.id === bookingId ? { ...booking, status } : booking
-      ));
+      setBookings(
+        bookings.map((booking) =>
+          booking.id === bookingId ? { ...booking, status } : booking
+        )
+      );
 
       toast.success(`Booking ${status} successfully`);
     } catch (err) {
@@ -246,20 +314,33 @@ const BusinessDashboard = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return <div className="text-red-600 p-4">{error}</div>;
-  }
-
   return (
     <div className="font-sans leading-relaxed text-[#4A4A4A] bg-gray-50 min-h-screen">
+      {/* Modal de confirmação para cancelar booking */}
+      {bookingToCancel && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-lg font-semibold mb-4">Confirm Cancellation</h2>
+            <p className="mb-6">
+              Are you sure you want to cancel this booking?
+            </p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={closeCancelConfirmation}
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-400"
+              >
+                No, Keep It
+              </button>
+              <button
+                onClick={handleCancelBooking}
+                className="px-4 py-2 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600"
+              >
+                Yes, Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-8">
           <div className="flex justify-between items-center">
@@ -274,6 +355,13 @@ const BusinessDashboard = () => {
                 <FaEdit className="w-4 h-4" />
                 <span>Edit Salon</span>
               </button>
+              <button
+                onClick={() => handleDeleteSalon(salon._id)}
+                className="flex items-center space-x-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              >
+                <FaTrash className="w-4 h-4" />
+                <span>Delete Salon</span>
+              </button>
             </div>
           </div>
 
@@ -284,27 +372,35 @@ const BusinessDashboard = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-gray-500">Business Name</p>
-                  <p className="text-lg text-[#4A4A4A]">{salon?.name || "N/A"}</p>
+                  <p className="text-sm font-medium text-gray-500">
+                    Business Name
+                  </p>
+                  <p className="text-lg text-[#4A4A4A]">
+                    {salon?.name || "N/A"}
+                  </p>
                 </div>
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-gray-500 flex items-center">
                     <FaPhone className="mr-2" /> Phone
                   </p>
-                  <p className="text-lg text-[#4A4A4A]">{salon?.phone || "N/A"}</p>
+                  <p className="text-lg text-[#4A4A4A]">
+                    {salon?.phone || "N/A"}
+                  </p>
                 </div>
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-gray-500">Email</p>
                   <p className="text-lg text-[#4A4A4A]">{user.email}</p>
                 </div>
               </div>
-              
+
               <div className="space-y-4">
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-gray-500 flex items-center">
                     <FaMapMarkerAlt className="mr-2" /> Address
                   </p>
-                  <p className="text-lg text-[#4A4A4A]">{salon?.location || "N/A"}</p>
+                  <p className="text-lg text-[#4A4A4A]">
+                    {salon?.location || "N/A"}
+                  </p>
                 </div>
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-gray-500 flex items-center">
@@ -313,9 +409,11 @@ const BusinessDashboard = () => {
                   <div className="text-lg text-[#4A4A4A]">
                     {salon?.openingHours ? (
                       <ul className="space-y-1">
-                        {formatOpeningHours(salon.openingHours).map((hours, index) => (
-                          <li key={index}>{hours}</li>
-                        ))}
+                        {formatOpeningHours(salon.openingHours).map(
+                          (hours, index) => (
+                            <li key={index}>{hours}</li>
+                          )
+                        )}
                       </ul>
                     ) : (
                       "N/A"
@@ -333,20 +431,28 @@ const BusinessDashboard = () => {
                 {bookings.length} total bookings
               </div>
             </div>
-            
+
             {bookings.length === 0 ? (
               <div className="text-center py-12 bg-gray-50 rounded-lg">
                 <p className="text-gray-500">
-                  No bookings found. Bookings will appear here once customers make reservations.
+                  No bookings found. Bookings will appear here once customers
+                  make reservations.
                 </p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
+              <div className="flex justify-center items-center">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      {["Customer", "Service", "Date", "Time", "Status", "Actions"].map((header) => (
-                        <th 
+                      {[
+                        "Customer",
+                        "Email",
+                        "Service",
+                        "Date",
+                        "Time",
+                        "Manage Bookings",
+                      ].map((header) => (
+                        <th
                           key={header}
                           className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                         >
@@ -356,59 +462,79 @@ const BusinessDashboard = () => {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {bookings.map((booking) => (
-                      <tr key={booking._id || booking.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="font-medium text-[#4A4A4A]">
-                            {booking.customerName}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {booking.serviceName}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {new Date(booking.date).toLocaleDateString()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {booking.time}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                              booking.status === "confirmed"
-                                ? "bg-green-100 text-green-800"
-                                : booking.status === "pending"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-red-100 text-red-800"
-                            }`}
-                          >
-                            {booking.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          {booking.status === "pending" && (
-                            <div className="flex space-x-2">
+                    {bookings.map((booking) => {
+                      const customerName = booking.customerId
+                        ? `${booking.customerId.firstName} ${booking.customerId.lastName}`
+                        : "Unknown Customer";
+                      const customerEmail = booking.customerId?.email || "N/A";
+                      const serviceName =
+                        booking.serviceId?.name || "Unknown Service";
+                      const appointmentDate = booking.appointmentDate
+                        ? new Date(booking.appointmentDate).toLocaleDateString()
+                        : "Invalid Date";
+                      const appointmentTime =
+                        booking.appointmentTime || "Invalid Time";
+
+                      return (
+                        <tr
+                          key={booking._id || booking.id}
+                          className="hover:bg-gray-50"
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="font-medium text-[#4A4A4A]">
+                              {customerName}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="font-medium text-[#4A4A4A]">
+                              {customerEmail}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {serviceName}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {appointmentDate}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {appointmentTime}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                            {booking.bookingStatus === "Pending" ? (
                               <button
-                                onClick={() =>
-                                  handleBookingStatus(booking.id, "confirmed")
-                                }
-                                className="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
-                              >
-                                Confirm
-                              </button>
-                              <button
-                                onClick={() =>
-                                  handleBookingStatus(booking.id, "cancelled")
-                                }
-                                className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+                                onClick={() => {
+                                  console.log(
+                                    "Cancel button clicked for booking ID:",
+                                    booking._id
+                                  );
+                                  openCancelConfirmation(booking._id);
+                                }}
+                                className="px-4 py-2 bg-[#A2B9C6] text-white rounded-lg text-sm hover:bg-[#FADADD] hover:text-[#4A4A4A] transition duration-300"
                               >
                                 Cancel
                               </button>
-                            </div>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
+                            ) : (
+                              (() => {
+                                const isCompleted =
+                                  booking.bookingStatus === "Service Completed";
+                                const statusClass = "bg-gray-100 text-gray-600";
+                                const statusText = isCompleted
+                                  ? "Service Completed"
+                                  : "";
+
+                                return (
+                                  <span
+                                    className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}`}
+                                  >
+                                    {statusText}
+                                  </span>
+                                );
+                              })()
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -436,7 +562,7 @@ const BusinessDashboard = () => {
                       required
                     />
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -446,7 +572,10 @@ const BusinessDashboard = () => {
                         type="number"
                         value={newService.price}
                         onChange={(e) =>
-                          setNewService({ ...newService, price: e.target.value })
+                          setNewService({
+                            ...newService,
+                            price: e.target.value,
+                          })
                         }
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] transition-colors"
                         required
@@ -470,7 +599,7 @@ const BusinessDashboard = () => {
                       />
                     </div>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Description
@@ -488,7 +617,7 @@ const BusinessDashboard = () => {
                       required
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Languages Spoken
@@ -504,7 +633,7 @@ const BusinessDashboard = () => {
                     />
                   </div>
                 </div>
-                
+
                 <button
                   type="submit"
                   className="w-full mt-4 bg-[#A2B9C6] text-white px-6 py-3 rounded-lg hover:bg-[#8fa9b8] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] transition-colors"
@@ -527,14 +656,15 @@ const BusinessDashboard = () => {
               {services.length === 0 ? (
                 <div className="text-center py-12 bg-gray-50 rounded-lg">
                   <p className="text-gray-500">
-                    No services added yet. Add your first service using the form.
+                    No services added yet. Add your first service using the
+                    form.
                   </p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {services.map((service) => (
-                    <div 
-                      key={service._id} 
+                    <div
+                      key={service._id}
                       className="p-4 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow"
                     >
                       {editingServiceId === service._id ? (
@@ -596,7 +726,9 @@ const BusinessDashboard = () => {
                             <Select
                               isMulti
                               options={languageOptions}
-                              value={getCurrentLanguages(editedService.languageSpoken)}
+                              value={getCurrentLanguages(
+                                editedService.languageSpoken
+                              )}
                               onChange={handleEditLanguageChange}
                               className="mt-1"
                               classNamePrefix="select"
@@ -639,21 +771,25 @@ const BusinessDashboard = () => {
                             </div>
                             {service.languageSpoken?.length > 0 && (
                               <div className="mt-2">
-                                <p className="text-sm text-gray-500">Languages:</p>
+                                <p className="text-sm text-gray-500">
+                                  Languages:
+                                </p>
                                 <div className="flex flex-wrap gap-2 mt-1">
-                                  {service.languageSpoken.map((langCode, index) => {
-                                    const lang = languageOptions.find(
-                                      (option) => option.value === langCode
-                                    );
-                                    return lang ? (
-                                      <span 
-                                        key={index} 
-                                        className="text-xs bg-gray-100 px-2 py-1 rounded"
-                                      >
-                                        {lang.label.props.children[1]}
-                                      </span>
-                                    ) : null;
-                                  })}
+                                  {service.languageSpoken.map(
+                                    (langCode, index) => {
+                                      const lang = languageOptions.find(
+                                        (option) => option.value === langCode
+                                      );
+                                      return lang ? (
+                                        <span
+                                          key={index}
+                                          className="text-xs bg-gray-100 px-2 py-1 rounded"
+                                        >
+                                          {lang.label.props.children[1]}
+                                        </span>
+                                      ) : null;
+                                    }
+                                  )}
                                 </div>
                               </div>
                             )}
