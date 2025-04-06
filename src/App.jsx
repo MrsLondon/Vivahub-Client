@@ -100,9 +100,9 @@ const App = () => {
                 path="/customer-dashboard"
                 element={
                   <ProtectedRoute allowedRoles={["customer"]}>
-                    <NavbarLayout>
+                   
                       <CustomerDashboard />
-                    </NavbarLayout>
+                   
                   </ProtectedRoute>
                 }
               />
@@ -110,9 +110,9 @@ const App = () => {
                 path="/business-dashboard"
                 element={
                   <ProtectedRoute allowedRoles={["business"]}>
-                    <NavbarLayout>
+                    
                       <BusinessDashboard />
-                    </NavbarLayout>
+                  
                   </ProtectedRoute>
                 }
               />
