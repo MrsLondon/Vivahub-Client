@@ -150,150 +150,259 @@ const SignupPage = () => {
   return (
     <div className="font-sans bg-[#F8F8F8] min-h-screen flex flex-col">
       <Navbar />
-      <div className="flex-grow flex items-center justify-center">
-        <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
-          <h2 className="text-center text-3xl font-extrabold text-[#4A4A4A]">
-            Create your {role} account
-          </h2>
-          {error && (
-            <div
-              className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
-              role="alert"
-            >
-              <span className="block sm:inline">{error}</span>
-            </div>
-          )}
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-            <div className="space-y-4">
-              <input
-                name="firstName"
-                type="text"
-                required
-                className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-                placeholder="First Name"
-                value={formData.firstName}
-                onChange={handleChange}
-              />
-              <input
-                name="lastName"
-                type="text"
-                required
-                className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-                placeholder="Last Name"
-                value={formData.lastName}
-                onChange={handleChange}
-              />
-              <input
-                name="email"
-                type="email"
-                required
-                className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-                placeholder="Email address"
-                value={formData.email}
-                onChange={handleChange}
-              />
-              {role === "business" && (
-                <>
-                  <input
-                    name="businessName"
-                    type="text"
-                    required
-                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-                    placeholder="Business Name"
-                    value={formData.businessName}
-                    onChange={handleChange}
-                  />
-                  <input
-                    name="address"
-                    type="text"
-                    required
-                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-                    placeholder="Business Address"
-                    value={formData.address}
-                    onChange={handleChange}
-                  />
-                  <textarea
-                    name="description"
-                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-                    placeholder="Business Description"
-                    value={formData.description}
-                    onChange={handleChange}
-                  />
-                  <input
-                    name="phone"
-                    type="text"
-                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-                    placeholder="Phone Number"
-                    value={formData.phone}
-                    onChange={handleChange}
-                  />
-
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-[#4A4A4A]">
-                      Opening Hours
-                    </h3>
-                    {Object.keys(formData.openingHours).map((day) => (
-                      <div key={day} className="flex items-center space-x-4">
-                        <label className="w-1/4 capitalize">{day}:</label>
-                        <input
-                          name={`openingHours.${day}.open`}
-                          type="time"
-                          className="w-1/3 px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-                          placeholder="Open"
-                          value={formData.openingHours[day].open}
-                          onChange={handleChange}
-                        />
-                        <input
-                          name={`openingHours.${day}.close`}
-                          type="time"
-                          className="w-1/3 px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-                          placeholder="Close"
-                          value={formData.openingHours[day].close}
-                          onChange={handleChange}
-                        />
-                      </div>
-                    ))}
+      <div className="flex-grow flex items-center justify-center p-4">
+        <div className="w-full max-w-4xl"> {/* Increased max width for large screens */}
+          <div className="bg-white rounded-lg shadow-md overflow-hidden"> {/* Added overflow-hidden */}
+            {/* Two-column layout for large screens */}
+            <div className="md:flex">
+              {/* Left side - decorative image/branding (only on large screens) */}
+              <div className="hidden md:block md:w-1/3 bg-[#E0E0E0] p-8 flex items-center justify-center">
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold text-[#4A4A4A] mb-4">
+                    {role === "business" ? "Grow Your Business" : "Find Your Perfect Style"}
+                  </h2>
+                  <p className="text-[#4A4A4A]">
+                    {role === "business" 
+                      ? "Join our platform and connect with thousands of potential customers"
+                      : "Discover the best salons and book appointments with ease"}
+                  </p>
+                </div>
+              </div>
+              
+              {/* Right side - form content */}
+              <div className="w-full md:w-2/3 p-6 md:p-8">
+                <h2 className="text-center text-3xl font-extrabold text-[#4A4A4A]">
+                  Create your {role} account
+                </h2>
+                
+                {error && (
+                  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4" role="alert">
+                    <span className="block sm:inline">{error}</span>
                   </div>
-                </>
-              )}
-              <input
-                name="password"
-                type="password"
-                required
-                className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-              <input
-                name="confirmPassword"
-                type="password"
-                required
-                className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
-                placeholder="Confirm Password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-              />
+                )}
+                
+                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                  <div className="space-y-4">
+                    {/* Name fields in row on large screens */}
+                    <div className="flex flex-col md:flex-row gap-4">
+                      <input
+                        name="firstName"
+                        type="text"
+                        required
+                        className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                        placeholder="First Name"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                      />
+                      <input
+                        name="lastName"
+                        type="text"
+                        required
+                        className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                        placeholder="Last Name"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    
+                    <input
+                      name="email"
+                      type="email"
+                      required
+                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                      placeholder="Email address"
+                      value={formData.email}
+                      onChange={handleChange}
+                    />
+                    
+                    {role === "business" && (
+                      <>
+                        <input
+                          name="businessName"
+                          type="text"
+                          required
+                          className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                          placeholder="Business Name"
+                          value={formData.businessName}
+                          onChange={handleChange}
+                        />
+                        
+                        <input
+                          name="address"
+                          type="text"
+                          required
+                          className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                          placeholder="Business Address"
+                          value={formData.address}
+                          onChange={handleChange}
+                        />
+                        
+                        <textarea
+                          name="description"
+                          className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                          placeholder="Business Description"
+                          value={formData.description}
+                          onChange={handleChange}
+                          rows={3}
+                        />
+                        
+                        <input
+                          name="phone"
+                          type="text"
+                          className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                          placeholder="Phone Number"
+                          value={formData.phone}
+                          onChange={handleChange}
+                        />
+                        
+                        {/* Opening Hours - now in a scrollable panel */}
+                        <div className="border border-[#E0E0E0] rounded-lg p-4">
+                          <h3 className="text-lg font-semibold text-[#4A4A4A] mb-3">
+                            Opening Hours
+                          </h3>
+                          
+                          <div className="flex items-center mb-4">
+                            <input
+                              type="checkbox"
+                              id="sameHoursAllDays"
+                              className="mr-2"
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  const hours = formData.openingHours.monday;
+                                  setFormData(prev => ({
+                                    ...prev,
+                                    openingHours: {
+                                      monday: hours,
+                                      tuesday: hours,
+                                      wednesday: hours,
+                                      thursday: hours,
+                                      friday: hours,
+                                      saturday: hours,
+                                      sunday: hours
+                                    }
+                                  }));
+                                }
+                              }}
+                            />
+                            <label htmlFor="sameHoursAllDays">Same hours for all days</label>
+                          </div>
+                          
+                          <div className="max-h-60 overflow-y-auto pr-2 space-y-3">
+                            {Object.keys(formData.openingHours).map((day) => (
+                              <div key={day} className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                                <label className="w-24 capitalize font-medium">{day}:</label>
+                                <div className="flex-1 grid grid-cols-2 gap-2">
+                                  {/* Open time dropdown */}
+                                  <div className="relative">
+                                    <select
+                                      name={`openingHours.${day}.open`}
+                                      value={formData.openingHours[day].open}
+                                      onChange={handleChange}
+                                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] appearance-none"
+                                    >
+                                      <option value="">Closed</option>
+                                      {Array.from({ length: 25 }, (_, i) => {
+                                        const hour = i % 12 || 12;
+                                        const ampm = i < 12 ? 'AM' : 'PM';
+                                        const time = `${hour}:${i % 2 === 0 ? '00' : '30'} ${ampm}`;
+                                        const value = `${String(Math.floor(i / 2)).padStart(2, '0')}:${i % 2 === 0 ? '00' : '30'}`;
+                                        return (
+                                          <option key={`open-${day}-${i}`} value={value}>
+                                            {time}
+                                          </option>
+                                        );
+                                      })}
+                                    </select>
+                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                                      <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                                      </svg>
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Close time dropdown */}
+                                  <div className="relative">
+                                    <select
+                                      name={`openingHours.${day}.close`}
+                                      value={formData.openingHours[day].close}
+                                      onChange={handleChange}
+                                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] appearance-none"
+                                      disabled={!formData.openingHours[day].open}
+                                    >
+                                      <option value="">Closed</option>
+                                      {formData.openingHours[day].open && 
+                                        Array.from({ length: 25 }, (_, i) => {
+                                          const hour = i % 12 || 12;
+                                          const ampm = i < 12 ? 'AM' : 'PM';
+                                          const time = `${hour}:${i % 2 === 0 ? '00' : '30'} ${ampm}`;
+                                          const value = `${String(Math.floor(i / 2)).padStart(2, '0')}:${i % 2 === 0 ? '00' : '30'}`;
+                                          return (
+                                            <option key={`close-${day}-${i}`} value={value}>
+                                              {time}
+                                            </option>
+                                          );
+                                        })
+                                      }
+                                    </select>
+                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                                      <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                                      </svg>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </>
+                    )}
+                    
+                    <input
+                      name="password"
+                      type="password"
+                      required
+                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                      placeholder="Password"
+                      value={formData.password}
+                      onChange={handleChange}
+                    />
+                    
+                    <input
+                      name="confirmPassword"
+                      type="password"
+                      required
+                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6]"
+                      placeholder="Confirm Password"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  
+                  <button
+                    type="submit"
+                    className="w-full py-3 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#8fa9b8] transition duration-300"
+                  >
+                    Sign up
+                  </button>
+                </form>
+                
+                <div className="text-center mt-4">
+                  <Link
+                    to="/login"
+                    className="text-sm text-[#A2B9C6] hover:text-[#8fa9b8] transition duration-300"
+                  >
+                    Already have an account? Sign in
+                  </Link>
+                </div>
+              </div>
             </div>
-            <button
-              type="submit"
-              className="w-full py-3 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#8fa9b8] transition duration-300"
-            >
-              Sign up
-            </button>
-          </form>
-          <div className="text-center">
-            <Link
-              to="/login"
-              className="text-sm text-[#A2B9C6] hover:text-[#8fa9b8] transition duration-300"
-            >
-              Already have an account? Sign in
-            </Link>
           </div>
         </div>
       </div>
     </div>
-  );
+  ); 
+
 };
 
 export default SignupPage;
