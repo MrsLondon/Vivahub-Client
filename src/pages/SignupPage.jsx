@@ -116,6 +116,7 @@ const SignupPage = () => {
   };
 
   return (
+
     <div className={`min-h-screen font-body transition-colors duration-300 ${
       theme === "light" ? "bg-white text-[#4A4A4A]" : "bg-gray-900 text-gray-200"
     }`}>
@@ -181,6 +182,7 @@ const SignupPage = () => {
               </div>
             )}
                 
+
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                   <div className="space-y-4">
                     <div className="flex flex-col md:flex-row gap-4">
@@ -211,7 +213,7 @@ const SignupPage = () => {
                         onChange={handleChange}
                       />
                     </div>
-                    
+
                     <input
                       name="email"
                       type="email"
@@ -225,7 +227,7 @@ const SignupPage = () => {
                       value={formData.email}
                       onChange={handleChange}
                     />
-                    
+
                     {role === "business" && (
                       <>
                         <input
@@ -241,7 +243,7 @@ const SignupPage = () => {
                           value={formData.businessName}
                           onChange={handleChange}
                         />
-                        
+
                         <input
                           name="address"
                           type="text"
@@ -255,7 +257,7 @@ const SignupPage = () => {
                           value={formData.address}
                           onChange={handleChange}
                         />
-                        
+
                         <textarea
                           name="description"
                           className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
@@ -268,7 +270,7 @@ const SignupPage = () => {
                           onChange={handleChange}
                           rows={3}
                         />
-                        
+
                         <input
                           name="phone"
                           type="text"
@@ -281,6 +283,7 @@ const SignupPage = () => {
                           value={formData.phone}
                           onChange={handleChange}
                         />
+
                         
                         <div className={`border rounded-lg p-4 ${
                           theme === "light" 
@@ -290,9 +293,10 @@ const SignupPage = () => {
                           <h3 className={`text-lg font-semibold mb-3 ${
                             theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
                           }`}>
+
                             Opening Hours
                           </h3>
-                          
+
                           <div className="flex items-center mb-4">
                             <input
                               type="checkbox"
@@ -301,7 +305,7 @@ const SignupPage = () => {
                               onChange={(e) => {
                                 if (e.target.checked) {
                                   const hours = formData.openingHours.monday;
-                                  setFormData(prev => ({
+                                  setFormData((prev) => ({
                                     ...prev,
                                     openingHours: {
                                       monday: hours,
@@ -310,21 +314,24 @@ const SignupPage = () => {
                                       thursday: hours,
                                       friday: hours,
                                       saturday: hours,
-                                      sunday: hours
-                                    }
+                                      sunday: hours,
+                                    },
                                   }));
                                 }
                               }}
                             />
+
                             <label htmlFor="sameHoursAllDays" className={
                               theme === "light" ? "text-[#4A4A4A]" : "text-gray-300"
                             }>
+
                               Same hours for all days
                             </label>
                           </div>
-                          
+
                           <div className="max-h-60 overflow-y-auto pr-2 space-y-3">
                             {Object.keys(formData.openingHours).map((day) => (
+
                               <div key={day} className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                                 <label className={`w-24 capitalize font-medium ${
                                   theme === "light" ? "text-[#4A4A4A]" : "text-gray-300"
@@ -380,6 +387,7 @@ const SignupPage = () => {
                                       })
                                     }
                                   </select>
+
                                 </div>
                               </div>
                             ))}
@@ -387,7 +395,7 @@ const SignupPage = () => {
                         </div>
                       </>
                     )}
-                    
+
                     <input
                       name="password"
                       type="password"
@@ -401,7 +409,7 @@ const SignupPage = () => {
                       value={formData.password}
                       onChange={handleChange}
                     />
-                    
+
                     <input
                       name="confirmPassword"
                       type="password"
@@ -416,7 +424,7 @@ const SignupPage = () => {
                       onChange={handleChange}
                     />
                   </div>
-                  
+
                   <button
                     type="submit"
                     className={`w-full py-3 rounded-lg transition duration-300 ${
@@ -427,7 +435,9 @@ const SignupPage = () => {
                   >
                     Sign up
                   </button>
+
                   </form>
+
           </div>
         )}
       </div>
