@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../hooks/useAuth';
 import { Link } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
 
 // Create axios instance with default config
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
@@ -15,6 +16,7 @@ const api = axios.create({
 });
 
 const LoginPage = () => {
+  const { theme } = useTheme();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -73,19 +75,33 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F8F8F8] py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
+    <div className={`min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 ${
+      theme === 'light' ? 'bg-[#eeeeee]' : 'bg-gray-900'
+    }`}>
+      <div className={`max-w-md w-full space-y-8 p-8 rounded-lg shadow-sm border ${
+        theme === 'light' 
+          ? 'bg-white border-gray-200' 
+          : 'bg-gray-800 border-gray-700'
+      }`}>
         <div>
-          <h2 className="text-center text-2xl font-medium text-[#4A4A4A]">
+          <h2 className={`text-center text-2xl font-medium ${
+            theme === 'light' ? 'text-[#4A4A4A]' : 'text-gray-200'
+          }`}>
             Sign in to your account
           </h2>
-          <p className="mt-2 text-center text-sm text-[#4A4A4A]/80">
+          <p className={`mt-2 text-center text-sm ${
+            theme === 'light' ? 'text-[#4A4A4A]/80' : 'text-gray-300'
+          }`}>
             Access your VivaHub dashboard
           </p>
         </div>
 
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <div className={`p-3 rounded-lg ${
+            theme === 'light' 
+              ? 'bg-red-100 border border-red-400 text-red-700' 
+              : 'bg-red-900 border border-red-700 text-red-100'
+          }`}>
             <span className="block sm:inline">{error}</span>
           </div>
         )}
@@ -99,7 +115,11 @@ const LoginPage = () => {
                 name="email"
                 type="email"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-[#E0E0E0] placeholder-[#4A4A4A]/60 text-[#4A4A4A] rounded-t-md focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] sm:text-sm"
+                className={`appearance-none rounded-none relative block w-full px-3 py-2 border placeholder-[#4A4A4A]/60 rounded-t-md focus:outline-none focus:ring-2 sm:text-sm ${
+                  theme === 'light'
+                    ? 'border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] text-[#4A4A4A]'
+                    : 'border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700 text-gray-200'
+                }`}
                 placeholder="Email address"
                 value={formData.email}
                 onChange={handleChange}
@@ -112,7 +132,11 @@ const LoginPage = () => {
                 name="password"
                 type="password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-[#E0E0E0] placeholder-[#4A4A4A]/60 text-[#4A4A4A] rounded-b-md focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] sm:text-sm"
+                className={`appearance-none rounded-none relative block w-full px-3 py-2 border placeholder-[#4A4A4A]/60 rounded-b-md focus:outline-none focus:ring-2 sm:text-sm ${
+                  theme === 'light'
+                    ? 'border-gray-300 focus:ring-[#A2B9C6] focus:border-[#A2B9C6] text-[#4A4A4A]'
+                    : 'border-gray-600 focus:ring-[#FADADD] focus:border-[#FADADD] bg-gray-700 text-gray-200'
+                }`}
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
@@ -123,14 +147,25 @@ const LoginPage = () => {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#A2B9C6] hover:bg-[#8BA5B3] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#A2B9C6]"
+              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                theme === 'light'
+                  ? 'text-white bg-[#A2B9C6] hover:bg-[#8BA5B3] focus:ring-[#A2B9C6]'
+                  : 'text-[#4A4A4A] bg-[#FADADD] hover:bg-[#f0c8cc] focus:ring-[#FADADD]'
+              }`}
             >
               Sign in
             </button>
           </div>
           
           <div className="text-center">
-            <Link to="/signup" className="text-sm text-[#A2B9C6] hover:text-[#8BA5B3]">
+            <Link 
+              to="/signup" 
+              className={`text-sm ${
+                theme === 'light'
+                  ? 'text-[#A2B9C6] hover:text-[#8BA5B3]'
+                  : 'text-[#FADADD] hover:text-[#f0c8cc]'
+              }`}
+            >
               Don't have an account? Sign up
             </Link>
           </div>
