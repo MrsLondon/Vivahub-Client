@@ -25,7 +25,7 @@ const BusinessDashboard = () => {
   const [salon, setSalon] = useState({});
   const [bookings, setBookings] = useState([]);
   const [services, setServices] = useState([]);
-  const [languages, setLanguages] = useState([]);
+  const [languageOptions, setLanguageOptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [newService, setNewService] = useState({
@@ -46,74 +46,71 @@ const BusinessDashboard = () => {
     });
   };
 
+  // Fetch languages from API
   useEffect(() => {
     const fetchLanguages = async () => {
       try {
         const response = await axios.get(`${API_URL}/api/services/languages`);
-        setLanguages(
-          response.data.map((lang) => ({
-            value: lang.code,
-            label: (
-              <div className="flex items-center">
-                <img
-                  src={`https://flagcdn.com/w40/${lang.country}.png`}
-                  alt={lang.name}
-                  className="w-5 h-5 mr-2"
-                />
-                {lang.name}
-              </div>
-            ),
-          }))
-        );
+        const options = response.data.map((lang) => ({
+          value: lang.code,
+          label: (
+            <div className="flex items-center">
+              <img
+                src={`https://flagcdn.com/w40/${lang.country}.png`}
+                alt={lang.name}
+                className="w-5 h-5 mr-2"
+              />
+              {lang.name}
+            </div>
+          ),
+        }));
+        setLanguageOptions(options);
       } catch (err) {
         console.error("Failed to fetch languages:", err);
+        toast.error("Failed to load language options");
       }
     };
 
     fetchLanguages();
   }, []);
 
+  // Handle language selection for new service
   const handleLanguageChange = (selectedOptions) => {
     setNewService({
       ...newService,
-      languageSpoken: selectedOptions.map((option) => option.value),
+      languageSpoken: selectedOptions.map(option => option.value),
     });
   };
 
+  // Handle language selection for editing service
+  const handleEditLanguageChange = (selectedOptions) => {
+    setEditedService({
+      ...editedService,
+      languageSpoken: selectedOptions.map(option => option.value),
+    });
+  };
+
+  // Get current language selections for a service
+  const getCurrentLanguages = (languageCodes) => {
+    return languageOptions.filter(option => 
+      languageCodes?.includes(option.value)
+    );
+  };
+
+  // Fetch all data
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [bookingsRes, servicesRes, salonRes] = await Promise.all([
-          axios
-            .get(`${API_URL}/api/bookings`, {
-              headers: { Authorization: `Bearer ${user.token}` },
-            })
-            .catch((err) => {
-              if (err.response?.status === 404) {
-                return { data: [] };
-              }
-              throw err;
-            }),
-          axios
-            .get(`${API_URL}/api/services/user`, {
-              headers: { Authorization: `Bearer ${user.token}` },
-            })
-            .catch((err) => {
-              if (err.response?.status === 404) {
-                return { data: [] };
-              }
-              throw err;
-            }),
-          axios
-            .get(`${API_URL}/api/salons/user`, {
-              headers: { Authorization: `Bearer ${user.token}` },
-            })
-            .catch((err) => {
-              if (err.response?.status === 404) {
-                return { data: {} };
-              }
-              throw err;
-            }),
+          axios.get(`${API_URL}/api/bookings`, {
+            headers: { Authorization: `Bearer ${user.token}` },
+          }).catch(() => ({ data: [] })),
+          axios.get(`${API_URL}/api/services/user`, {
+            headers: { Authorization: `Bearer ${user.token}` },
+          }).catch(() => ({ data: [] })),
+          axios.get(`${API_URL}/api/salons/user`, {
+            headers: { Authorization: `Bearer ${user.token}` },
+          }).catch(() => ({ data: {} })),
         ]);
 
         setBookings(bookingsRes.data);
@@ -123,6 +120,7 @@ const BusinessDashboard = () => {
         if (!err.response || err.response.status !== 404) {
           setError("Failed to fetch dashboard data");
           console.error("Error fetching data:", err);
+          toast.error("Failed to load dashboard data");
         }
       } finally {
         setLoading(false);
@@ -135,9 +133,12 @@ const BusinessDashboard = () => {
   const handleServiceSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${API_URL}/api/services`, newService, {
-        headers: { Authorization: `Bearer ${user.token}` },
-      });
+      const response = await axios.post(
+        `${API_URL}/api/services`, 
+        newService,
+        { headers: { Authorization: `Bearer ${user.token}` } }
+      );
+      
       setServices([...services, response.data]);
       setNewService({
         name: "",
@@ -146,15 +147,19 @@ const BusinessDashboard = () => {
         duration: "",
         languageSpoken: [],
       });
+      toast.success("Service created successfully!");
     } catch (err) {
-      setError("Failed to create service");
       console.error("Error creating service:", err);
+      toast.error("Failed to create service");
     }
   };
 
   const handleEditClick = (service) => {
     setEditingServiceId(service._id);
-    setEditedService({ ...service });
+    setEditedService({ 
+      ...service,
+      languageSpoken: service.languageSpoken || [] 
+    });
   };
 
   const handleSaveClick = async () => {
@@ -165,18 +170,16 @@ const BusinessDashboard = () => {
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
 
-      setServices((prevServices) =>
-        prevServices.map((service) =>
-          service._id === editingServiceId ? response.data : service
-        )
-      );
+      setServices(services.map(service =>
+        service._id === editingServiceId ? response.data : service
+      ));
 
       toast.success("Service updated successfully!");
       setEditingServiceId(null);
       setEditedService({});
     } catch (err) {
       console.error("Error updating service:", err);
-      toast.error("Failed to update service.");
+      toast.error("Failed to update service");
     }
   };
 
@@ -186,21 +189,41 @@ const BusinessDashboard = () => {
   };
 
   const handleDeleteService = async (serviceId) => {
-    if (window.confirm("Are you sure you want to delete this service?")) {
-      try {
-        await axios.delete(`${API_URL}/api/services/delete/${serviceId}`, {
-          headers: { Authorization: `Bearer ${user.token}` },
-        });
+    toast.custom((t) => (
+      <div className="bg-white p-4 rounded-lg shadow-lg">
+        <p className="mb-4">Are you sure you want to delete this service?</p>
+        <div className="flex justify-end space-x-2">
+          <button
+            onClick={() => {
+              toast.dismiss(t.id);
+              performDeleteService(serviceId);
+            }}
+            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+          >
+            Delete
+          </button>
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    ), { duration: 60000 });
+  };
 
-        setServices((prevServices) =>
-          prevServices.filter((service) => service._id !== serviceId)
-        );
+  const performDeleteService = async (serviceId) => {
+    try {
+      await axios.delete(`${API_URL}/api/services/delete/${serviceId}`, {
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
 
-        toast.success("Service deleted successfully!");
-      } catch (err) {
-        console.error("Error deleting service:", err);
-        toast.error("Failed to delete service.");
-      }
+      setServices(services.filter(service => service._id !== serviceId));
+      toast.success("Service deleted successfully!");
+    } catch (err) {
+      console.error("Error deleting service:", err);
+      toast.error("Failed to delete service");
     }
   };
 
@@ -209,18 +232,12 @@ const BusinessDashboard = () => {
       await axios.put(
         `${API_URL}/api/business/bookings/${bookingId}/status`,
         { status },
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${user.token}` } }
       );
 
-      setBookings((prevBookings) =>
-        prevBookings.map((booking) =>
-          booking.id === bookingId ? { ...booking, status } : booking
-        )
-      );
+      setBookings(bookings.map(booking =>
+        booking.id === bookingId ? { ...booking, status } : booking
+      ));
 
       toast.success(`Booking ${status} successfully`);
     } catch (err) {
@@ -243,10 +260,8 @@ const BusinessDashboard = () => {
 
   return (
     <div className="font-sans leading-relaxed text-[#4A4A4A] bg-gray-50 min-h-screen">
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-8">
-          {/* Header */}
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-light text-[#4A4A4A]">
               Business Dashboard
@@ -262,7 +277,6 @@ const BusinessDashboard = () => {
             </div>
           </div>
 
-          {/* Business Profile Card - Enhanced with more salon info */}
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
             <h2 className="text-xl font-semibold text-[#4A4A4A] mb-4">
               Business Profile
@@ -312,7 +326,6 @@ const BusinessDashboard = () => {
             </div>
           </div>
 
-          {/* Bookings Section */}
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-semibold text-[#4A4A4A]">Bookings</h2>
@@ -402,9 +415,7 @@ const BusinessDashboard = () => {
             )}
           </div>
 
-          {/* Services Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Add New Service Card */}
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
               <h2 className="text-xl font-semibold text-[#4A4A4A] mb-6">
                 Add New Service
@@ -484,7 +495,8 @@ const BusinessDashboard = () => {
                     </label>
                     <Select
                       isMulti
-                      options={languages}
+                      options={languageOptions}
+                      value={getCurrentLanguages(newService.languageSpoken)}
                       onChange={handleLanguageChange}
                       className="mt-1"
                       classNamePrefix="select"
@@ -502,7 +514,6 @@ const BusinessDashboard = () => {
               </form>
             </div>
 
-            {/* Services List Card */}
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-semibold text-[#4A4A4A]">
@@ -578,6 +589,20 @@ const BusinessDashboard = () => {
                               placeholder="Duration (mins)"
                             />
                           </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Languages Spoken
+                            </label>
+                            <Select
+                              isMulti
+                              options={languageOptions}
+                              value={getCurrentLanguages(editedService.languageSpoken)}
+                              onChange={handleEditLanguageChange}
+                              className="mt-1"
+                              classNamePrefix="select"
+                              placeholder="Select languages..."
+                            />
+                          </div>
                           <div className="flex justify-end space-x-2">
                             <button
                               onClick={handleSaveClick}
@@ -612,6 +637,26 @@ const BusinessDashboard = () => {
                                 {service.duration} mins
                               </span>
                             </div>
+                            {service.languageSpoken?.length > 0 && (
+                              <div className="mt-2">
+                                <p className="text-sm text-gray-500">Languages:</p>
+                                <div className="flex flex-wrap gap-2 mt-1">
+                                  {service.languageSpoken.map((langCode, index) => {
+                                    const lang = languageOptions.find(
+                                      (option) => option.value === langCode
+                                    );
+                                    return lang ? (
+                                      <span 
+                                        key={index} 
+                                        className="text-xs bg-gray-100 px-2 py-1 rounded"
+                                      >
+                                        {lang.label.props.children[1]}
+                                      </span>
+                                    ) : null;
+                                  })}
+                                </div>
+                              </div>
+                            )}
                           </div>
                           <div className="flex space-x-2">
                             <button

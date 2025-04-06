@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
 const BusinessProfile = () => {
-  const { id } = useParams(); // Get salon ID from the URL
+  const { id } = useParams();
   const navigate = useNavigate();
   const [salon, setSalon] = useState({
     name: "",
@@ -28,7 +28,6 @@ const BusinessProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch salon data
   useEffect(() => {
     const fetchSalon = async () => {
       try {
@@ -45,13 +44,11 @@ const BusinessProfile = () => {
     fetchSalon();
   }, [id]);
 
-  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setSalon({ ...salon, [name]: value });
   };
 
-  // Handle nested fields (e.g., openingHours)
   const handleNestedChange = (day, field, value) => {
     setSalon({
       ...salon,
@@ -62,21 +59,16 @@ const BusinessProfile = () => {
     });
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Adjust the format of openingHours to match the backend
     const formattedOpeningHours = Object.keys(salon.openingHours).reduce(
       (acc, day) => {
         const { open, close } = salon.openingHours[day];
-
-        // Garantir que os valores sejam convertidos para null ou "HH:mm"
         acc[day] = {
           open: open && open !== "Closed" ? open : null,
           close: close && close !== "Closed" ? close : null,
         };
-
         return acc;
       },
       {}
@@ -84,17 +76,15 @@ const BusinessProfile = () => {
 
     const sanitizedData = {
       ...salon,
-      openingHours: formattedOpeningHours, // Substituir pelo formato correto
+      openingHours: formattedOpeningHours,
     };
-
-    console.log("Data being sent:", sanitizedData); // Verificar os dados no console
 
     try {
       await axios.put(`${API_URL}/api/salons/update/${id}`, sanitizedData, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       toast.success("Salon updated successfully!");
-      navigate("/business-dashboard"); // Redirecionar após sucesso
+      navigate("/business-dashboard");
     } catch (err) {
       console.error("Error updating salon:", err);
       toast.error("Failed to update salon.");
@@ -115,153 +105,172 @@ const BusinessProfile = () => {
 
   return (
     <div className="font-body leading-relaxed min-h-screen bg-white dark:bg-gray-900 text-[#4A4A4A] dark:text-gray-200">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-4xl font-bold text-center text-[#4A4A4A] dark:text-gray-200 mb-8">
+      <div className="max-w-4xl mx-auto px-6 sm:px-8 lg:px-10 py-10">
+        <h1 className="text-3xl font-bold text-center text-[#4A4A4A] dark:text-gray-200 mb-10">
           Edit Business Profile
         </h1>
         <form
           onSubmit={handleSubmit}
-          className="grid grid-cols-1 md:grid-cols-2 gap-8"
+          className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10"
         >
-          {/* Left Column: General Information */}
-          <div className="space-y-6">
-            {/* Business Name */}
-            <div>
-              <label className="block text-sm font-medium text-[#4A4A4A] dark:text-gray-200">
-                Business Name
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={salon.name}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                required
-              />
-            </div>
+          {/* Left Column */}
+          {/* Left Column (General Info Section) */}
+<div className="lg:col-span-5">
+  <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 space-y-6">
+    <h2 className="text-lg font-semibold text-[#4A4A4A] dark:text-gray-200 mb-2">
+      General Information
+    </h2>
 
-            {/* Location */}
-            <div>
-              <label className="block text-sm font-medium text-[#4A4A4A] dark:text-gray-200">
-                Location
-              </label>
-              <input
-                type="text"
-                name="location"
-                value={salon.location}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                required
-              />
-            </div>
+    {[
+      { label: "Business Name", name: "name", type: "text" },
+      { label: "Location", name: "location", type: "text" },
+      { label: "Email", name: "email", type: "email" },
+      { label: "Phone", name: "phone", type: "text" },
+    ].map((field) => (
+      <div key={field.name}>
+        <label className="block text-sm font-medium text-[#4A4A4A] dark:text-gray-200 mb-1">
+          {field.label}
+        </label>
+        <input
+          type={field.type}
+          name={field.name}
+          value={salon[field.name]}
+          onChange={handleChange}
+          className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm px-3 py-2"
+          required
+        />
+      </div>
+    ))}
 
-            {/* Email */}
-            <div>
-              <label className="block text-sm font-medium text-[#4A4A4A] dark:text-gray-200">
-                Email
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={salon.email}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                required
-              />
-            </div>
+    {/* Description */}
+    <div>
+      <label className="block text-sm font-medium text-[#4A4A4A] dark:text-gray-200 mb-1">
+        Description
+      </label>
+      <textarea
+        name="description"
+        value={salon.description}
+        onChange={handleChange}
+        className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm px-3 py-2"
+        rows="3"
+      />
+    </div>
 
-            {/* Phone */}
-            <div>
-              <label className="block text-sm font-medium text-[#4A4A4A] dark:text-gray-200">
-                Phone
-              </label>
-              <input
-                type="text"
-                name="phone"
-                value={salon.phone}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                required
-              />
-            </div>
+    {/* Closed Days */}
+    <div>
+      <label className="block text-sm font-medium text-[#4A4A4A] dark:text-gray-200 mb-1">
+        Closed Days
+      </label>
+      <input
+        type="text"
+        name="closedDays"
+        value={salon.closedDays.join(", ")}
+        onChange={(e) =>
+          setSalon({
+            ...salon,
+            closedDays: e.target.value
+              .split(",")
+              .map((day) => day.trim()),
+          })
+        }
+        className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm px-3 py-2"
+        placeholder="e.g., 2025-12-25, 2025-01-01"
+      />
+    </div>
+  </div>
+</div>
 
-            {/* Description */}
-            <div>
-              <label className="block text-sm font-medium text-[#4A4A4A] dark:text-gray-200">
-                Description
-              </label>
-              <textarea
-                name="description"
-                value={salon.description}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              />
-            </div>
 
-            {/* Closed Days */}
-            <div>
-              <label className="block text-sm font-medium text-[#4A4A4A] dark:text-gray-200">
-                Closed Days
-              </label>
-              <input
-                type="text"
-                name="closedDays"
-                value={salon.closedDays.join(", ")}
-                onChange={(e) =>
-                  setSalon({
-                    ...salon,
-                    closedDays: e.target.value
-                      .split(",")
-                      .map((day) => day.trim()),
-                  })
-                }
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                placeholder="e.g., 2025-12-25, 2025-01-01"
-              />
-            </div>
-          </div>
-
-          {/* Right Column: Opening Hours */}
-          <div className="space-y-3">
-            <h2 className="text-base font-semibold text-[#4A4A4A] dark:text-gray-200">
+          {/* Right Column */}
+          <div className="lg:col-span-7 space-y-5">
+            <h2 className="text-lg font-semibold text-[#4A4A4A] dark:text-gray-200">
               Opening Hours
             </h2>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="sameHours"
+                className="h-4 w-4 text-[#A2B9C6] border-gray-300 rounded focus:ring-[#A2B9C6]"
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    const firstDayHours = salon.openingHours.monday;
+                    setSalon((prev) => ({
+                      ...prev,
+                      openingHours: Object.keys(prev.openingHours).reduce(
+                        (acc, day) => {
+                          acc[day] = { ...firstDayHours };
+                          return acc;
+                        },
+                        {}
+                      ),
+                    }));
+                  }
+                }}
+              />
+              <label
+                htmlFor="sameHours"
+                className="text-sm font-medium text-[#4A4A4A] dark:text-gray-200"
+              >
+                Same hours for all days
+              </label>
+            </div>
+
             {Object.keys(salon.openingHours).map((day) => (
               <div
                 key={day}
-                className="flex items-center justify-between gap-2 border rounded-lg px-3 py-2 bg-white dark:bg-gray-800"
+                className="flex flex-col sm:flex-row items-start sm:items-center gap-3 border border-gray-200 dark:border-gray-700 rounded-md px-3 py-2 bg-gray-50 dark:bg-gray-800"
               >
-                <p className="text-sm capitalize text-[#4A4A4A] dark:text-gray-200 w-1/4">
-                  {day}
-                </p>
-                <div className="flex items-center gap-2 w-3/4">
-                  <input
-                    type="time"
-                    value={salon.openingHours[day].open || ""} // Fallback to empty string if null
+                <label className="w-24 capitalize font-medium text-[#4A4A4A] dark:text-gray-200">
+                  {day}:
+                </label>
+                <div className="flex-1 grid grid-cols-2 gap-4">
+                  <select
+                    value={salon.openingHours[day].open || ""}
                     onChange={(e) =>
                       handleNestedChange(day, "open", e.target.value)
                     }
-                    className="w-full rounded-md border border-gray-300 px-2 py-1 text-xs focus:border-[#A2B9C6] focus:ring-[#A2B9C6]"
-                  />
-                  <span className="text-xs text-gray-500">to</span>
-                  <input
-                    type="time"
-                    value={salon.openingHours[day].close || ""} // Fallback to empty string if null
+                    className="w-full px-2.5 py-1.5 border border-gray-300 rounded-md text-sm text-[#4A4A4A] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] appearance-none"
+                  >
+                    <option value="">Closed</option>
+                    {Array.from({ length: 24 }, (_, i) => {
+                      const hour = String(i).padStart(2, "0");
+                      return (
+                        <option key={`open-${day}-${i}`} value={`${hour}:00`}>
+                          {`${hour}:00`}
+                        </option>
+                      );
+                    })}
+                  </select>
+
+                  <select
+                    value={salon.openingHours[day].close || ""}
                     onChange={(e) =>
                       handleNestedChange(day, "close", e.target.value)
                     }
-                    className="w-full rounded-md border border-gray-300 px-2 py-1 text-xs focus:border-[#A2B9C6] focus:ring-[#A2B9C6]"
-                  />
+                    className="w-full px-2.5 py-1.5 border border-gray-300 rounded-md text-sm text-[#4A4A4A] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] appearance-none"
+                    disabled={!salon.openingHours[day].open}
+                  >
+                    <option value="">Closed</option>
+                    {Array.from({ length: 24 }, (_, i) => {
+                      const hour = String(i).padStart(2, "0");
+                      return (
+                        <option key={`close-${day}-${i}`} value={`${hour}:00`}>
+                          {`${hour}:00`}
+                        </option>
+                      );
+                    })}
+                  </select>
                 </div>
               </div>
             ))}
           </div>
 
           {/* Save Button */}
-          <div className="md:col-span-2 flex justify-center">
+          <div className="lg:col-span-12 flex justify-center mt-8">
             <button
               type="submit"
-              className="px-4 py-2 bg-[#A2B9C6] text-white rounded-lg text-sm hover:bg-[#FADADD] hover:text-[#4A4A4A] transition duration-300"
+              className="px-6 py-2 bg-[#A2B9C6] text-white rounded-lg text-sm hover:bg-[#FADADD] hover:text-[#4A4A4A] transition duration-300"
             >
               Save Changes
             </button>
