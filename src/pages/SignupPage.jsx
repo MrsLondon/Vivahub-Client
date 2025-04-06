@@ -70,13 +70,12 @@ const SignupPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
-    // Verify if the password and confirm password match
+  
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       return;
     }
-
+  
     try {
       // User data
       const signupData = {
@@ -86,27 +85,41 @@ const SignupPage = () => {
         lastName: formData.lastName,
         role: role,
       };
-
+  
       // Including salon data if the user is a business
       if (role === "business") {
-        signupData.businessDetails = {
-          businessName: formData.businessName,
-          address: formData.address,
+        // Structure the data to match exactly what your backend expects
+        const salonData = {
+          name: formData.businessName,
+          location: formData.address,
           description: formData.description,
           phone: formData.phone,
-          email: formData.email, // the same email as the user
+          email: formData.email,
           openingHours: formData.openingHours,
+          // Note: closedDays is not in your form but your backend accepts it
+          // If you need it, you should add it to your form state
         };
+  
+        // First create the user
+        const userResponse = await api.post("/api/auth/register", signupData);
+        console.log("User created:", userResponse.data);
+  
+        // Then create the salon with the user's ID
+        const salonResponse = await api.post("/api/salons", salonData, {
+          headers: {
+            Authorization: `Bearer ${userResponse.data.token}`, // Assuming your register endpoint returns a token
+          },
+        });
+        console.log("Salon created:", salonResponse.data);
+  
+        // Redirect the user to the login page
+        navigate("/login");
+      } else {
+        // For customers, just create the user
+        const userResponse = await api.post("/api/auth/register", signupData);
+        console.log("Signup successful:", userResponse.data);
+        navigate("/login");
       }
-
-      console.log("Signup data being sent:", signupData);
-
-      // Send data to the backend
-      const userResponse = await api.post("/api/auth/register", signupData);
-      console.log("Signup successful:", userResponse.data);
-
-      // Redirect the user to the login page
-      navigate("/login");
     } catch (err) {
       console.error("Signup error:", err);
       setError(
@@ -294,25 +307,27 @@ const SignupPage = () => {
                                 <div className="flex-1 grid grid-cols-2 gap-2">
                                   {/* Open time dropdown */}
                                   <div className="relative">
-                                    <select
-                                      name={`openingHours.${day}.open`}
-                                      value={formData.openingHours[day].open}
-                                      onChange={handleChange}
-                                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] appearance-none"
-                                    >
-                                      <option value="">Closed</option>
-                                      {Array.from({ length: 25 }, (_, i) => {
-                                        const hour = i % 12 || 12;
-                                        const ampm = i < 12 ? 'AM' : 'PM';
-                                        const time = `${hour}:${i % 2 === 0 ? '00' : '30'} ${ampm}`;
-                                        const value = `${String(Math.floor(i / 2)).padStart(2, '0')}:${i % 2 === 0 ? '00' : '30'}`;
-                                        return (
-                                          <option key={`open-${day}-${i}`} value={value}>
-                                            {time}
-                                          </option>
-                                        );
-                                      })}
-                                    </select>
+                                  <select
+                                    name={`openingHours.${day}.open`}
+                                    value={formData.openingHours[day].open}
+                                    onChange={handleChange}
+                                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] appearance-none"
+                                  >
+                                    <option value="">Closed</option>
+                                    {Array.from({ length: 49 }, (_, i) => {
+                                      // 00:00 to 24:00 in 30-minute increments
+                                      const hours = Math.floor(i / 2);
+                                      const minutes = i % 2 === 0 ? '00' : '30';
+                                      const timeValue = `${String(hours).padStart(2, '0')}:${minutes}`;
+                                      
+                                      // Display in 24-hour format (e.g., "09:00", "17:30")
+                                      return (
+                                        <option key={`open-${day}-${i}`} value={timeValue}>
+                                          {timeValue}
+                                        </option>
+                                      );
+                                    })}
+                                  </select>
                                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                       <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                                         <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -322,28 +337,28 @@ const SignupPage = () => {
                                   
                                   {/* Close time dropdown */}
                                   <div className="relative">
-                                    <select
-                                      name={`openingHours.${day}.close`}
-                                      value={formData.openingHours[day].close}
-                                      onChange={handleChange}
-                                      className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] appearance-none"
-                                      disabled={!formData.openingHours[day].open}
-                                    >
-                                      <option value="">Closed</option>
-                                      {formData.openingHours[day].open && 
-                                        Array.from({ length: 25 }, (_, i) => {
-                                          const hour = i % 12 || 12;
-                                          const ampm = i < 12 ? 'AM' : 'PM';
-                                          const time = `${hour}:${i % 2 === 0 ? '00' : '30'} ${ampm}`;
-                                          const value = `${String(Math.floor(i / 2)).padStart(2, '0')}:${i % 2 === 0 ? '00' : '30'}`;
-                                          return (
-                                            <option key={`close-${day}-${i}`} value={value}>
-                                              {time}
-                                            </option>
-                                          );
-                                        })
-                                      }
-                                    </select>
+                                  <select
+                                    name={`openingHours.${day}.close`}
+                                    value={formData.openingHours[day].close}
+                                    onChange={handleChange}
+                                    className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-[#4A4A4A] focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] appearance-none"
+                                    disabled={!formData.openingHours[day].open}
+                                  >
+                                    <option value="">Closed</option>
+                                    {formData.openingHours[day].open && 
+                                      Array.from({ length: 49 }, (_, i) => {
+                                        const hours = Math.floor(i / 2);
+                                        const minutes = i % 2 === 0 ? '00' : '30';
+                                        const timeValue = `${String(hours).padStart(2, '0')}:${minutes}`;
+                                        
+                                        return (
+                                          <option key={`close-${day}-${i}`} value={timeValue}>
+                                            {timeValue}
+                                          </option>
+                                        );
+                                      })
+                                    }
+                                  </select>
                                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                       <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                                         <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
