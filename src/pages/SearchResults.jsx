@@ -214,7 +214,7 @@ const SearchResults = () => {
                 {searchResults.map((result) => (
                   <Link
                     key={result._id}
-                    to={`/salon/${result._id}`}
+                    to={`/salons/${result._id}`}
                     className="block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition duration-300"
                   >
                     <div className="h-40 bg-gray-200 relative">
