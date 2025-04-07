@@ -46,7 +46,6 @@ const Header = ({ theme, toggleTheme, showFilters, toggleFilters }) => {
         <Link to="/search?query=facials" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium">Facials</Link>
         <Link to="/search?query=waxing" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium">Waxing</Link>
         <Link to="/search?query=massage" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium">Massage</Link>
-        <Link to="/search?query=language" className="text-[#4A4A4A] dark:text-gray-200 hover:text-[#A2B9C6] dark:hover:text-[#FADADD] font-medium">Language</Link>
       </div>
       
       <div className="flex items-center gap-4">

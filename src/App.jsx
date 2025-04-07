@@ -64,9 +64,9 @@ const App = () => {
               <Route
                 path="/search"
                 element={
-                  <NavbarLayout>
+                
                     <SearchResults />
-                  </NavbarLayout>
+              
                 }
               />
               <Route
