@@ -68,15 +68,20 @@ const ReviewForm = ({ bookingId, salonId, serviceId, onReviewSubmitted }) => {
     setError('');
 
     try {
+      console.log("Submitting review with:", { bookingId, salonId, serviceId });
+      
       // Create form data for multipart/form-data submission
       const reviewFormData = new FormData();
       if (bookingId) {
         reviewFormData.append('bookingId', bookingId);
-      } else {
+      } else if (salonId && serviceId) {
         // If no bookingId is provided, use salonId and serviceId directly
         reviewFormData.append('salonId', salonId);
         reviewFormData.append('serviceId', serviceId);
+      } else {
+        throw new Error("Either bookingId or both salonId and serviceId must be provided");
       }
+      
       reviewFormData.append('rating', formData.rating);
       reviewFormData.append('comment', formData.comment);
       
@@ -85,12 +90,20 @@ const ReviewForm = ({ bookingId, salonId, serviceId, onReviewSubmitted }) => {
         reviewFormData.append('image', image);
       }
 
+      // Log the form data for debugging
+      for (let [key, value] of reviewFormData.entries()) {
+        console.log(`${key}: ${value}`);
+      }
+
       // Submit the review
       const response = await api.post('/api/reviews', reviewFormData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${user.token}`
         },
       });
+
+      console.log("Review submission successful:", response.data);
 
       // Clear form and notify parent component
       setFormData({ rating: 5, comment: '' });
