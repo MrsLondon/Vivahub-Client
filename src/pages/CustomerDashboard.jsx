@@ -137,7 +137,7 @@ const CustomerDashboard = () => {
 
   useEffect(() => {
     fetchBookings();
-  }, [user, fetchBookings]);
+  }, [fetchBookings]);
 
   if (loading)
     return (
