@@ -136,7 +136,7 @@ const BusinessProfile = () => {
           name={field.name}
           value={salon[field.name]}
           onChange={handleChange}
-          className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm px-3 py-2"
+          className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm px-3 py-2 text-black"
           required
         />
       </div>
@@ -151,7 +151,7 @@ const BusinessProfile = () => {
         name="description"
         value={salon.description}
         onChange={handleChange}
-        className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm px-3 py-2"
+        className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm px-3 py-2 text-black"
         rows="3"
       />
     </div>
@@ -230,7 +230,7 @@ const BusinessProfile = () => {
                     onChange={(e) =>
                       handleNestedChange(day, "open", e.target.value)
                     }
-                    className="w-full px-2.5 py-1.5 border border-gray-300 rounded-md text-sm text-[#4A4A4A] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] appearance-none"
+                    className="w-full px-2.5 py-1.5 border border-gray-300 rounded-md text-sm text-[#4A4A4A] dark:text-black focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] appearance-none"
                   >
                     <option value="">Closed</option>
                     {Array.from({ length: 24 }, (_, i) => {
@@ -248,7 +248,7 @@ const BusinessProfile = () => {
                     onChange={(e) =>
                       handleNestedChange(day, "close", e.target.value)
                     }
-                    className="w-full px-2.5 py-1.5 border border-gray-300 rounded-md text-sm text-[#4A4A4A] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] appearance-none"
+                    className="w-full px-2.5 py-1.5 border border-gray-300 rounded-md text-sm text-[#4A4A4A] dark:black focus:outline-none focus:ring-2 focus:ring-[#A2B9C6] appearance-none"
                     disabled={!salon.openingHours[day].open}
                   >
                     <option value="">Closed</option>
