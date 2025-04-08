@@ -23,6 +23,13 @@ const SearchResults = () => {
   const [languages, setLanguages] = useState([]);
   const dropdownRef = useRef(null);
 
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 20,
+    total: 0,
+    totalPages: 1
+  });
+
   // Fetch languages from backend
   useEffect(() => {
     const fetchLanguages = async () => {
@@ -51,36 +58,67 @@ const SearchResults = () => {
     }
   }, [location.search]);
 
-  const handleSearch = useCallback(async () => {
+  const handleSearch = useCallback(async (page = 1) => {
     try {
       setLoading(true);
       setError('');
-
-      const params = new URLSearchParams({
-        filterType: selectedLanguage ? 'language' : 'service',
+      
+      const params = {
         ...(searchTerm && { query: searchTerm }),
-        ...(selectedLanguage && { language: selectedLanguage })
-      });
-
-      // Only update URL if it's different from current
-      if (params.toString() !== new URLSearchParams(location.search).toString()) {
-        navigate(`/search?${params.toString()}`, { replace: true });
-      }
-
+        filterType: selectedLanguage ? 'language' : 'service',
+        ...(selectedLanguage && { language: selectedLanguage }),
+        page,
+        limit: pagination.limit
+      };
+  
       const response = await axios.get(`${API_URL}/api/search`, { params });
       
       if (response.data.status === 'success') {
         setSearchResults(response.data.data);
-      } else {
-        setError(response.data.message || 'Failed to fetch services');
+        setPagination({
+          page: response.data.pagination.page,
+          limit: response.data.pagination.limit,
+          total: response.data.pagination.total,
+          totalPages: response.data.pagination.totalPages
+        });
       }
     } catch (err) {
-      console.error('Search error:', err);
-      setError(err.response?.data?.message || 'Failed to fetch services. Please try again.');
+      // ... error handling
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, selectedLanguage, navigate, location.search]);
+  }, [searchTerm, selectedLanguage, pagination.limit]);
+  
+  // Add pagination controls
+  {pagination.totalPages > 1 && (
+    <div className={`flex justify-center mt-6 space-x-2 ${
+      theme === "light" ? "text-gray-700" : "text-gray-300"
+    }`}>
+      <button
+        onClick={() => handleSearch(pagination.page - 1)}
+        disabled={pagination.page === 1}
+        className={`px-4 py-2 rounded-md ${
+          pagination.page === 1 ? 'opacity-50 cursor-not-allowed' : 
+          theme === "light" ? "hover:bg-gray-100" : "hover:bg-gray-700"
+        }`}
+      >
+        Previous
+      </button>
+      <span className="px-4 py-2">
+        Page {pagination.page} of {pagination.totalPages}
+      </span>
+      <button
+        onClick={() => handleSearch(pagination.page + 1)}
+        disabled={pagination.page === pagination.totalPages}
+        className={`px-4 py-2 rounded-md ${
+          pagination.page === pagination.totalPages ? 'opacity-50 cursor-not-allowed' : 
+          theme === "light" ? "hover:bg-gray-100" : "hover:bg-gray-700"
+        }`}
+      >
+        Next
+      </button>
+    </div>
+  )}
 
   // Trigger search when relevant values change
   useEffect(() => {
@@ -249,82 +287,91 @@ const SearchResults = () => {
 
         {/* Search Results */}
         {searchResults && (
-          <div className={`mt-6 rounded-lg shadow-sm p-6 ${
-            theme === "light" ? "bg-white" : "bg-gray-800"
-          }`}>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className={`text-xl font-semibold ${
+  <div className={`mt-6 rounded-lg shadow-sm p-6 ${
+    theme === "light" ? "bg-white" : "bg-gray-800"
+  }`}>
+    <div className="flex justify-between items-center mb-6">
+      <h2 className={`text-xl font-semibold ${
+        theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+      }`}>
+        Search Results
+      </h2>
+      {searchResults.length > 0 && (
+        <span className={`text-sm ${
+          theme === "light" ? "text-gray-500" : "text-gray-400"
+        }`}>
+          Showing {searchResults.length} results
+        </span>
+      )}
+    </div>
+
+    {searchResults.length === 0 ? (
+      <div className="text-center py-10">
+        <p className={theme === "light" ? "text-gray-500" : "text-gray-300"}>
+          No results found for your search.
+        </p>
+      </div>
+    ) : (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {searchResults.map((service) => (
+          <Link
+            key={service._id}
+            to={`/salons/${service.salon._id}`}
+            className={`block border rounded-lg overflow-hidden hover:shadow-md transition duration-300 ${
+              theme === "light"
+                ? "bg-white border-gray-200"
+                : "bg-gray-700 border-gray-600"
+            }`}
+          >
+            <div className="h-40 bg-gray-200 relative">
+              <img
+                src={service.image || 'https://via.placeholder.com/300x200?text=No+Image'}
+                alt={service.name}
+                className="w-full h-full object-cover"
+              />
+              {service.salon && (
+                <div className={`absolute bottom-0 left-0 right-0 p-2 ${
+                  theme === "light" ? "bg-white/80" : "bg-gray-800/80"
+                }`}>
+                  <p className={`text-sm truncate ${
+                    theme === "light" ? "text-gray-800" : "text-gray-200"
+                  }`}>
+                    {service.salon.name}
+                  </p>
+                </div>
+              )}
+            </div>
+            <div className="p-4">
+              <h3 className={`font-semibold text-lg mb-1 ${
                 theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
               }`}>
-                Search Results
-              </h2>
-              <span className={`text-sm ${
+                {service.name}
+              </h3>
+              <p className={`text-sm mb-2 ${
                 theme === "light" ? "text-gray-500" : "text-gray-400"
               }`}>
-                {searchResults.length} {searchResults.length === 1 ? 'result' : 'results'} found
-              </span>
-            </div>
-
-            {searchResults.length === 0 ? (
-              <div className="text-center py-10">
-                <p className={theme === "light" ? "text-gray-500" : "text-gray-300"}>
-                  No results found for your search.
-                </p>
-                <p className={`mt-2 ${
-                  theme === "light" ? "text-gray-500" : "text-gray-300"
+                {service.description?.substring(0, 60)}...
+              </p>
+              <div className="flex items-center justify-between">
+                <span className={`text-sm font-medium ${
+                  theme === "light" ? "text-[#A2B9C6]" : "text-[#FADADD]"
                 }`}>
-                  Try different keywords or filters.
-                </p>
+                  ${service.price} • {service.duration} mins
+                </span>
+                <span className={`text-sm ${
+                  theme === "light" ? "text-gray-500" : "text-gray-400"
+                }`}>
+                  {service.languageSpoken || 'English'}
+                </span>
               </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {searchResults.map((result) => (
-                  <Link
-                    key={result._id}
-                    to={`/salons/${result._id}`}
-                    className={`block border rounded-lg overflow-hidden hover:shadow-md transition duration-300 ${
-                      theme === "light"
-                        ? "bg-white border-gray-200"
-                        : "bg-gray-700 border-gray-600"
-                    }`}
-                  >
-                    <div className="h-40 bg-gray-200 relative">
-                      <img
-                        src={result.images?.[0] || 'https://via.placeholder.com/300x200?text=No+Image'}
-                        alt={result.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="p-4">
-                      <h3 className={`font-semibold text-lg mb-1 ${
-                        theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-                      }`}>
-                        {result.name}
-                      </h3>
-                      <p className={`text-sm mb-2 ${
-                        theme === "light" ? "text-gray-500" : "text-gray-400"
-                      }`}>
-                        {result.address}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <span className={`text-sm font-medium ${
-                          theme === "light" ? "text-[#A2B9C6]" : "text-[#FADADD]"
-                        }`}>
-                          {result.services?.length || 0} services
-                        </span>
-                        <span className={`text-sm ${
-                          theme === "light" ? "text-gray-500" : "text-gray-400"
-                        }`}>
-                          {result.languages?.join(', ') || 'English'}
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+            </div>
+          </Link>
+        ))}
+      </div>
+    )}
+  </div>
+)}
+          
       </div>
     </div>
   );
