@@ -44,7 +44,7 @@ export const CareersPage = () => {
           
           <div className="space-y-6">
             <div className={`p-6 rounded-xl ${theme === "light" ? "bg-[#F8F8F8]" : "bg-gray-800"}`}>
-              <h3 className="text-xl font-semibold mb-2">Frontend Developer</h3>
+              <h3 className="text-xl font-semibold mb-2">Frontend Developer Junior</h3>
               <p className="mb-4">Full-time • Remote</p>
               <p>We're looking for a skilled React developer to help build our booking platform.</p>
             </div>
