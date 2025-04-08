@@ -25,9 +25,6 @@ const LoadingScreen = ({ theme }) => {
               alt="Loading" 
               className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96"
             />
-            <p className={`mt-2 text-lg md:text-xl ${theme === 'dark' ? 'text-gray-200' : 'text-gray-700'}`}>
-              Loading
-            </p>
           </>
         )}
       </div>
