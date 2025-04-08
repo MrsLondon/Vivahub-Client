@@ -1,4 +1,6 @@
+// components/HeroSection.jsx
 import { FaSearch, FaTimes, FaLanguage } from "react-icons/fa";
+import { useState, useRef, useEffect } from "react";
 
 const HeroSection = ({
   searchTerm,
@@ -12,16 +14,37 @@ const HeroSection = ({
   setSelectedLanguage,
   languages
 }) => {
+  const videoRef = useRef(null);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      video.oncanplay = () => {
+        setVideoLoaded(true);
+      };
+      video.onerror = () => {
+        setVideoLoaded(true); // Continue even if video fails
+      };
+    }
+  }, []);
+
   return (
     <section className="relative h-[500px] flex items-center justify-center bg-cover bg-center">
       <video
-        className="absolute inset-0 w-full h-full object-cover"
+        ref={videoRef}
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
         src="/video-hero.mp4"
         autoPlay
         loop
         muted
         playsInline
       ></video>
+
+       {/* Fallback background in case video takes too long */}
+       {!videoLoaded && (
+        <div className="absolute inset-0 bg-gradient-to-r from-[#A2B9C6] to-[#FADADD] dark:from-gray-800 dark:to-gray-700"></div>
+      )}
       
       <div className="absolute inset-0 bg-black bg-opacity-30 dark:bg-opacity-50"></div>
       

@@ -3,10 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { BookingContext } from "../context/BookingContext";
 import { AuthContext } from "../context/auth.context";
 import { createBooking } from "../services/api";
+import { useTheme } from "../context/ThemeContext";
+import { FaMoon, FaSun } from "react-icons/fa";
 
 const BookingPage = () => {
   const { bookingItems, removeFromBooking, totalPrice, totalDuration, clearBooking } = useContext(BookingContext);
   const { user, isAuthenticated } = useContext(AuthContext);
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
@@ -23,11 +26,16 @@ const BookingPage = () => {
   // Generate available time slots based on business hours (9am-5pm)
   const generateTimeSlots = () => {
     const slots = [];
-    for (let hour = 9; hour < 17; hour++) {
-      const hourFormatted = hour % 12 === 0 ? 12 : hour % 12;
-      const amPm = hour < 12 ? 'AM' : 'PM';
-      slots.push(`${hourFormatted}:00 ${amPm}`);
-      slots.push(`${hourFormatted}:30 ${amPm}`);
+    const startHour = 8; // 8am
+    const endHour = 20;  // 8pm
+
+    for (let hour = startHour; hour < endHour; hour++) {
+      for (let minute = 0; minute < 60; minute += 15) {
+        const hourFormatted = hour % 12 === 0 ? 12 : hour % 12;
+        const amPm = hour < 12 ? 'AM' : 'PM';
+        const minuteFormatted = minute.toString().padStart(2, '0');
+        slots.push(`${hourFormatted}:${minuteFormatted} ${amPm}`);
+      }
     }
     return slots;
   };
@@ -118,34 +126,73 @@ const BookingPage = () => {
   };
 
   return (
-    <div className="font-sans leading-relaxed text-[#4A4A4A] bg-white min-h-screen flex flex-col">
+    <div className={`font-sans leading-relaxed min-h-screen flex flex-col transition-colors duration-300 ${
+      theme === "light" ? "bg-white text-[#4A4A4A]" : "bg-gray-900 text-gray-200"
+    }`}>
       {/* Header */}
-      <header className="p-4 bg-[#eeeeee] flex justify-between items-center shadow-sm">
+      <header className={`p-4 flex justify-between items-center shadow-sm ${
+        theme === "light" ? "bg-[#eeeeee]" : "bg-gray-800"
+      }`}>
         {/* Logo */}
         <Link to="/" className="flex items-center">
-          <img src="/logo.png" alt="VivaHub Logo" className="h-10"/>
+          <img 
+            src={theme === "light" ? "/logo.png" : "/logo-dark.png"} 
+            alt="VivaHub Logo" 
+            className="h-10"
+          />
         </Link>
-        <Link to="/test-booking" className="text-[#4A4A4A] hover:underline">
-          Back to Services
-        </Link>
+        
+        <div className="flex items-center gap-4">
+          {/* Theme Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            className={`p-2 rounded-full ${
+              theme === "light"
+                ? "text-[#4A4A4A] hover:bg-[#FADADD]"
+                : "text-gray-200 hover:bg-gray-700"
+            } transition-colors`}
+            aria-label={`Toggle ${theme === 'light' ? 'dark' : 'light'} mode`}
+          >
+            {theme === 'light' ? <FaMoon /> : <FaSun />}
+          </button>
+          
+          {/* <Link 
+            to="/test-booking" 
+            className={`${
+              theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+            } hover:underline`}
+          >
+            Back to Services
+          </Link> */}
+        </div>
       </header>
 
-      <div className="py-10 px-5 bg-white flex-grow">
+      <div className="py-10 px-5 flex-grow">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-medium text-[#4A4A4A] mb-6">
+          <h1 className={`text-3xl font-medium mb-6 ${
+            theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+          }`}>
             Complete Your Booking
           </h1>
 
           {submitSuccess ? (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-8 text-center">
-              <h2 className="text-2xl font-medium text-green-700 mb-4">Booking Confirmed!</h2>
-              <p className="text-green-600 mb-6">Your booking has been successfully submitted.</p>
+            <div className={`rounded-lg p-6 mb-8 text-center ${
+              theme === "light" 
+                ? "bg-green-50 border border-green-200 text-green-700"
+                : "bg-green-900 border border-green-700 text-green-100"
+            }`}>
+              <h2 className="text-2xl font-medium mb-4">Booking Confirmed!</h2>
+              <p className="mb-6">Your booking has been successfully submitted.</p>
               <button
                 onClick={() => {
                   setSubmitSuccess(false);
                   navigate("/test-booking");
                 }}
-                className="px-6 py-2 bg-[#FADADD] text-[#4A4A4A] rounded hover:bg-[#f0c8cc] transition duration-300"
+                className={`px-6 py-2 rounded transition duration-300 ${
+                  theme === "light"
+                    ? "bg-[#FADADD] text-[#4A4A4A] hover:bg-[#f0c8cc]"
+                    : "bg-gray-700 text-gray-200 hover:bg-gray-600"
+                }`}
               >
                 Book More Services
               </button>
@@ -154,22 +201,46 @@ const BookingPage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Booking Summary */}
               <div className="lg:col-span-1">
-                <div className="bg-[#F8F8F8] rounded-lg p-6 sticky top-6">
-                  <h2 className="text-xl font-medium text-[#4A4A4A] mb-4">Booking Summary</h2>
+                <div className={`rounded-lg p-6 sticky top-6 ${
+                  theme === "light" ? "bg-[#F8F8F8]" : "bg-gray-800"
+                }`}>
+                  <h2 className={`text-xl font-medium mb-4 ${
+                    theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+                  }`}>
+                    Booking Summary
+                  </h2>
                   
                   {bookingItems.length === 0 ? (
-                    <p className="text-gray-500 mb-4">Your booking is empty.</p>
+                    <p className={`mb-4 ${
+                      theme === "light" ? "text-gray-500" : "text-gray-400"
+                    }`}>
+                      Your booking is empty.
+                    </p>
                   ) : (
                     <>
-                      <ul className="divide-y divide-gray-200 mb-4">
+                      <ul className={`divide-y mb-4 ${
+                        theme === "light" ? "divide-gray-200" : "divide-gray-700"
+                      }`}>
                         {bookingItems.map((item) => (
                           <li key={item._id} className="py-4 flex justify-between">
                             <div>
-                              <h3 className="font-medium">{item.name}</h3>
-                              <p className="text-sm text-gray-600">{item.duration} minutes</p>
+                              <h3 className={`font-medium ${
+                                theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+                              }`}>
+                                {item.name}
+                              </h3>
+                              <p className={`text-sm ${
+                                theme === "light" ? "text-gray-600" : "text-gray-400"
+                              }`}>
+                                {item.duration} minutes
+                              </p>
                             </div>
                             <div className="flex items-start">
-                              <span className="font-medium mr-3">${item.price.toFixed(2)}</span>
+                              <span className={`font-medium mr-3 ${
+                                theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+                              }`}>
+                                ${item.price.toFixed(2)}
+                              </span>
                               <button 
                                 onClick={() => removeFromBooking(item._id)}
                                 className="text-red-500 hover:text-red-700"
@@ -183,12 +254,18 @@ const BookingPage = () => {
                         ))}
                       </ul>
                       
-                      <div className="border-t border-gray-200 pt-4">
-                        <div className="flex justify-between mb-2">
+                      <div className={`border-t pt-4 ${
+                        theme === "light" ? "border-gray-200" : "border-gray-700"
+                      }`}>
+                        <div className={`flex justify-between mb-2 ${
+                          theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+                        }`}>
                           <span>Total Duration:</span>
                           <span>{totalDuration} minutes</span>
                         </div>
-                        <div className="flex justify-between text-lg font-bold">
+                        <div className={`flex justify-between text-lg font-bold ${
+                          theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+                        }`}>
                           <span>Total:</span>
                           <span>${totalPrice.toFixed(2)}</span>
                         </div>
@@ -200,12 +277,24 @@ const BookingPage = () => {
               
               {/* Booking Form */}
               <div className="lg:col-span-2">
-                <form onSubmit={handleSubmit} className="bg-white rounded-lg p-6 border border-gray-200">
-                  <h2 className="text-xl font-medium text-[#4A4A4A] mb-6">Your Information</h2>
+                <form onSubmit={handleSubmit} className={`rounded-lg p-6 ${
+                  theme === "light" 
+                    ? "bg-white border border-gray-200" 
+                    : "bg-gray-800 border border-gray-700"
+                }`}>
+                  <h2 className={`text-xl font-medium mb-6 ${
+                    theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+                  }`}>
+                    Your Information
+                  </h2>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                      <label htmlFor="name" className={`block text-sm font-medium mb-1 ${
+                        theme === "light" ? "text-gray-700" : "text-gray-300"
+                      }`}>
+                        Full Name
+                      </label>
                       <input
                         type="text"
                         id="name"
@@ -213,11 +302,19 @@ const BookingPage = () => {
                         value={formData.name}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FADADD]"
+                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                          theme === "light"
+                            ? "border-gray-300 focus:ring-[#FADADD]"
+                            : "border-gray-600 bg-gray-700 focus:ring-gray-500"
+                        }`}
                       />
                     </div>
                     <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                      <label htmlFor="email" className={`block text-sm font-medium mb-1 ${
+                        theme === "light" ? "text-gray-700" : "text-gray-300"
+                      }`}>
+                        Email
+                      </label>
                       <input
                         type="email"
                         id="email"
@@ -225,13 +322,21 @@ const BookingPage = () => {
                         value={formData.email}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FADADD]"
+                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                          theme === "light"
+                            ? "border-gray-300 focus:ring-[#FADADD]"
+                            : "border-gray-600 bg-gray-700 focus:ring-gray-500"
+                        }`}
                       />
                     </div>
                   </div>
                   
                   <div className="mb-6">
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                    <label htmlFor="phone" className={`block text-sm font-medium mb-1 ${
+                      theme === "light" ? "text-gray-700" : "text-gray-300"
+                    }`}>
+                      Phone Number
+                    </label>
                     <input
                       type="tel"
                       id="phone"
@@ -239,15 +344,27 @@ const BookingPage = () => {
                       value={formData.phone}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FADADD]"
+                      className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                        theme === "light"
+                          ? "border-gray-300 focus:ring-[#FADADD]"
+                          : "border-gray-600 bg-gray-700 focus:ring-gray-500"
+                      }`}
                     />
                   </div>
                   
-                  <h2 className="text-xl font-medium text-[#4A4A4A] mb-6">Appointment Details</h2>
+                  <h2 className={`text-xl font-medium mb-6 ${
+                    theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+                  }`}>
+                    Appointment Details
+                  </h2>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div>
-                      <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                      <label htmlFor="date" className={`block text-sm font-medium mb-1 ${
+                        theme === "light" ? "text-gray-700" : "text-gray-300"
+                      }`}>
+                        Date
+                      </label>
                       <input
                         type="date"
                         id="date"
@@ -256,18 +373,30 @@ const BookingPage = () => {
                         onChange={handleInputChange}
                         required
                         min={new Date().toISOString().split('T')[0]}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FADADD]"
+                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                          theme === "light"
+                            ? "border-gray-300 focus:ring-[#FADADD]"
+                            : "border-gray-600 bg-gray-700 focus:ring-gray-500"
+                        }`}
                       />
                     </div>
                     <div>
-                      <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1">Time</label>
+                      <label htmlFor="time" className={`block text-sm font-medium mb-1 ${
+                        theme === "light" ? "text-gray-700" : "text-gray-300"
+                      }`}>
+                        Time
+                      </label>
                       <select
                         id="time"
                         name="time"
                         value={formData.time}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FADADD]"
+                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                          theme === "light"
+                            ? "border-gray-300 focus:ring-[#FADADD]"
+                            : "border-gray-600 bg-gray-700 focus:ring-gray-500"
+                        }`}
                       >
                         <option value="">Select a time</option>
                         {timeSlots.map((slot, index) => (
@@ -278,26 +407,42 @@ const BookingPage = () => {
                   </div>
                   
                   <div className="mb-6">
-                    <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">Special Requests or Notes</label>
+                    <label htmlFor="notes" className={`block text-sm font-medium mb-1 ${
+                      theme === "light" ? "text-gray-700" : "text-gray-300"
+                    }`}>
+                      Special Requests or Notes
+                    </label>
                     <textarea
                       id="notes"
                       name="notes"
                       value={formData.notes}
                       onChange={handleInputChange}
                       rows="4"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FADADD]"
+                      className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                        theme === "light"
+                          ? "border-gray-300 focus:ring-[#FADADD]"
+                          : "border-gray-600 bg-gray-700 focus:ring-gray-500"
+                      }`}
                     ></textarea>
                   </div>
                   
                   <button
                     type="submit"
                     disabled={isSubmitting || bookingItems.length === 0}
-                    className="w-full py-3 bg-[#FADADD] text-[#4A4A4A] rounded-md hover:bg-[#f0c8cc] transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className={`w-full py-3 rounded-md transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${
+                      theme === "light"
+                        ? "bg-[#FADADD] text-[#4A4A4A] hover:bg-[#f0c8cc]"
+                        : "bg-gray-700 text-gray-200 hover:bg-gray-600"
+                    }`}
                   >
                     {isSubmitting ? "Processing..." : "Confirm Booking"}
                   </button>
                   {errorMessage && (
-                    <p className="text-red-500 mt-2">{errorMessage}</p>
+                    <p className={`mt-2 ${
+                      theme === "light" ? "text-red-500" : "text-red-400"
+                    }`}>
+                      {errorMessage}
+                    </p>
                   )}
                 </form>
               </div>
