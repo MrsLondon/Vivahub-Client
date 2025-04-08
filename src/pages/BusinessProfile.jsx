@@ -115,71 +115,70 @@ const BusinessProfile = () => {
         >
           {/* Left Column */}
           {/* Left Column (General Info Section) */}
-<div className="lg:col-span-5">
-  <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 space-y-6">
-    <h2 className="text-lg font-semibold text-[#4A4A4A] dark:text-gray-200 mb-2">
-      General Information
-    </h2>
+          <div className="lg:col-span-5">
+            <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 space-y-6">
+              <h2 className="text-lg font-semibold text-[#4A4A4A] dark:text-gray-200 mb-2">
+                General Information
+              </h2>
 
-    {[
-      { label: "Business Name", name: "name", type: "text" },
-      { label: "Location", name: "location", type: "text" },
-      { label: "Email", name: "email", type: "email" },
-      { label: "Phone", name: "phone", type: "text" },
-    ].map((field) => (
-      <div key={field.name}>
-        <label className="block text-sm font-medium text-[#4A4A4A] dark:text-gray-200 mb-1">
-          {field.label}
-        </label>
-        <input
-          type={field.type}
-          name={field.name}
-          value={salon[field.name]}
-          onChange={handleChange}
-          className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm px-3 py-2"
-          required
-        />
-      </div>
-    ))}
+              {[
+                { label: "Business Name", name: "name", type: "text" },
+                { label: "Location", name: "location", type: "text" },
+                { label: "Email", name: "email", type: "email" },
+                { label: "Phone", name: "phone", type: "text" },
+              ].map((field) => (
+                <div key={field.name}>
+                  <label className="block text-sm font-medium text-[#4A4A4A] dark:text-gray-200 mb-1">
+                    {field.label}
+                  </label>
+                  <input
+                    type={field.type}
+                    name={field.name}
+                    value={salon[field.name]}
+                    onChange={handleChange}
+                    className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm px-3 py-2"
+                    required
+                  />
+                </div>
+              ))}
 
-    {/* Description */}
-    <div>
-      <label className="block text-sm font-medium text-[#4A4A4A] dark:text-gray-200 mb-1">
-        Description
-      </label>
-      <textarea
-        name="description"
-        value={salon.description}
-        onChange={handleChange}
-        className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm px-3 py-2"
-        rows="3"
-      />
-    </div>
+              {/* Description */}
+              <div>
+                <label className="block text-sm font-medium text-[#4A4A4A] dark:text-gray-200 mb-1">
+                  Description
+                </label>
+                <textarea
+                  name="description"
+                  value={salon.description}
+                  onChange={handleChange}
+                  className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm px-3 py-2"
+                  rows="3"
+                />
+              </div>
 
-    {/* Closed Days */}
-    <div>
-      <label className="block text-sm font-medium text-[#4A4A4A] dark:text-gray-200 mb-1">
-        Closed Days
-      </label>
-      <input
-        type="text"
-        name="closedDays"
-        value={salon.closedDays.join(", ")}
-        onChange={(e) =>
-          setSalon({
-            ...salon,
-            closedDays: e.target.value
-              .split(",")
-              .map((day) => day.trim()),
-          })
-        }
-        className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm px-3 py-2"
-        placeholder="e.g., 2025-12-25, 2025-01-01"
-      />
-    </div>
-  </div>
-</div>
-
+              {/* Closed Days */}
+              <div>
+                <label className="block text-sm font-medium text-[#4A4A4A] dark:text-gray-200 mb-1">
+                  Closed Days
+                </label>
+                <input
+                  type="text"
+                  name="closedDays"
+                  value={salon.closedDays.join(", ")}
+                  onChange={(e) =>
+                    setSalon({
+                      ...salon,
+                      closedDays: e.target.value
+                        .split(",")
+                        .map((day) => day.trim()),
+                    })
+                  }
+                  className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm px-3 py-2"
+                  placeholder="e.g., 2025-12-25, 2025-01-01"
+                />
+              </div>
+            </div>
+          </div>
 
           {/* Right Column */}
           <div className="lg:col-span-7 space-y-5">

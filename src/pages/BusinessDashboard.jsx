@@ -318,26 +318,36 @@ const BusinessDashboard = () => {
   };
 
   return (
-    <div className={`font-sans leading-relaxed min-h-screen transition-colors duration-300 ${
-      theme === "light" ? "bg-gray-50 text-[#4A4A4A]" : "bg-gray-900 text-gray-200"
-    }`}>
-
-     {/* Header Component */}
-     <Header theme={theme} toggleTheme={toggleTheme} />
-
+    <div
+      className={`font-sans leading-relaxed min-h-screen transition-colors duration-300 ${
+        theme === "light"
+          ? "bg-gray-50 text-[#4A4A4A]"
+          : "bg-gray-900 text-gray-200"
+      }`}
+    >
+      {/* Header Component */}
+      <Header theme={theme} toggleTheme={toggleTheme} />
 
       {/* Modal de confirmação para cancelar booking */}
       {bookingToCancel && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className={`p-6 rounded-lg shadow-lg w-96 ${
-            theme === "light" ? "bg-white" : "bg-gray-800"
-          }`}>
-            <h2 className={`text-lg font-semibold mb-4 ${
-              theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-            }`}>Confirm Cancellation</h2>
-            <p className={`mb-6 ${
-              theme === "light" ? "text-gray-700" : "text-gray-300"
-            }`}>
+          <div
+            className={`p-6 rounded-lg shadow-lg w-96 ${
+              theme === "light" ? "bg-white" : "bg-gray-800"
+            }`}
+          >
+            <h2
+              className={`text-lg font-semibold mb-4 ${
+                theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+              }`}
+            >
+              Confirm Cancellation
+            </h2>
+            <p
+              className={`mb-6 ${
+                theme === "light" ? "text-gray-700" : "text-gray-300"
+              }`}
+            >
               Are you sure you want to cancel this booking?
             </p>
             <div className="flex justify-end space-x-4">
@@ -365,13 +375,15 @@ const BusinessDashboard = () => {
           </div>
         </div>
       )}
-      
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-8">
           <div className="flex justify-between items-center">
-            <h1 className={`text-3xl font-light ${
-              theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-            }`}>
+            <h1
+              className={`text-3xl font-light ${
+                theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+              }`}
+            >
               Business Dashboard
             </h1>
             <div className="flex space-x-2">
@@ -391,7 +403,7 @@ const BusinessDashboard = () => {
                 className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
                   theme === "light"
                     ? "bg-red-500 text-white hover:bg-red-600"
-                    : "bg-red-600 text-white hover:bg-red-700"
+                    : "bg-red-600 text-black hover:bg-red-700"
                 }`}
               >
                 <FaTrash className="w-4 h-4" />
@@ -400,49 +412,67 @@ const BusinessDashboard = () => {
             </div>
           </div>
 
-          <div className={`p-6 rounded-xl shadow-sm border ${
-            theme === "light" ? "bg-white border-gray-200" : "bg-gray-800 border-gray-700"
-          }`}>
-            <h2 className={`text-xl font-semibold mb-4 ${
-              theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-            }`}>
+          <div
+            className={`p-6 rounded-xl shadow-sm border ${
+              theme === "light"
+                ? "bg-white border-gray-200"
+                : "bg-gray-800 border-gray-700"
+            }`}
+          >
+            <h2
+              className={`text-xl font-semibold mb-4 ${
+                theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+              }`}
+            >
               Business Profile
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <p className={`text-sm font-medium ${
-                    theme === "light" ? "text-gray-500" : "text-gray-400"
-                  }`}>
+                  <p
+                    className={`text-sm font-medium ${
+                      theme === "light" ? "text-gray-500" : "text-gray-400"
+                    }`}
+                  >
                     Business Name
                   </p>
-                  <p className={`text-lg ${
-                    theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-                  }`}>
+                  <p
+                    className={`text-lg ${
+                      theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+                    }`}
+                  >
                     {salon?.name || "N/A"}
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <p className={`text-sm font-medium flex items-center ${
-                    theme === "light" ? "text-gray-500" : "text-gray-400"
-                  }`}>
+                  <p
+                    className={`text-sm font-medium flex items-center ${
+                      theme === "light" ? "text-gray-500" : "text-gray-400"
+                    }`}
+                  >
                     <FaPhone className="mr-2" /> Phone
                   </p>
-                  <p className={`text-lg ${
-                    theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-                  }`}>
+                  <p
+                    className={`text-lg ${
+                      theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+                    }`}
+                  >
                     {salon?.phone || "N/A"}
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <p className={`text-sm font-medium ${
-                    theme === "light" ? "text-gray-500" : "text-gray-400"
-                  }`}>
+                  <p
+                    className={`text-sm font-medium ${
+                      theme === "light" ? "text-gray-500" : "text-gray-400"
+                    }`}
+                  >
                     Email
                   </p>
-                  <p className={`text-lg ${
-                    theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-                  }`}>
+                  <p
+                    className={`text-lg ${
+                      theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+                    }`}
+                  >
                     {user.email}
                   </p>
                 </div>
@@ -450,26 +480,34 @@ const BusinessDashboard = () => {
 
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <p className={`text-sm font-medium flex items-center ${
-                    theme === "light" ? "text-gray-500" : "text-gray-400"
-                  }`}>
+                  <p
+                    className={`text-sm font-medium flex items-center ${
+                      theme === "light" ? "text-gray-500" : "text-gray-400"
+                    }`}
+                  >
                     <FaMapMarkerAlt className="mr-2" /> Address
                   </p>
-                  <p className={`text-lg ${
-                    theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-                  }`}>
+                  <p
+                    className={`text-lg ${
+                      theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+                    }`}
+                  >
                     {salon?.location || "N/A"}
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <p className={`text-sm font-medium flex items-center ${
-                    theme === "light" ? "text-gray-500" : "text-gray-400"
-                  }`}>
+                  <p
+                    className={`text-sm font-medium flex items-center ${
+                      theme === "light" ? "text-gray-500" : "text-gray-400"
+                    }`}
+                  >
                     <FaClock className="mr-2" /> Opening Hours
                   </p>
-                  <div className={`text-lg ${
-                    theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-                  }`}>
+                  <div
+                    className={`text-lg ${
+                      theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+                    }`}
+                  >
                     {salon?.openingHours ? (
                       <ul className="space-y-1">
                         {formatOpeningHours(salon.openingHours).map(
@@ -488,26 +526,38 @@ const BusinessDashboard = () => {
           </div>
 
           {/* Bookings Section */}
-          <div className={`p-6 rounded-xl shadow-sm border ${
-            theme === "light" ? "bg-white border-gray-200" : "bg-gray-800 border-gray-700"
-          }`}>
+          <div
+            className={`p-6 rounded-xl shadow-sm border ${
+              theme === "light"
+                ? "bg-white border-gray-200"
+                : "bg-gray-800 border-gray-700"
+            }`}
+          >
             <div className="flex justify-between items-center mb-6">
-              <h2 className={`text-xl font-semibold ${
-                theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-              }`}>
+              <h2
+                className={`text-xl font-semibold ${
+                  theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+                }`}
+              >
                 Bookings
               </h2>
-              <div className={`text-sm ${
-                theme === "light" ? "text-gray-500" : "text-gray-400"
-              }`}>
+              <div
+                className={`text-sm ${
+                  theme === "light" ? "text-gray-500" : "text-gray-400"
+                }`}
+              >
                 {bookings.length} total bookings
               </div>
             </div>
 
             {bookings.length === 0 ? (
-              <div className={`text-center py-12 rounded-lg ${
-                theme === "light" ? "bg-gray-50 text-gray-500" : "bg-gray-700 text-gray-300"
-              }`}>
+              <div
+                className={`text-center py-12 rounded-lg ${
+                  theme === "light"
+                    ? "bg-gray-50 text-gray-500"
+                    : "bg-gray-700 text-gray-300"
+                }`}
+              >
                 <p>
                   No bookings found. Bookings will appear here once customers
                   make reservations.
@@ -516,9 +566,9 @@ const BusinessDashboard = () => {
             ) : (
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
-                  <thead className={
-                    theme === "light" ? "bg-gray-50" : "bg-gray-700"
-                  }>
+                  <thead
+                    className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}
+                  >
                     <tr>
                       {[
                         "Customer",
@@ -531,7 +581,9 @@ const BusinessDashboard = () => {
                         <th
                           key={header}
                           className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${
-                            theme === "light" ? "text-gray-500" : "text-gray-300"
+                            theme === "light"
+                              ? "text-gray-500"
+                              : "text-gray-300"
                           }`}
                         >
                           {header}
@@ -539,9 +591,13 @@ const BusinessDashboard = () => {
                       ))}
                     </tr>
                   </thead>
-                  <tbody className={`divide-y ${
-                    theme === "light" ? "divide-gray-200 bg-white" : "divide-gray-700 bg-gray-800"
-                  }`}>
+                  <tbody
+                    className={`divide-y ${
+                      theme === "light"
+                        ? "divide-gray-200 bg-white"
+                        : "divide-gray-700 bg-gray-800"
+                    }`}
+                  >
                     {bookings.map((booking) => {
                       const customerName = booking.customerId
                         ? `${booking.customerId.firstName} ${booking.customerId.lastName}`
@@ -558,41 +614,67 @@ const BusinessDashboard = () => {
                       return (
                         <tr
                           key={booking._id || booking.id}
-                          className={theme === "light" ? "hover:bg-gray-50" : "hover:bg-gray-700"}
+                          className={
+                            theme === "light"
+                              ? "hover:bg-gray-50"
+                              : "hover:bg-gray-700"
+                          }
                         >
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className={`font-medium ${
-                              theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-                            }`}>
+                            <div
+                              className={`font-medium ${
+                                theme === "light"
+                                  ? "text-[#4A4A4A]"
+                                  : "text-gray-200"
+                              }`}
+                            >
                               {customerName}
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className={`font-medium ${
-                              theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-                            }`}>
+                            <div
+                              className={`font-medium ${
+                                theme === "light"
+                                  ? "text-[#4A4A4A]"
+                                  : "text-gray-200"
+                              }`}
+                            >
                               {customerEmail}
                             </div>
                           </td>
-                          <td className={`px-6 py-4 whitespace-nowrap ${
-                            theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-                          }`}>
+                          <td
+                            className={`px-6 py-4 whitespace-nowrap ${
+                              theme === "light"
+                                ? "text-[#4A4A4A]"
+                                : "text-gray-200"
+                            }`}
+                          >
                             {serviceName}
                           </td>
-                          <td className={`px-6 py-4 whitespace-nowrap ${
-                            theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-                          }`}>
+                          <td
+                            className={`px-6 py-4 whitespace-nowrap ${
+                              theme === "light"
+                                ? "text-[#4A4A4A]"
+                                : "text-gray-200"
+                            }`}
+                          >
                             {appointmentDate}
                           </td>
-                          <td className={`px-6 py-4 whitespace-nowrap ${
-                            theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-                          }`}>
+                          <td
+                            className={`px-6 py-4 whitespace-nowrap ${
+                              theme === "light"
+                                ? "text-[#4A4A4A]"
+                                : "text-gray-200"
+                            }`}
+                          >
                             {appointmentTime}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-center">
                             {booking.bookingStatus === "Pending" ? (
                               <button
-                                onClick={() => openCancelConfirmation(booking._id)}
+                                onClick={() =>
+                                  openCancelConfirmation(booking._id)
+                                }
                                 className={`px-4 py-2 rounded-lg text-sm transition-colors ${
                                   theme === "light"
                                     ? "bg-[#A2B9C6] text-white hover:bg-[#8fa9b8]"
@@ -602,13 +684,15 @@ const BusinessDashboard = () => {
                                 Cancel
                               </button>
                             ) : (
-                              <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                theme === "light"
-                                  ? "bg-gray-100 text-gray-600"
-                                  : "bg-gray-600 text-gray-200"
-                              }`}>
-                                {booking.bookingStatus === "Service Completed" 
-                                  ? "Service Completed" 
+                              <span
+                                className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                  theme === "light"
+                                    ? "bg-gray-100 text-gray-600"
+                                    : "bg-gray-600 text-gray-200"
+                                }`}
+                              >
+                                {booking.bookingStatus === "Service Completed"
+                                  ? "Service Completed"
                                   : "Service Canceled"}
                               </span>
                             )}
@@ -625,20 +709,28 @@ const BusinessDashboard = () => {
           {/* Services Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Add New Service Form */}
-            <div className={`p-6 rounded-xl shadow-sm border ${
-              theme === "light" ? "bg-white border-gray-200" : "bg-gray-800 border-gray-700"
-            }`}>
-              <h2 className={`text-xl font-semibold mb-6 ${
-                theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-              }`}>
+            <div
+              className={`p-6 rounded-xl shadow-sm border ${
+                theme === "light"
+                  ? "bg-white border-gray-200"
+                  : "bg-gray-800 border-gray-700"
+              }`}
+            >
+              <h2
+                className={`text-xl font-semibold mb-6 ${
+                  theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+                }`}
+              >
                 Add New Service
               </h2>
               <form onSubmit={handleServiceSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 gap-4">
                   <div>
-                    <label className={`block text-sm font-medium mb-1 ${
-                      theme === "light" ? "text-gray-700" : "text-gray-300"
-                    }`}>
+                    <label
+                      className={`block text-sm font-medium mb-1 ${
+                        theme === "light" ? "text-gray-700" : "text-gray-300"
+                      }`}
+                    >
                       Service Name
                     </label>
                     <input
@@ -658,9 +750,11 @@ const BusinessDashboard = () => {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className={`block text-sm font-medium mb-1 ${
-                        theme === "light" ? "text-gray-700" : "text-gray-300"
-                      }`}>
+                      <label
+                        className={`block text-sm font-medium mb-1 ${
+                          theme === "light" ? "text-gray-700" : "text-gray-300"
+                        }`}
+                      >
                         Price ($)
                       </label>
                       <input
@@ -681,9 +775,11 @@ const BusinessDashboard = () => {
                       />
                     </div>
                     <div>
-                      <label className={`block text-sm font-medium mb-1 ${
-                        theme === "light" ? "text-gray-700" : "text-gray-300"
-                      }`}>
+                      <label
+                        className={`block text-sm font-medium mb-1 ${
+                          theme === "light" ? "text-gray-700" : "text-gray-300"
+                        }`}
+                      >
                         Duration (mins)
                       </label>
                       <input
@@ -706,9 +802,11 @@ const BusinessDashboard = () => {
                   </div>
 
                   <div>
-                    <label className={`block text-sm font-medium mb-1 ${
-                      theme === "light" ? "text-gray-700" : "text-gray-300"
-                    }`}>
+                    <label
+                      className={`block text-sm font-medium mb-1 ${
+                        theme === "light" ? "text-gray-700" : "text-gray-300"
+                      }`}
+                    >
                       Description
                     </label>
                     <textarea
@@ -730,9 +828,11 @@ const BusinessDashboard = () => {
                   </div>
 
                   <div>
-                    <label className={`block text-sm font-medium mb-1 ${
-                      theme === "light" ? "text-gray-700" : "text-gray-300"
-                    }`}>
+                    <label
+                      className={`block text-sm font-medium mb-1 ${
+                        theme === "light" ? "text-gray-700" : "text-gray-300"
+                      }`}
+                    >
                       Languages Spoken
                     </label>
                     <Select
@@ -746,31 +846,39 @@ const BusinessDashboard = () => {
                       styles={{
                         control: (provided, state) => ({
                           ...provided,
-                          backgroundColor: theme === "light" ? 'white' : '#374151',
-                          borderColor: theme === "light" ? '#d1d5db' : '#4b5563',
-                          '&:hover': {
-                            borderColor: theme === "light" ? '#a2b9c6' : '#fadadd'
-                          }
+                          backgroundColor:
+                            theme === "light" ? "white" : "#374151",
+                          borderColor:
+                            theme === "light" ? "#d1d5db" : "#4b5563",
+                          "&:hover": {
+                            borderColor:
+                              theme === "light" ? "#a2b9c6" : "#fadadd",
+                          },
                         }),
                         menu: (provided) => ({
                           ...provided,
-                          backgroundColor: theme === "light" ? 'white' : '#374151'
+                          backgroundColor:
+                            theme === "light" ? "white" : "#374151",
                         }),
                         option: (provided, state) => ({
                           ...provided,
-                          backgroundColor: state.isFocused 
-                            ? (theme === "light" ? '#f3f4f6' : '#4b5563')
-                            : (theme === "light" ? 'white' : '#374151'),
-                          color: theme === "light" ? '#4a4a4a' : '#f3f4f6'
+                          backgroundColor: state.isFocused
+                            ? theme === "light"
+                              ? "#f3f4f6"
+                              : "#4b5563"
+                            : theme === "light"
+                            ? "white"
+                            : "#374151",
+                          color: theme === "light" ? "#4a4a4a" : "#f3f4f6",
                         }),
                         singleValue: (provided) => ({
                           ...provided,
-                          color: theme === "light" ? '#4a4a4a' : '#f3f4f6'
+                          color: theme === "light" ? "#4a4a4a" : "#f3f4f6",
                         }),
                         input: (provided) => ({
                           ...provided,
-                          color: theme === "light" ? '#4a4a4a' : '#f3f4f6'
-                        })
+                          color: theme === "light" ? "#4a4a4a" : "#f3f4f6",
+                        }),
                       }}
                     />
                   </div>
@@ -790,26 +898,38 @@ const BusinessDashboard = () => {
             </div>
 
             {/* Your Services List */}
-            <div className={`p-6 rounded-xl shadow-sm border ${
-              theme === "light" ? "bg-white border-gray-200" : "bg-gray-800 border-gray-700"
-            }`}>
+            <div
+              className={`p-6 rounded-xl shadow-sm border ${
+                theme === "light"
+                  ? "bg-white border-gray-200"
+                  : "bg-gray-800 border-gray-700"
+              }`}
+            >
               <div className="flex justify-between items-center mb-6">
-                <h2 className={`text-xl font-semibold ${
-                  theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-                }`}>
+                <h2
+                  className={`text-xl font-semibold ${
+                    theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+                  }`}
+                >
                   Your Services
                 </h2>
-                <div className={`text-sm ${
-                  theme === "light" ? "text-gray-500" : "text-gray-400"
-                }`}>
+                <div
+                  className={`text-sm ${
+                    theme === "light" ? "text-gray-500" : "text-gray-400"
+                  }`}
+                >
                   {services.length} services
                 </div>
               </div>
 
               {services.length === 0 ? (
-                <div className={`text-center py-12 rounded-lg ${
-                  theme === "light" ? "bg-gray-50 text-gray-500" : "bg-gray-700 text-gray-300"
-                }`}>
+                <div
+                  className={`text-center py-12 rounded-lg ${
+                    theme === "light"
+                      ? "bg-gray-50 text-gray-500"
+                      : "bg-gray-700 text-gray-300"
+                  }`}
+                >
                   <p>
                     No services added yet. Add your first service using the
                     form.
@@ -895,9 +1015,13 @@ const BusinessDashboard = () => {
                             />
                           </div>
                           <div>
-                            <label className={`block text-sm font-medium mb-1 ${
-                              theme === "light" ? "text-gray-700" : "text-gray-300"
-                            }`}>
+                            <label
+                              className={`block text-sm font-medium mb-1 ${
+                                theme === "light"
+                                  ? "text-gray-700"
+                                  : "text-gray-300"
+                              }`}
+                            >
                               Languages Spoken
                             </label>
                             <Select
@@ -913,31 +1037,42 @@ const BusinessDashboard = () => {
                               styles={{
                                 control: (provided, state) => ({
                                   ...provided,
-                                  backgroundColor: theme === "light" ? 'white' : '#374151',
-                                  borderColor: theme === "light" ? '#d1d5db' : '#4b5563',
-                                  '&:hover': {
-                                    borderColor: theme === "light" ? '#a2b9c6' : '#fadadd'
-                                  }
+                                  backgroundColor:
+                                    theme === "light" ? "white" : "#374151",
+                                  borderColor:
+                                    theme === "light" ? "#d1d5db" : "#4b5563",
+                                  "&:hover": {
+                                    borderColor:
+                                      theme === "light" ? "#a2b9c6" : "#fadadd",
+                                  },
                                 }),
                                 menu: (provided) => ({
                                   ...provided,
-                                  backgroundColor: theme === "light" ? 'white' : '#374151'
+                                  backgroundColor:
+                                    theme === "light" ? "white" : "#374151",
                                 }),
                                 option: (provided, state) => ({
                                   ...provided,
-                                  backgroundColor: state.isFocused 
-                                    ? (theme === "light" ? '#f3f4f6' : '#4b5563')
-                                    : (theme === "light" ? 'white' : '#374151'),
-                                  color: theme === "light" ? '#4a4a4a' : '#f3f4f6'
+                                  backgroundColor: state.isFocused
+                                    ? theme === "light"
+                                      ? "#f3f4f6"
+                                      : "#4b5563"
+                                    : theme === "light"
+                                    ? "white"
+                                    : "#374151",
+                                  color:
+                                    theme === "light" ? "#4a4a4a" : "#f3f4f6",
                                 }),
                                 singleValue: (provided) => ({
                                   ...provided,
-                                  color: theme === "light" ? '#4a4a4a' : '#f3f4f6'
+                                  color:
+                                    theme === "light" ? "#4a4a4a" : "#f3f4f6",
                                 }),
                                 input: (provided) => ({
                                   ...provided,
-                                  color: theme === "light" ? '#4a4a4a' : '#f3f4f6'
-                                })
+                                  color:
+                                    theme === "light" ? "#4a4a4a" : "#f3f4f6",
+                                }),
                               }}
                             />
                           </div>
@@ -969,33 +1104,53 @@ const BusinessDashboard = () => {
                       ) : (
                         <div className="flex justify-between items-start">
                           <div>
-                            <h3 className={`font-medium text-lg ${
-                              theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-                            }`}>
+                            <h3
+                              className={`font-medium text-lg ${
+                                theme === "light"
+                                  ? "text-[#4A4A4A]"
+                                  : "text-gray-200"
+                              }`}
+                            >
                               {service.name}
                             </h3>
-                            <p className={`mt-1 ${
-                              theme === "light" ? "text-gray-600" : "text-gray-300"
-                            }`}>
+                            <p
+                              className={`mt-1 ${
+                                theme === "light"
+                                  ? "text-gray-600"
+                                  : "text-gray-300"
+                              }`}
+                            >
                               {service.description}
                             </p>
                             <div className="flex space-x-4 mt-2">
-                              <span className={`text-sm ${
-                                theme === "light" ? "text-gray-500" : "text-gray-400"
-                              }`}>
+                              <span
+                                className={`text-sm ${
+                                  theme === "light"
+                                    ? "text-gray-500"
+                                    : "text-gray-400"
+                                }`}
+                              >
                                 ${service.price}
                               </span>
-                              <span className={`text-sm ${
-                                theme === "light" ? "text-gray-500" : "text-gray-400"
-                              }`}>
+                              <span
+                                className={`text-sm ${
+                                  theme === "light"
+                                    ? "text-gray-500"
+                                    : "text-gray-400"
+                                }`}
+                              >
                                 {service.duration} mins
                               </span>
                             </div>
                             {service.languageSpoken?.length > 0 && (
                               <div className="mt-2">
-                                <p className={`text-sm ${
-                                  theme === "light" ? "text-gray-500" : "text-gray-400"
-                                }`}>
+                                <p
+                                  className={`text-sm ${
+                                    theme === "light"
+                                      ? "text-gray-500"
+                                      : "text-gray-400"
+                                  }`}
+                                >
                                   Languages:
                                 </p>
                                 <div className="flex flex-wrap gap-2 mt-1">
