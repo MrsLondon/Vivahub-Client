@@ -43,6 +43,7 @@ const CustomerDashboard = () => {
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
+            "Content-Type": "application/json",
           },
         }
       );
