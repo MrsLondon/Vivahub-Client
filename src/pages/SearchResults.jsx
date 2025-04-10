@@ -9,14 +9,28 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 // Service placeholder mapping utility
 const servicePlaceholders = {
-  "women's haircut": "women-haircut-placeholder"
+  "women's haircut": "women-haircut-placeholder2",
+  "styling": "haircut-and-styling-placeholder",
+  "men's haircut": "men-haircut-placeholder",
+  "children's haircut": "children-haircut-placeholder",
+  "barber": "barber-haircut-placeholder",
+  "hair coloring": "hair-coloring-haircut-placeholder",
+  "hair extensions": "hair-extensions-placeholder",
+  "keratin treatment": "keratin-treatment-placeholder",
+  "hair mask": "hair-mask-treatment-placeholder",
+  "waxing": "waxing-service-placeholder",
+  "makeup": "makeup-placeholder",
+  "nails": "nails-placeholder",
+  "gel": "gel-nails-placeholder",
+  "massage": "massage-placeholder",
+  "full body": "full-body-placeholder"
 };
 
 const getServicePlaceholder = (serviceName) => {
   const lowerName = serviceName.toLowerCase();
   for (const [key, value] of Object.entries(servicePlaceholders)) {
     if (lowerName.includes(key.toLowerCase())) {
-      return `https://res.cloudinary.com/duu9km8ss/image/upload/v1744136286/vivahub_services_placeholders/women-haircut-placeholder.jpg`;
+      return `https://res.cloudinary.com/duu9km8ss/image/upload/v1744136286/vivahub_services_placeholders/${value}.jpg`;
     }
   }
   return null;

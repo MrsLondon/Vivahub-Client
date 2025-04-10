@@ -32,6 +32,18 @@ const SalonDetailsPage = () => {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const { theme, toggleTheme } = useTheme();
 
+// Salon placeholder mapping utility
+const salonPlaceholders = {
+  "Elegant Beauty Salon": "https://res.cloudinary.com/duu9km8ss/image/upload/v1744308274/vivahub_services_placeholders/elegant-beauty-salon-placeholder.png",
+  "Modern Style Studio": "https://res.cloudinary.com/duu9km8ss/image/upload/v1744308340/vivahub_services_placeholders/modern-style-studio-placeholder.png",
+  "Glamour & Glow Beauty Salon": "https://res.cloudinary.com/duu9km8ss/image/upload/v1744308339/vivahub_services_placeholders/glamour-glow-beauty-salon-placeholder.png",
+  "Sergi's Salon": "https://res.cloudinary.com/duu9km8ss/image/upload/v1744308341/vivahub_services_placeholders/sergis-salon-placeholder.png",
+  "Brunella Salon": "https://res.cloudinary.com/duu9km8ss/image/upload/v1744308341/vivahub_services_placeholders/brunella-salon-placeholder.png"
+};
+
+const getSalonPlaceholder = (salonName) => {
+  return salonPlaceholders[salonName] || null;
+};
 
   useEffect(() => {
     const fetchSalonDetails = async () => {
@@ -69,6 +81,43 @@ const SalonDetailsPage = () => {
 
   if (loading) return <p className="text-center text-gray-500">Loading...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
+
+  const SalonImageCard = ({ salon, theme }) => {
+    const placeholder = getSalonPlaceholder(salon.name);
+    
+    return (
+      <div className="w-full h-64 mb-6 rounded-lg overflow-hidden relative">
+        {salon.images?.[0] ? (
+          <img
+            src={salon.images[0]}
+            alt={salon.name}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              if (placeholder) {
+                e.target.src = placeholder;
+              } else {
+                e.target.style.display = 'none';
+              }
+            }}
+          />
+        ) : placeholder ? (
+          <img
+            src={placeholder}
+            alt={salon.name}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className={`absolute inset-0 flex items-center justify-center ${
+            theme === "light" ? "bg-gray-200" : "bg-gray-700"
+          }`}>
+            <span className={theme === "light" ? "text-gray-500" : "text-gray-300"}>
+              {salon.name}
+            </span>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div
@@ -133,13 +182,12 @@ const SalonDetailsPage = () => {
 
       {/* Salon Details Section */}
       <section className="py-10 px-5 flex-grow">
-        <div className="max-w-4xl mx-auto">
-          <h1
-            className={`text-3xl font-medium mb-4 ${
-              theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-            }`}
-          >
-            {salon.name}
+  <div className="max-w-4xl mx-auto">
+    <SalonImageCard salon={salon} theme={theme} />
+    <h1 className={`text-3xl font-medium mb-4 ${
+      theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+    }`}>
+      {salon.name}
           </h1>
           <p
             className={`text-lg mb-2 ${
