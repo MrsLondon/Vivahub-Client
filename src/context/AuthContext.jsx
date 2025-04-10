@@ -11,7 +11,7 @@ const AuthProvider = ({ children }) => {
     const storedToken = localStorage.getItem("token");
     console.log("Stored user:", storedUser);
     console.log("Stored token:", storedToken);
-    
+
     if (storedUser && storedToken) {
       try {
         const parsedUser = JSON.parse(storedUser);
@@ -51,17 +51,16 @@ const AuthProvider = ({ children }) => {
 
   const contextValue = {
     user,
+    setUser,
     login,
     logout,
-    isAuthenticated: !!user
+    isAuthenticated: !!user,
   };
-  
+
   console.log("AuthContext value:", contextValue);
 
   return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };
 
