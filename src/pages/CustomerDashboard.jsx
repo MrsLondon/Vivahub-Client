@@ -10,7 +10,7 @@ import { useTheme } from "../context/ThemeContext";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
 const CustomerDashboard = () => {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -155,11 +155,12 @@ const CustomerDashboard = () => {
 
     try {
       const response = await axios.put(
-        `${API_URL}/api/users/${user.id}`,
+        `${API_URL}/api/users/update`,
         editProfileData,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
+            "Content-Type": "application/json",
           },
         }
       );
