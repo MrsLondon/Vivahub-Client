@@ -37,7 +37,7 @@ const salonPlaceholders = {
   "Elegant Beauty Salon": "https://res.cloudinary.com/duu9km8ss/image/upload/v1744308274/vivahub_services_placeholders/elegant-beauty-salon-placeholder.png",
   "Modern Style Studio": "https://res.cloudinary.com/duu9km8ss/image/upload/v1744308340/vivahub_services_placeholders/modern-style-studio-placeholder.png",
   "Glamour & Glow Beauty Salon": "https://res.cloudinary.com/duu9km8ss/image/upload/v1744308339/vivahub_services_placeholders/glamour-glow-beauty-salon-placeholder.png",
-  "Sergi's Salon": "https://res.cloudinary.com/duu9km8ss/image/upload/v1744308341/vivahub_services_placeholders/sergis-salon-placeholder.png",
+  "Sergi's Salon": "https://res.cloudinary.com/duu9km8ss/image/upload/v1744310237/vivahub_services_placeholders/sergis-salon-placeholder.png",
   "Brunella Salon": "https://res.cloudinary.com/duu9km8ss/image/upload/v1744308341/vivahub_services_placeholders/brunella-salon-placeholder.png"
 };
 
