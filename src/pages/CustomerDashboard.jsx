@@ -6,11 +6,12 @@ import "react-toastify/dist/ReactToastify.css";
 import ReviewForm from "../components/ReviewForm";
 import Header from "../components/Header";
 import { useTheme } from "../context/ThemeContext";
+import { useNavigate } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
 const CustomerDashboard = () => {
-  const { user, setUser } = useAuth();
+  const { user, setUser, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -169,12 +170,40 @@ const CustomerDashboard = () => {
       toast.success("Profile updated successfully");
 
       // Update user in context
-      setUser(response.data.user);
+      setUser({
+        ...user, // keep the existing user data
+        ...response.data.user, // Update the user data with the response
+      });
 
       setShowEditProfileModal(false);
     } catch (error) {
       console.error("Error updating profile:", error);
       toast.error("Failed to update profile");
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete your account? This action cannot be undone."
+      )
+    ) {
+      return;
+    }
+
+    try {
+      await axios.delete(`${API_URL}/api/users/delete`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+
+      toast.success("Account deleted successfully.");
+      logout();
+      navigate("/");
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      toast.error("Failed to delete account. Please try again.");
     }
   };
 
@@ -597,16 +626,28 @@ const CustomerDashboard = () => {
                 >
                   Your Profile
                 </h2>
-                <button
-                  onClick={() => setShowEditProfileModal(true)}
-                  className={`px-4 py-2 rounded-lg text-sm ${
-                    theme === "light"
-                      ? "bg-[#A2B9C6] text-white hover:bg-[#8fa9b8]"
-                      : "bg-[#FADADD] text-[#4A4A4A] hover:bg-[#f0c8cc]"
-                  }`}
-                >
-                  Edit Profile
-                </button>
+                <div className="flex justify-end space-x-4">
+                  <button
+                    onClick={() => setShowEditProfileModal(true)}
+                    className={`px-4 py-2 rounded-lg text-sm ${
+                      theme === "light"
+                        ? "bg-[#A2B9C6] text-white hover:bg-[#8fa9b8]"
+                        : "bg-[#FADADD] text-[#4A4A4A] hover:bg-[#f0c8cc]"
+                    }`}
+                  >
+                    Edit Profile
+                  </button>
+                  <button
+                    onClick={handleDeleteUser}
+                    className={`px-4 py-2 rounded-lg text-sm ${
+                      theme === "light"
+                        ? "bg-red-500 text-white hover:bg-red-600"
+                        : "bg-red-700 text-white hover:bg-red-800"
+                    }`}
+                  >
+                    Delete User
+                  </button>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -680,7 +721,7 @@ const CustomerDashboard = () => {
                           (header) => (
                             <th
                               key={header}
-                              className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${
+                              className={`px-6 py-3 text-center text-xs font-medium uppercase tracking-wider ${
                                 theme === "light"
                                   ? "text-gray-500"
                                   : "text-gray-300"
@@ -702,7 +743,7 @@ const CustomerDashboard = () => {
                       {bookings.map((booking) => (
                         <tr key={booking.id || booking._id}>
                           <td
-                            className={`px-6 py-4 whitespace-nowrap text-sm ${
+                            className={`px-6 py-4 whitespace-nowrap text-sm text-center ${
                               theme === "light"
                                 ? "text-gray-900"
                                 : "text-gray-200"
@@ -713,7 +754,7 @@ const CustomerDashboard = () => {
                               : "No salon assigned"}
                           </td>
                           <td
-                            className={`px-6 py-4 whitespace-nowrap text-sm ${
+                            className={`px-6 py-4 whitespace-nowrap text-sm text-center ${
                               theme === "light"
                                 ? "text-gray-900"
                                 : "text-gray-200"
@@ -724,7 +765,7 @@ const CustomerDashboard = () => {
                               : "No service assigned"}
                           </td>
                           <td
-                            className={`px-6 py-4 whitespace-nowrap text-sm ${
+                            className={`px-6 py-4 whitespace-nowrap text-sm text-center ${
                               theme === "light"
                                 ? "text-gray-900"
                                 : "text-gray-200"
@@ -738,7 +779,7 @@ const CustomerDashboard = () => {
                               : "No date"}
                           </td>
                           <td
-                            className={`px-6 py-4 whitespace-nowrap text-sm ${
+                            className={`px-6 py-4 whitespace-nowrap text-sm text-center ${
                               theme === "light"
                                 ? "text-gray-900"
                                 : "text-gray-200"
