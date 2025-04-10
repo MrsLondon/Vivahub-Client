@@ -11,7 +11,6 @@ import AboutApp from "../components/AboutApp";
 import ForBusinessOwners from "../components/ForBusinessOwners";
 import SocialMedia from '../components/SocialMedia';
 import Footer from "../components/Footer";
-import LoadingScreen from "../components/LoadingScreen";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
@@ -24,7 +23,6 @@ const Homepage = () => {
   const [error, setError] = useState('');
   const { theme, toggleTheme } = useTheme();
   const [showFilters, setShowFilters] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
   // Fetch languages from backend
   useEffect(() => {
@@ -38,13 +36,6 @@ const Homepage = () => {
       }
     };
     fetchLanguages();
-  }, []);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-    return () => clearTimeout(timer);
   }, []);
 
   const handleSearch = async () => {
@@ -72,10 +63,6 @@ const Homepage = () => {
   const toggleFilters = () => {
     setShowFilters(!showFilters);
   };
-
-  if (isLoading) {
-    return <LoadingScreen theme={theme} />;
-  }
 
   return (
     <div className={`font-body leading-relaxed min-h-screen transition-colors duration-300

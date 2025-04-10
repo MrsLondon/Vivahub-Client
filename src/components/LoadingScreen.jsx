@@ -6,7 +6,7 @@ const LoadingScreen = ({ theme }) => {
     <div className={`fixed inset-0 flex items-center justify-center z-50 transition-colors duration-300
       ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
       <div className="flex flex-col items-center justify-center">
-        {/* Logo - now with text aligned directly below */}
+        {/* Logo */}
         {theme === 'dark' ? (
           <>
             <img 
