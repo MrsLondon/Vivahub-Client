@@ -11,10 +11,12 @@ import {
   FaPhone,
   FaMapMarkerAlt,
   FaClock,
+  FaCalendarAlt,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import Header from "../components/Header";
+import CalendarModal from "../components/CalendarModal";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
@@ -24,6 +26,7 @@ const BusinessDashboard = () => {
   const { theme, toggleTheme } = useTheme();
 
   // State management
+  const [showCalendar, setShowCalendar] = useState(false);
   const [bookingToCancel, setBookingToCancel] = useState(null);
   const [editingServiceId, setEditingServiceId] = useState(null);
   const [editedService, setEditedService] = useState({});
@@ -541,6 +544,13 @@ const BusinessDashboard = () => {
               >
                 Bookings
               </h2>
+              <button
+                onClick={() => setShowCalendar(true)}
+                className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-[#A2B9C6] text-white hover:bg-[#8fa9b8]"
+              >
+                <FaCalendarAlt className="w-5 h-5" />
+                <span>View Calendar</span>
+              </button>
               <div
                 className={`text-sm ${
                   theme === "light" ? "text-gray-500" : "text-gray-400"
@@ -548,6 +558,12 @@ const BusinessDashboard = () => {
               >
                 {bookings.length} total bookings
               </div>
+              {/* Calendar Modal */}
+              <CalendarModal
+                isOpen={showCalendar}
+                onClose={() => setShowCalendar(false)}
+                salonId={salon._id}
+              />
             </div>
 
             {bookings.length === 0 ? (

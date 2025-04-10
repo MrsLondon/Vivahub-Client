@@ -115,13 +115,14 @@ const SalonDetailsPage = () => {
       >
         {/* Logo */}
         <Link to="/" className="flex items-center">
-          <img src={theme === 'light' ? "/logo.png" : "/logo-dark.png"}  alt="VivaHub Logo" className="h-10" />
+          <img
+            src={theme === "light" ? "/logo.png" : "/logo-dark.png"}
+            alt="VivaHub Logo"
+            className="h-10"
+          />
         </Link>
 
         <div className="flex items-center gap-4">
-                
-       
-
           {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
@@ -130,9 +131,9 @@ const SalonDetailsPage = () => {
                 ? "text-[#4A4A4A] hover:bg-[#FADADD]"
                 : "text-gray-200 hover:bg-gray-700"
             } transition-colors`}
-            aria-label={`Toggle ${theme === 'light' ? 'dark' : 'light'} mode`}
+            aria-label={`Toggle ${theme === "light" ? "dark" : "light"} mode`}
           >
-            {theme === 'light' ? <FaMoon /> : <FaSun />}
+            {theme === "light" ? <FaMoon /> : <FaSun />}
           </button>
 
           {/* Booking button with counter */}
@@ -201,15 +202,17 @@ const SalonDetailsPage = () => {
                 {Object.entries(salon.openingHours).map(([day, hours]) => {
                   // Handle both string and object formats
                   const hoursDisplay =
-                    typeof hours === "object"
+                    hours && hours.open && hours.close
                       ? `${hours.open} - ${hours.close}`
-                      : hours;
+                      : "Closed";
 
                   return (
                     <li
                       key={day}
                       className={`text-sm ${
-                        theme === "light" ? "text-[#4A4A4A]/80" : "text-gray-300"
+                        theme === "light"
+                          ? "text-[#4A4A4A]/80"
+                          : "text-gray-300"
                       }`}
                     >
                       <strong>
@@ -273,18 +276,14 @@ const SalonDetailsPage = () => {
                   )}
                   <p
                     className={`text-sm mb-1 ${
-                      theme === "light"
-                        ? "text-[#4A4A4A]/80"
-                        : "text-gray-300"
+                      theme === "light" ? "text-[#4A4A4A]/80" : "text-gray-300"
                     }`}
                   >
                     <strong>Price:</strong> ${service.price}
                   </p>
                   <p
                     className={`text-sm mb-4 ${
-                      theme === "light"
-                        ? "text-[#4A4A4A]/80"
-                        : "text-gray-300"
+                      theme === "light" ? "text-[#4A4A4A]/80" : "text-gray-300"
                     }`}
                   >
                     <strong>Duration:</strong> {service.duration} minutes
@@ -332,7 +331,9 @@ const SalonDetailsPage = () => {
               theme === "light" ? "bg-gray-200" : "bg-gray-700"
             }`}
           >
-            <p className={theme === "light" ? "text-gray-500" : "text-gray-300"}>
+            <p
+              className={theme === "light" ? "text-gray-500" : "text-gray-300"}
+            >
               Google Maps Placeholder
             </p>
           </div>
@@ -353,16 +354,14 @@ const SalonDetailsPage = () => {
           {reviews.length > 0 ? (
             <div className="space-y-6">
               {reviews.map((review) => (
-                <ReviewItem
-                  key={review._id}
-                  review={review}
-                  theme={theme}
-                />
+                <ReviewItem key={review._id} review={review} theme={theme} />
               ))}
             </div>
           ) : (
             <p
-              className={theme === "light" ? "text-[#4A4A4A]/80" : "text-gray-300"}
+              className={
+                theme === "light" ? "text-[#4A4A4A]/80" : "text-gray-300"
+              }
             >
               No reviews available for this salon yet.
             </p>
@@ -459,18 +458,14 @@ const SalonDetailsPage = () => {
                   </h3>
                   <p
                     className={`text-sm mb-2 ${
-                      theme === "light"
-                        ? "text-[#4A4A4A]/80"
-                        : "text-gray-300"
+                      theme === "light" ? "text-[#4A4A4A]/80" : "text-gray-300"
                     }`}
                   >
                     <strong>Role:</strong> {member.role}
                   </p>
                   <p
                     className={`text-sm ${
-                      theme === "light"
-                        ? "text-[#4A4A4A]/80"
-                        : "text-gray-300"
+                      theme === "light" ? "text-[#4A4A4A]/80" : "text-gray-300"
                     }`}
                   >
                     {member.bio}
@@ -524,9 +519,7 @@ const SalonDetailsPage = () => {
                   </h3>
                   <p
                     className={`text-sm mb-2 ${
-                      theme === "light"
-                        ? "text-[#4A4A4A]/80"
-                        : "text-gray-300"
+                      theme === "light" ? "text-[#4A4A4A]/80" : "text-gray-300"
                     }`}
                   >
                     {nearbySalon.location}

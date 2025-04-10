@@ -5,9 +5,16 @@ import { AuthContext } from "../context/auth.context";
 import { createBooking } from "../services/api";
 import { useTheme } from "../context/ThemeContext";
 import { FaMoon, FaSun } from "react-icons/fa";
+import Navbar from "../components/Navbar";
 
 const BookingPage = () => {
-  const { bookingItems, removeFromBooking, totalPrice, totalDuration, clearBooking } = useContext(BookingContext);
+  const {
+    bookingItems,
+    removeFromBooking,
+    totalPrice,
+    totalDuration,
+    clearBooking,
+  } = useContext(BookingContext);
   const { user, isAuthenticated } = useContext(AuthContext);
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
@@ -17,7 +24,7 @@ const BookingPage = () => {
     phone: "",
     date: "",
     time: "",
-    notes: ""
+    notes: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -27,13 +34,13 @@ const BookingPage = () => {
   const generateTimeSlots = () => {
     const slots = [];
     const startHour = 8; // 8am
-    const endHour = 20;  // 8pm
+    const endHour = 20; // 8pm
 
     for (let hour = startHour; hour < endHour; hour++) {
       for (let minute = 0; minute < 60; minute += 15) {
         const hourFormatted = hour % 12 === 0 ? 12 : hour % 12;
-        const amPm = hour < 12 ? 'AM' : 'PM';
-        const minuteFormatted = minute.toString().padStart(2, '0');
+        const amPm = hour < 12 ? "AM" : "PM";
+        const minuteFormatted = minute.toString().padStart(2, "0");
         slots.push(`${hourFormatted}:${minuteFormatted} ${amPm}`);
       }
     }
@@ -46,13 +53,13 @@ const BookingPage = () => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (bookingItems.length === 0) {
       alert("Please add services to your booking first");
       return;
@@ -73,35 +80,35 @@ const BookingPage = () => {
       const bookingPromises = bookingItems.map(async (service) => {
         // Convert time from "1:00 PM" format to 24-hour format "13:00"
         const timeString = formData.time;
-        const [time, period] = timeString.split(' ');
-        const [hour, minute] = time.split(':');
+        const [time, period] = timeString.split(" ");
+        const [hour, minute] = time.split(":");
         let hour24 = parseInt(hour);
-        
-        if (period === 'PM' && hour24 < 12) {
+
+        if (period === "PM" && hour24 < 12) {
           hour24 += 12;
-        } else if (period === 'AM' && hour24 === 12) {
+        } else if (period === "AM" && hour24 === 12) {
           hour24 = 0;
         }
-        
-        const time24 = `${hour24.toString().padStart(2, '0')}:${minute}`;
-        
+
+        const time24 = `${hour24.toString().padStart(2, "0")}:${minute}`;
+
         const bookingData = {
           serviceId: service._id,
           appointmentDate: formData.date,
           appointmentTime: time24,
-          notes: formData.notes
+          notes: formData.notes,
         };
-        
+
         return await createBooking(bookingData);
       });
-      
+
       const results = await Promise.all(bookingPromises);
       console.log("Booking results:", results);
-      
+
       // Clear booking after successful submission
       clearBooking();
       setSubmitSuccess(true);
-      
+
       // Reset form
       setFormData({
         name: "",
@@ -109,16 +116,21 @@ const BookingPage = () => {
         phone: "",
         date: "",
         time: "",
-        notes: ""
+        notes: "",
       });
     } catch (error) {
       console.error("Error submitting booking:", error);
-      let message = "There was an error submitting your booking. Please try again.";
-      
-      if (error.response && error.response.data && error.response.data.message) {
+      let message =
+        "There was an error submitting your booking. Please try again.";
+
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
         message = error.response.data.message;
       }
-      
+
       setErrorMessage(message);
     } finally {
       setIsSubmitting(false);
@@ -126,64 +138,39 @@ const BookingPage = () => {
   };
 
   return (
-    <div className={`font-sans leading-relaxed min-h-screen flex flex-col transition-colors duration-300 ${
-      theme === "light" ? "bg-white text-[#4A4A4A]" : "bg-gray-900 text-gray-200"
-    }`}>
-      {/* Header */}
-      <header className={`p-4 flex justify-between items-center shadow-sm ${
-        theme === "light" ? "bg-[#eeeeee]" : "bg-gray-800"
-      }`}>
-        {/* Logo */}
-        <Link to="/" className="flex items-center">
-          <img 
-            src={theme === "light" ? "/logo.png" : "/logo-dark.png"} 
-            alt="VivaHub Logo" 
-            className="h-10"
-          />
-        </Link>
-        
-        <div className="flex items-center gap-4">
-          {/* Theme Toggle Button */}
-          <button
-            onClick={toggleTheme}
-            className={`p-2 rounded-full ${
-              theme === "light"
-                ? "text-[#4A4A4A] hover:bg-[#FADADD]"
-                : "text-gray-200 hover:bg-gray-700"
-            } transition-colors`}
-            aria-label={`Toggle ${theme === 'light' ? 'dark' : 'light'} mode`}
-          >
-            {theme === 'light' ? <FaMoon /> : <FaSun />}
-          </button>
-          
-          {/* <Link 
-            to="/test-booking" 
-            className={`${
-              theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-            } hover:underline`}
-          >
-            Back to Services
-          </Link> */}
-        </div>
-      </header>
+    <div
+      className={`font-sans leading-relaxed min-h-screen flex flex-col transition-colors duration-300 ${
+        theme === "light"
+          ? "bg-white text-[#4A4A4A]"
+          : "bg-gray-900 text-gray-200"
+      }`}
+    >
+      {/* Navbar */}
+      <Navbar />
 
       <div className="py-10 px-5 flex-grow">
         <div className="max-w-4xl mx-auto">
-          <h1 className={`text-3xl font-medium mb-6 ${
-            theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-          }`}>
+          <h1
+            className={`text-3xl font-medium mb-6 ${
+              theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+            }`}
+          >
             Complete Your Booking
           </h1>
 
           {submitSuccess ? (
-            <div className={`rounded-lg p-6 mb-8 text-center ${
-              theme === "light" 
-                ? "bg-green-50 border border-green-200 text-green-700"
-                : "bg-green-900 border border-green-700 text-green-100"
-            }`}>
+            <div
+              className={`rounded-lg p-6 mb-8 text-center ${
+                theme === "light"
+                  ? "bg-green-50 border border-green-200 text-green-700"
+                  : "bg-green-900 border border-green-700 text-green-100"
+              }`}
+            >
               <h2 className="text-2xl font-medium mb-4">Booking Confirmed!</h2>
-              <p className="mb-6">Your booking has been successfully submitted.</p>
-              <button
+              <p className="mb-6">
+                Your booking has been successfully submitted.
+              </p>
+              {/* <button
                 onClick={() => {
                   setSubmitSuccess(false);
                   navigate("/test-booking");
@@ -195,77 +182,125 @@ const BookingPage = () => {
                 }`}
               >
                 Book More Services
-              </button>
+              </button> */}
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Booking Summary */}
               <div className="lg:col-span-1">
-                <div className={`rounded-lg p-6 sticky top-6 ${
-                  theme === "light" ? "bg-[#F8F8F8]" : "bg-gray-800"
-                }`}>
-                  <h2 className={`text-xl font-medium mb-4 ${
-                    theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-                  }`}>
+                <div
+                  className={`rounded-lg p-6 sticky top-6 ${
+                    theme === "light" ? "bg-[#F8F8F8]" : "bg-gray-800"
+                  }`}
+                >
+                  <h2
+                    className={`text-xl font-medium mb-4 ${
+                      theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+                    }`}
+                  >
                     Booking Summary
                   </h2>
-                  
+
                   {bookingItems.length === 0 ? (
-                    <p className={`mb-4 ${
-                      theme === "light" ? "text-gray-500" : "text-gray-400"
-                    }`}>
+                    <p
+                      className={`mb-4 ${
+                        theme === "light" ? "text-gray-500" : "text-gray-400"
+                      }`}
+                    >
                       Your booking is empty.
                     </p>
                   ) : (
                     <>
-                      <ul className={`divide-y mb-4 ${
-                        theme === "light" ? "divide-gray-200" : "divide-gray-700"
-                      }`}>
+                      <ul
+                        className={`divide-y mb-4 ${
+                          theme === "light"
+                            ? "divide-gray-200"
+                            : "divide-gray-700"
+                        }`}
+                      >
                         {bookingItems.map((item) => (
-                          <li key={item._id} className="py-4 flex justify-between">
+                          <li
+                            key={item._id}
+                            className="py-4 flex justify-between"
+                          >
                             <div>
-                              <h3 className={`font-medium ${
-                                theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-                              }`}>
+                              <h3
+                                className={`font-medium ${
+                                  theme === "light"
+                                    ? "text-[#4A4A4A]"
+                                    : "text-gray-200"
+                                }`}
+                              >
                                 {item.name}
                               </h3>
-                              <p className={`text-sm ${
-                                theme === "light" ? "text-gray-600" : "text-gray-400"
-                              }`}>
+                              <p
+                                className={`text-sm ${
+                                  theme === "light"
+                                    ? "text-gray-600"
+                                    : "text-gray-400"
+                                }`}
+                              >
                                 {item.duration} minutes
                               </p>
                             </div>
                             <div className="flex items-start">
-                              <span className={`font-medium mr-3 ${
-                                theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-                              }`}>
+                              <span
+                                className={`font-medium mr-3 ${
+                                  theme === "light"
+                                    ? "text-[#4A4A4A]"
+                                    : "text-gray-200"
+                                }`}
+                              >
                                 ${item.price.toFixed(2)}
                               </span>
-                              <button 
+                              <button
                                 onClick={() => removeFromBooking(item._id)}
                                 className="text-red-500 hover:text-red-700"
                               >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="h-5 w-5"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M6 18L18 6M6 6l12 12"
+                                  />
                                 </svg>
                               </button>
                             </div>
                           </li>
                         ))}
                       </ul>
-                      
-                      <div className={`border-t pt-4 ${
-                        theme === "light" ? "border-gray-200" : "border-gray-700"
-                      }`}>
-                        <div className={`flex justify-between mb-2 ${
-                          theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-                        }`}>
+
+                      <div
+                        className={`border-t pt-4 ${
+                          theme === "light"
+                            ? "border-gray-200"
+                            : "border-gray-700"
+                        }`}
+                      >
+                        <div
+                          className={`flex justify-between mb-2 ${
+                            theme === "light"
+                              ? "text-[#4A4A4A]"
+                              : "text-gray-200"
+                          }`}
+                        >
                           <span>Total Duration:</span>
                           <span>{totalDuration} minutes</span>
                         </div>
-                        <div className={`flex justify-between text-lg font-bold ${
-                          theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-                        }`}>
+                        <div
+                          className={`flex justify-between text-lg font-bold ${
+                            theme === "light"
+                              ? "text-[#4A4A4A]"
+                              : "text-gray-200"
+                          }`}
+                        >
                           <span>Total:</span>
                           <span>${totalPrice.toFixed(2)}</span>
                         </div>
@@ -274,25 +309,33 @@ const BookingPage = () => {
                   )}
                 </div>
               </div>
-              
+
               {/* Booking Form */}
               <div className="lg:col-span-2">
-                <form onSubmit={handleSubmit} className={`rounded-lg p-6 ${
-                  theme === "light" 
-                    ? "bg-white border border-gray-200" 
-                    : "bg-gray-800 border border-gray-700"
-                }`}>
-                  <h2 className={`text-xl font-medium mb-6 ${
-                    theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-                  }`}>
+                <form
+                  onSubmit={handleSubmit}
+                  className={`rounded-lg p-6 ${
+                    theme === "light"
+                      ? "bg-white border border-gray-200"
+                      : "bg-gray-800 border border-gray-700"
+                  }`}
+                >
+                  <h2
+                    className={`text-xl font-medium mb-6 ${
+                      theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+                    }`}
+                  >
                     Your Information
                   </h2>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div>
-                      <label htmlFor="name" className={`block text-sm font-medium mb-1 ${
-                        theme === "light" ? "text-gray-700" : "text-gray-300"
-                      }`}>
+                      <label
+                        htmlFor="name"
+                        className={`block text-sm font-medium mb-1 ${
+                          theme === "light" ? "text-gray-700" : "text-gray-300"
+                        }`}
+                      >
                         Full Name
                       </label>
                       <input
@@ -310,9 +353,12 @@ const BookingPage = () => {
                       />
                     </div>
                     <div>
-                      <label htmlFor="email" className={`block text-sm font-medium mb-1 ${
-                        theme === "light" ? "text-gray-700" : "text-gray-300"
-                      }`}>
+                      <label
+                        htmlFor="email"
+                        className={`block text-sm font-medium mb-1 ${
+                          theme === "light" ? "text-gray-700" : "text-gray-300"
+                        }`}
+                      >
                         Email
                       </label>
                       <input
@@ -330,11 +376,14 @@ const BookingPage = () => {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="mb-6">
-                    <label htmlFor="phone" className={`block text-sm font-medium mb-1 ${
-                      theme === "light" ? "text-gray-700" : "text-gray-300"
-                    }`}>
+                    <label
+                      htmlFor="phone"
+                      className={`block text-sm font-medium mb-1 ${
+                        theme === "light" ? "text-gray-700" : "text-gray-300"
+                      }`}
+                    >
                       Phone Number
                     </label>
                     <input
@@ -351,18 +400,23 @@ const BookingPage = () => {
                       }`}
                     />
                   </div>
-                  
-                  <h2 className={`text-xl font-medium mb-6 ${
-                    theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-                  }`}>
+
+                  <h2
+                    className={`text-xl font-medium mb-6 ${
+                      theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
+                    }`}
+                  >
                     Appointment Details
                   </h2>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div>
-                      <label htmlFor="date" className={`block text-sm font-medium mb-1 ${
-                        theme === "light" ? "text-gray-700" : "text-gray-300"
-                      }`}>
+                      <label
+                        htmlFor="date"
+                        className={`block text-sm font-medium mb-1 ${
+                          theme === "light" ? "text-gray-700" : "text-gray-300"
+                        }`}
+                      >
                         Date
                       </label>
                       <input
@@ -372,7 +426,7 @@ const BookingPage = () => {
                         value={formData.date}
                         onChange={handleInputChange}
                         required
-                        min={new Date().toISOString().split('T')[0]}
+                        min={new Date().toISOString().split("T")[0]}
                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
                           theme === "light"
                             ? "border-gray-300 focus:ring-[#FADADD]"
@@ -381,9 +435,12 @@ const BookingPage = () => {
                       />
                     </div>
                     <div>
-                      <label htmlFor="time" className={`block text-sm font-medium mb-1 ${
-                        theme === "light" ? "text-gray-700" : "text-gray-300"
-                      }`}>
+                      <label
+                        htmlFor="time"
+                        className={`block text-sm font-medium mb-1 ${
+                          theme === "light" ? "text-gray-700" : "text-gray-300"
+                        }`}
+                      >
                         Time
                       </label>
                       <select
@@ -400,16 +457,21 @@ const BookingPage = () => {
                       >
                         <option value="">Select a time</option>
                         {timeSlots.map((slot, index) => (
-                          <option key={index} value={slot}>{slot}</option>
+                          <option key={index} value={slot}>
+                            {slot}
+                          </option>
                         ))}
                       </select>
                     </div>
                   </div>
-                  
+
                   <div className="mb-6">
-                    <label htmlFor="notes" className={`block text-sm font-medium mb-1 ${
-                      theme === "light" ? "text-gray-700" : "text-gray-300"
-                    }`}>
+                    <label
+                      htmlFor="notes"
+                      className={`block text-sm font-medium mb-1 ${
+                        theme === "light" ? "text-gray-700" : "text-gray-300"
+                      }`}
+                    >
                       Special Requests or Notes
                     </label>
                     <textarea
@@ -425,7 +487,7 @@ const BookingPage = () => {
                       }`}
                     ></textarea>
                   </div>
-                  
+
                   <button
                     type="submit"
                     disabled={isSubmitting || bookingItems.length === 0}
@@ -438,9 +500,11 @@ const BookingPage = () => {
                     {isSubmitting ? "Processing..." : "Confirm Booking"}
                   </button>
                   {errorMessage && (
-                    <p className={`mt-2 ${
-                      theme === "light" ? "text-red-500" : "text-red-400"
-                    }`}>
+                    <p
+                      className={`mt-2 ${
+                        theme === "light" ? "text-red-500" : "text-red-400"
+                      }`}
+                    >
                       {errorMessage}
                     </p>
                   )}
