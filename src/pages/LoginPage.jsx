@@ -59,17 +59,32 @@ const LoginPage = () => {
       // Update auth state
       login({ ...user, token });
       
-      // Use a small timeout to ensure auth state is updated before navigation
+      // Use a longer timeout to ensure auth state is updated before navigation
       setTimeout(() => {
         if (redirectTo) {
           console.log('Navigating to return URL:', redirectTo);
-          navigate(redirectTo);
+          // Handle both relative and absolute URLs
+          if (redirectTo.startsWith('http')) {
+            // For absolute URLs, extract the path
+            try {
+              const urlObj = new URL(redirectTo);
+              const pathWithSearch = urlObj.pathname + urlObj.search;
+              console.log('Extracted path from absolute URL:', pathWithSearch);
+              navigate(pathWithSearch);
+            } catch (err) {
+              console.error('Error parsing return URL:', err);
+              navigate(redirectTo);
+            }
+          } else {
+            // For relative URLs, use as is
+            navigate(redirectTo);
+          }
         } else if (user.role === 'customer') {
           navigate('/customer-dashboard');
         } else if (user.role === 'business') {
           navigate('/business-dashboard');
         }
-      }, 100);
+      }, 300); // Increased timeout for state update
     } catch (err) {
       console.error('Login error:', err);
       if (err.response) {
