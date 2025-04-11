@@ -4,6 +4,7 @@ import { FaSlidersH, FaMoon, FaSun } from "react-icons/fa";
 import StarRating from "../components/StarRating";
 import ReviewItem from "../components/ReviewItem";
 import ReviewForm from "../components/ReviewForm";
+import SalonMap from "../components/SalonMap";
 import axios from "axios";
 import { BookingContext } from "../context/BookingContext";
 import BookingSidebar from "../components/BookingSidebar";
@@ -227,10 +228,11 @@ const SalonDetailsPage = () => {
               " Not available"
             )}
           </div>
+          {/* Map Section */}
+          <SalonMap salon={salon} theme={theme} />
         </div>
       </section>
 
-      {/* Rest of your component remains the same */}
       {/* Services Section */}
       <section
         className={`py-10 px-5 ${
