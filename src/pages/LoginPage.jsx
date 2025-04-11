@@ -32,6 +32,7 @@ const LoginPage = () => {
     const params = new URLSearchParams(location.search);
     const returnPath = params.get('returnUrl');
     if (returnPath) {
+      console.log('Return URL detected:', returnPath);
       setReturnUrl(returnPath);
     }
   }, [location]);
@@ -50,15 +51,25 @@ const LoginPage = () => {
       const response = await api.post('/api/auth/login', formData);
       const { token, user } = response.data;
       console.log('Login successful:', { token, user });
+      
+      // Store the returnUrl before login state update
+      const redirectTo = returnUrl;
+      console.log('Will redirect to:', redirectTo || 'default dashboard');
+      
+      // Update auth state
       login({ ...user, token });
       
-      if (returnUrl) {
-        navigate(returnUrl);
-      } else if (user.role === 'customer') {
-        navigate('/customer-dashboard');
-      } else if (user.role === 'business') {
-        navigate('/business-dashboard');
-      }
+      // Use a small timeout to ensure auth state is updated before navigation
+      setTimeout(() => {
+        if (redirectTo) {
+          console.log('Navigating to return URL:', redirectTo);
+          navigate(redirectTo);
+        } else if (user.role === 'customer') {
+          navigate('/customer-dashboard');
+        } else if (user.role === 'business') {
+          navigate('/business-dashboard');
+        }
+      }, 100);
     } catch (err) {
       console.error('Login error:', err);
       if (err.response) {
