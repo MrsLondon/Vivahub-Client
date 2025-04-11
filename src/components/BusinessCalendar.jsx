@@ -4,7 +4,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; // Importa os ícones
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const localizer = momentLocalizer(moment);
 
@@ -13,7 +13,6 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 const BusinessCalendar = ({ salonId, onSelectEvent }) => {
   const [events, setEvents] = useState([]);
 
-  // Função para converter os dados do booking para o formato do calendário
   const convertToCalendarEvent = (booking) => {
     try {
       const appointmentDate = new Date(booking.appointmentDate);
@@ -67,11 +66,10 @@ const BusinessCalendar = ({ salonId, onSelectEvent }) => {
     fetchBookings();
   }, [salonId]);
 
-  // Barra de navegação personalizada
   const CustomToolbar = ({ label, onNavigate, onView, view }) => {
     return (
       <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
-        {/* Navegação entre períodos */}
+        {/* Navegation between periods */}
         <div className="flex items-center gap-2">
           <button
             onClick={() => onNavigate("PREV")}
@@ -88,7 +86,7 @@ const BusinessCalendar = ({ salonId, onSelectEvent }) => {
           </button>
         </div>
 
-        {/* Botões para alternar entre visualizações */}
+        {/* Buttons to switch between views */}
         <div className="flex items-center gap-2 mt-4 sm:mt-0">
           <button
             onClick={() => onView("day")}
@@ -133,12 +131,12 @@ const BusinessCalendar = ({ salonId, onSelectEvent }) => {
         startAccessor="start"
         endAccessor="end"
         style={{ height: 500 }}
-        defaultView="day" // Define a visualização inicial como "dia"
-        views={["month", "week", "day"]} // Permite alternar entre mês, semana e dia
+        defaultView="month"
+        views={["month", "week", "day"]}
         popup
         className="bg-[#F8F8F8] text-[#4A4A4A] rounded-lg shadow-md"
         components={{
-          toolbar: CustomToolbar, // Substitui a barra de navegação padrão
+          toolbar: CustomToolbar,
         }}
         eventPropGetter={(event) => ({
           style: {
@@ -149,7 +147,7 @@ const BusinessCalendar = ({ salonId, onSelectEvent }) => {
             padding: "5px",
           },
         })}
-        onSelectEvent={onSelectEvent} // Passa o evento selecionado para o modal
+        onSelectEvent={onSelectEvent} 
       />
     </div>
   );

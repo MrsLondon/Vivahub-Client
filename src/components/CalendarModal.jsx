@@ -2,14 +2,13 @@ import React, { useState } from "react";
 import BusinessCalendar from "./BusinessCalendar";
 
 const CalendarModal = ({ isOpen, onClose, salonId }) => {
-  const [selectedEvent, setSelectedEvent] = useState(null); // Estado para o evento selecionado
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
-  if (!isOpen) return null; // Não renderiza se o modal não estiver aberto
-
+  if (!isOpen) return null;
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-4xl relative">
-        {/* Botão para fechar o modal */}
+        {/* Button to close the modal */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100"
@@ -17,7 +16,7 @@ const CalendarModal = ({ isOpen, onClose, salonId }) => {
           ✕
         </button>
 
-        {/* Exibe os detalhes do evento selecionado */}
+        {/* Displays the details of the selected event */}
         {selectedEvent ? (
           <div>
             <h2 className="text-2xl font-bold mb-4 text-[#4A4A4A] dark:text-gray-200">
@@ -56,14 +55,14 @@ const CalendarModal = ({ isOpen, onClose, salonId }) => {
               </p>
             </div>
             <button
-              onClick={() => setSelectedEvent(null)} // Volta para o calendário
+              onClick={() => setSelectedEvent(null)} // Return to the calendar
               className="mt-6 px-6 py-3 bg-[#A2B9C6] text-white rounded-lg hover:bg-[#8fa9b8] dark:bg-[#FADADD] dark:text-[#4A4A4A] dark:hover:bg-[#f0c8cc] transition"
             >
               Back to Calendar
             </button>
           </div>
         ) : (
-          // Exibe o calendário se nenhum evento estiver selecionado
+          // Display calendar if no event is selected
           <BusinessCalendar
             salonId={salonId}
             onSelectEvent={setSelectedEvent}
