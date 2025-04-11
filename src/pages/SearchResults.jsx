@@ -91,10 +91,22 @@ const SearchResults = () => {
       setLoading(true);
       setError('');
       
+      // Get the language code if a language name is selected
+      let languageCode = selectedLanguage;
+      if (selectedLanguage && !selectedLanguage.includes('-')) {
+        // If user entered a language name instead of code, try to find the code
+        const foundLanguage = languages.find(
+          lang => lang.name.toLowerCase() === selectedLanguage.toLowerCase()
+        );
+        if (foundLanguage) {
+          languageCode = foundLanguage.code;
+        }
+      }
+      
       const params = {
         ...(searchTerm && { query: searchTerm }),
-        filterType: selectedLanguage ? 'language' : 'service',
-        ...(selectedLanguage && { language: selectedLanguage }),
+        filterType: languageCode ? 'language' : 'service',
+        ...(languageCode && { language: languageCode }),
         page,
         limit: pagination.limit
       };
@@ -102,6 +114,7 @@ const SearchResults = () => {
       const response = await axios.get(`${API_URL}/api/search`, { params });
       
       if (response.data.status === 'success') {
+        console.log('Search results:', response.data.data);
         setSearchResults(response.data.data);
         setPagination({
           page: response.data.pagination.page,
@@ -116,7 +129,7 @@ const SearchResults = () => {
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, selectedLanguage, pagination.limit]);
+  }, [searchTerm, selectedLanguage, pagination.limit, languages]);
 
   useEffect(() => {
     if (searchTerm || selectedLanguage) {
@@ -387,7 +400,52 @@ const SearchResults = () => {
                         <span className={`text-sm ${
                           theme === "light" ? "text-gray-500" : "text-gray-400"
                         }`}>
-                          {service.languageSpoken || 'English'}
+                          {service.languageDetails && service.languageDetails.length > 0 ? (
+                            <div className="flex items-center space-x-1">
+                              {service.languageDetails.map((lang, index) => (
+                                <img 
+                                  key={index}
+                                  src={`https://flagcdn.com/w20/${lang.country}.png`}
+                                  alt={lang.name}
+                                  title={lang.name}
+                                  className="w-5 h-4 inline-block"
+                                />
+                              ))}
+                            </div>
+                          ) : service.languageSpoken ? (
+                            Array.isArray(service.languageSpoken) ? (
+                              <div className="flex items-center space-x-1">
+                                {service.languageSpoken.map((code, index) => {
+                                  const lang = languages.find(l => l.code === code) || 
+                                              { code, name: code, country: 'xx' };
+                                  return (
+                                    <img 
+                                      key={index}
+                                      src={`https://flagcdn.com/w20/${lang.country}.png`}
+                                      alt={lang.name}
+                                      title={lang.name}
+                                      className="w-5 h-4 inline-block"
+                                    />
+                                  );
+                                })}
+                              </div>
+                            ) : (
+                              (() => {
+                                const lang = languages.find(l => l.code === service.languageSpoken) || 
+                                          { code: service.languageSpoken, name: service.languageSpoken, country: 'xx' };
+                                return (
+                                  <img 
+                                    src={`https://flagcdn.com/w20/${lang.country}.png`}
+                                    alt={lang.name}
+                                    title={lang.name}
+                                    className="w-5 h-4 inline-block"
+                                  />
+                                );
+                              })()
+                            )
+                          ) : (
+                            'English'
+                          )}
                         </span>
                       </div>
                     </div>
