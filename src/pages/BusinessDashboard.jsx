@@ -549,7 +549,7 @@ const BusinessDashboard = () => {
                 className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-[#A2B9C6] text-white hover:bg-[#8fa9b8]"
               >
                 <FaCalendarAlt className="w-5 h-5" />
-                <span>View Calendar</span>
+                <span className="hidden sm:block">View Calendar</span>
               </button>
               <div
                 className={`text-sm ${
