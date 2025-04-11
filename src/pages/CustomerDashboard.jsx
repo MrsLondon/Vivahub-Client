@@ -827,8 +827,8 @@ const CustomerDashboard = () => {
                                 <span
                                   className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                                     theme === "light"
-                                      ? "bg-green-100 text-green-600"
-                                      : "bg-green-800 text-green-200"
+                                      ? "bg-gray-100 text-gray-600"
+                                      : "bg-gray-600 text-gray-200"
                                   }`}
                                 >
                                   Service Completed
