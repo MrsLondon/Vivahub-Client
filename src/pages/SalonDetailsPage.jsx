@@ -32,7 +32,7 @@ const salonPlaceholders = {
 
 const GENERIC_SALON_PLACEHOLDER = "https://res.cloudinary.com/duu9km8ss/image/upload/v1744311894/vivahub_services_placeholders/general-salon-placeholder2.png";
 
-const SalonImageCard = ({ salon, theme }) => {
+const SalonImageCard = ({ salon }) => {
   // Priority: 1. salon.images[0] → 2. specific placeholder → 3. generic placeholder
   const imageUrl = salon.images?.[0] || salonPlaceholders[salon.name] || GENERIC_SALON_PLACEHOLDER;
   
@@ -165,7 +165,7 @@ const SalonDetailsPage = () => {
       {/* Salon Details Section */}
       <section className="py-10 px-5 flex-grow">
         <div className="max-w-4xl mx-auto">
-          <SalonImageCard salon={salon} theme={theme} />
+          <SalonImageCard salon={salon} />
           <h1 className={`text-3xl font-medium mb-4 ${
             theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
           }`}>
@@ -318,30 +318,6 @@ const SalonDetailsPage = () => {
         </div>
       </section>
 
-      {/* Google Maps Placeholder Section */}
-      <section className="py-10 px-5">
-        <div className="max-w-4xl mx-auto">
-          <h2
-            className={`text-xl font-medium mb-6 ${
-              theme === "light" ? "text-[#4A4A4A]" : "text-gray-200"
-            }`}
-          >
-            Location
-          </h2>
-          <div
-            className={`w-full h-64 flex items-center justify-center ${
-              theme === "light" ? "bg-gray-200" : "bg-gray-700"
-            }`}
-          >
-            <p
-              className={theme === "light" ? "text-gray-500" : "text-gray-300"}
-            >
-              Google Maps Placeholder
-            </p>
-          </div>
-        </div>
-      </section>
-
       {/* Customer Reviews Section */}
       <section className="py-10 px-5">
         <div className="max-w-4xl mx-auto">
@@ -426,7 +402,8 @@ const SalonDetailsPage = () => {
         </div>
       </section>
 
-      {/* Meet the Staff Section */}
+      {/* Meet the Staff Section - Commented out as it's showing placeholder message */}
+      {/* 
       <section
         className={`py-10 px-5 ${
           theme === "light" ? "bg-[#F8F8F8]" : "bg-gray-800"
@@ -486,8 +463,10 @@ const SalonDetailsPage = () => {
           )}
         </div>
       </section>
+      */}
 
-      {/* Nearby Salons Section */}
+      {/* Nearby Salons Section - Commented out as it's showing placeholder message */}
+      {/*
       <section
         className={`py-10 px-5 ${
           theme === "light" ? "bg-[#F8F8F8]" : "bg-gray-800"
@@ -548,6 +527,7 @@ const SalonDetailsPage = () => {
           )}
         </div>
       </section>
+      */}
 
       {/* Booking Sidebar */}
       <BookingSidebar
