@@ -7,6 +7,17 @@ import { useTheme } from "../context/ThemeContext";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
+// Salon placeholder mapping utility
+const salonPlaceholders = {
+  "Elegant Beauty Salon": "https://res.cloudinary.com/duu9km8ss/image/upload/v1744308274/vivahub_services_placeholders/elegant-beauty-salon-placeholder.png",
+  "Modern Style Studio": "https://res.cloudinary.com/duu9km8ss/image/upload/v1744308340/vivahub_services_placeholders/modern-style-studio-placeholder.png",
+  "Glamour & Glow Beauty Salon": "https://res.cloudinary.com/duu9km8ss/image/upload/v1744308339/vivahub_services_placeholders/glamour-glow-beauty-salon-placeholder.png",
+  "Sergi's Salon": "https://res.cloudinary.com/duu9km8ss/image/upload/v1744310237/vivahub_services_placeholders/sergis-salon-placeholder.png",
+  "Brunella Salon": "https://res.cloudinary.com/duu9km8ss/image/upload/v1744308341/vivahub_services_placeholders/brunella-salon-placeholder.png"
+};
+
+const GENERIC_SALON_PLACEHOLDER = "https://res.cloudinary.com/duu9km8ss/image/upload/v1744311894/vivahub_services_placeholders/general-salon-placeholder2.png";
+
 // Service placeholder mapping utility
 const servicePlaceholders = {
   "women's haircut": "women-haircut-placeholder2",
@@ -164,41 +175,31 @@ const SearchResults = () => {
   }, []);
 
   const ServiceImageCard = ({ service, theme }) => {
-    const placeholder = getServicePlaceholder(service.name);
-    const hasImages = service.salon?.images?.[0] || service.image;
+    // First try to get the salon image
+    let imageUrl = null;
+    
+    if (service.salon) {
+      // Priority: 1. salon.images[0] → 2. specific salon placeholder → 3. service placeholder → 4. generic placeholder
+      imageUrl = service.salon.images?.[0] || 
+                 (service.salon.name && salonPlaceholders[service.salon.name]) || 
+                 getServicePlaceholder(service.name) || 
+                 GENERIC_SALON_PLACEHOLDER;
+    } else {
+      // If no salon, use service image or placeholder
+      imageUrl = service.image || getServicePlaceholder(service.name) || GENERIC_SALON_PLACEHOLDER;
+    }
     
     return (
       <div className="h-40 bg-gray-200 relative">
-        {!hasImages && placeholder ? (
-          <img
-            src={placeholder}
-            alt={`${service.name} service`}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <img
-            src={service.salon?.images?.[0] || service.image}
-            alt={service.salon?.name || service.name}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              const fallback = getServicePlaceholder(service.name);
-              e.target.src = fallback || '';
-              if (!fallback) e.target.style.display = 'none';
-            }}
-          />
-        )}
-        
-        {!hasImages && !placeholder && (
-          <div className={`absolute inset-0 flex items-center justify-center ${
-            theme === "light" ? "bg-gray-100" : "bg-gray-600"
-          }`}>
-            <span className={`text-sm ${
-              theme === "light" ? "text-gray-400" : "text-gray-300"
-            }`}>
-              No Image Available
-            </span>
-          </div>
-        )}
+        <img
+          src={imageUrl}
+          alt={service.salon?.name || service.name}
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            e.target.src = GENERIC_SALON_PLACEHOLDER; // Ultimate fallback
+            e.target.onerror = null; // Prevent infinite loop
+          }}
+        />
         
         {service.salon && (
           <div className={`absolute bottom-0 left-0 right-0 p-2 ${
