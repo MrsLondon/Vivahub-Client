@@ -5,7 +5,8 @@ import { AuthContext } from "../context/auth.context";
 import { createBooking } from "../services/api";
 import { useTheme } from "../context/ThemeContext";
 import { FaMoon, FaSun } from "react-icons/fa";
-import Navbar from "../components/Navbar";
+// import Navbar from "../components/Navbar";
+import Header from "../components/Header";
 
 const BookingPage = () => {
   const {
@@ -146,7 +147,7 @@ const BookingPage = () => {
       }`}
     >
       {/* Navbar */}
-      <Navbar />
+      <Header />
 
       <div className="py-10 px-5 flex-grow">
         <div className="max-w-4xl mx-auto">
